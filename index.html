@@ -1,0 +1,2744 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Чудеса света — кругосветка блогера</title>
+<style>
+  :root{
+    --sky:#3a86ff; --sky-deep:#2563eb; --sunset:#ff8a5c; --coral:#ff6b6b;
+    --gold:#ffc94d; --mint:#27c498; --ink:#1a2238; --cloud:#ffffff;
+    --paper:#f4f7ff; --muted:#7a849e; --soft:#e7edff;
+    --shadow:0 8px 24px rgba(26,34,56,.12);
+    --shadow-lg:0 14px 40px rgba(26,34,56,.20);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    background:var(--paper); color:var(--ink);
+    overflow:hidden; user-select:none;
+    display:flex; align-items:center; justify-content:center;
+  }
+  /* phone frame: app fills viewport on mobile, sits in a centered frame on desktop */
+  #app{
+    position:relative; width:100%; max-width:440px; height:100dvh;
+    margin:0 auto; background:var(--paper); overflow:hidden;
+    display:flex; flex-direction:column;
+  }
+  /* On larger screens, cap the height so bottom buttons are always visible,
+     and show it as a phone-like frame centered on the page. */
+  @media (min-width:480px){
+    body{background:#dde5f7}
+    #app{
+      height:min(820px, 100dvh);
+      max-height:100dvh;
+      border-radius:32px;
+      box-shadow:0 24px 60px rgba(26,34,56,.28);
+      border:1px solid rgba(255,255,255,.6);
+    }
+  }
+  .screen{
+    position:absolute; inset:0; display:flex; flex-direction:column;
+    opacity:0; pointer-events:none; transform:translateX(24px);
+    transition:opacity .35s ease, transform .35s ease;
+    overflow:hidden;
+  }
+  .screen.active{opacity:1; pointer-events:auto; transform:none}
+  /* centered screens (welcome / onboard / dayend) must scroll if content is tall */
+  .screen.center, .screen.pad.center{overflow-y:auto; -webkit-overflow-scrolling:touch}
+
+  /* ---------- shared UI ---------- */
+  .pad{padding:24px 22px}
+  .pad.center{padding-bottom:30px}
+  .grow{flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch}
+  .center{align-items:center; justify-content:center; text-align:center}
+  /* scrollable centered screens: start from top so nothing is pushed off, spacers fill extra room */
+  .screen.center{justify-content:flex-start}
+  .spacer{flex:1 1 auto; min-height:20px}
+  h1{font-size:30px; line-height:1.15; letter-spacing:-.5px}
+  h2{font-size:23px; line-height:1.2; letter-spacing:-.3px}
+  p.lead{font-size:16px; line-height:1.55; color:var(--muted); margin-top:12px}
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:8px;
+    width:100%; padding:17px 20px; border:none; border-radius:18px;
+    font-size:17px; font-weight:700; color:#fff; cursor:pointer;
+    background:linear-gradient(135deg,var(--sky),var(--sky-deep));
+    box-shadow:0 8px 18px rgba(58,134,255,.35); transition:transform .12s ease, box-shadow .12s ease;
+  }
+  .btn:active{transform:translateY(2px) scale(.99); box-shadow:0 4px 10px rgba(58,134,255,.3)}
+  .btn.ghost{background:#fff; color:var(--sky-deep); box-shadow:var(--shadow); border:2px solid var(--soft)}
+  .btn.warm{background:linear-gradient(135deg,var(--sunset),var(--coral)); box-shadow:0 8px 18px rgba(255,107,107,.35)}
+  .btn.small{width:auto; padding:12px 18px; font-size:15px; border-radius:14px}
+
+  /* ---------- welcome ---------- */
+  #welcome{background:linear-gradient(160deg,#4a93ff 0%, #6f5cff 60%, #8a5cff 100%); color:#fff}
+  .globe{font-size:96px; animation:float 4s ease-in-out infinite; filter:drop-shadow(0 10px 18px rgba(0,0,0,.25))}
+  @keyframes float{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-14px) rotate(4deg)}}
+  .clouds{position:absolute; inset:0; overflow:hidden; pointer-events:none}
+  .cloud{position:absolute; font-size:42px; opacity:.55; animation:drift linear infinite}
+  @keyframes drift{from{transform:translateX(-120px)}to{transform:translateX(520px)}}
+  #welcome .lead{color:rgba(255,255,255,.92)}
+  #welcome .btn{background:#fff; color:var(--sky-deep); box-shadow:0 10px 24px rgba(0,0,0,.22)}
+
+  /* ---------- onboarding slides ---------- */
+  /* onboard: scrollable content + pinned bottom controls */
+  #onboard{padding:0}
+  #onboard .ob-scroll{flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:24px 22px 8px; display:flex; flex-direction:column}
+  #onboard .ob-bottom{flex-shrink:0; padding:8px 22px calc(20px + env(safe-area-inset-bottom)); background:var(--paper)}
+  .slide-wrap{flex:1; display:flex; flex-direction:column; justify-content:center; text-align:center; min-height:0}
+  .slide{display:none}
+  .slide.show{display:block; animation:pop .4s ease}
+  @keyframes pop{from{opacity:0; transform:scale(.92)}to{opacity:1; transform:scale(1)}}
+  .slide .emoji{font-size:84px; display:block; margin-bottom:18px; filter:drop-shadow(0 8px 14px rgba(26,34,56,.18))}
+  .dots{display:flex; gap:9px; justify-content:center; margin:22px 0}
+  .dot{width:9px; height:9px; border-radius:50%; background:var(--soft); transition:.25s}
+  .dot.on{background:var(--sky); width:26px; border-radius:6px}
+  .howto{text-align:left; background:#fff; border-radius:20px; padding:18px 20px; box-shadow:var(--shadow); margin-top:6px}
+  .howto .row{display:flex; gap:13px; align-items:flex-start; padding:11px 0; font-size:15px; line-height:1.45}
+  .howto .row:not(:last-child){border-bottom:1px solid var(--soft)}
+  .howto .ic{font-size:24px; flex-shrink:0}
+
+  /* ---------- top bar (followers) ---------- */
+  .topbar{
+    display:flex; align-items:center; gap:12px; padding:14px 18px;
+    background:#fff; box-shadow:0 2px 10px rgba(26,34,56,.06); z-index:5;
+  }
+  .avatar{width:42px; height:42px; border-radius:50%; background:linear-gradient(135deg,var(--sunset),var(--coral));
+    display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0}
+  .followers{display:flex; flex-direction:column; line-height:1.1}
+  .followers .num{font-size:19px; font-weight:800; font-variant-numeric:tabular-nums}
+  .followers .lbl{font-size:11px; color:var(--muted); font-weight:600; letter-spacing:.3px}
+  .topbar .menu-btn{margin-left:auto; background:var(--paper); border:none; width:40px; height:40px; border-radius:12px; font-size:18px; cursor:pointer}
+
+  /* ---------- map ---------- */
+  #map .grow{padding:8px 0 30px}
+  .map-head{padding:18px 22px 6px}
+  .map-head h2{font-size:21px}
+  .map-head p{font-size:13px; color:var(--muted); margin-top:3px}
+  .route{position:relative; padding:14px 0 0}
+  .stop{position:relative; display:flex; align-items:center; gap:16px; padding:13px 22px; }
+  .stop .node{
+    width:64px; height:64px; border-radius:20px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; font-size:34px;
+    background:#fff; box-shadow:var(--shadow); position:relative; z-index:2;
+    border:3px solid #fff;
+  }
+  .stop.done .node{background:linear-gradient(135deg,var(--mint),#1fa982); border-color:#bff0e0; color:#fff}
+  .stop.current .node{background:linear-gradient(135deg,var(--gold),#ffb01f); border-color:#fff3d0;
+    animation:pulse 2s infinite; color:#fff}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,201,77,.5)}50%{box-shadow:0 0 0 12px rgba(255,201,77,0)}}
+  .stop.locked .node{background:#e2e8f4; color:#6b7a99}
+  /* hero SVG */
+  #loc .hero .big svg{display:block;margin:0 auto;color:rgba(255,255,255,.96);filter:drop-shadow(0 8px 20px rgba(0,0,0,.28))}
+  .stop .info{flex:1}
+  .stop .info .name{font-size:16px; font-weight:700}
+  .stop .info .sub{font-size:12.5px; color:var(--muted); margin-top:2px}
+  .stop .flag{font-size:22px}
+  .stop .lock{font-size:18px; color:#c2cae0}
+  .connector{position:absolute; left:53px; top:0; bottom:0; width:4px;
+    background:repeating-linear-gradient(var(--soft) 0 8px, transparent 8px 16px); z-index:1}
+  .stop.tappable{cursor:pointer}
+  .stop.tappable:active{transform:scale(.98)}
+
+  /* ---------- location intro ---------- */
+  #loc .hero{
+    background:linear-gradient(160deg,#5b9bff,#7d6bff); color:#fff;
+    padding:30px 24px 26px; text-align:center;
+  }
+  #loc .hero .big{font-size:78px; filter:drop-shadow(0 8px 16px rgba(0,0,0,.22))}
+  #loc .hero h2{margin-top:10px}
+  #loc .hero .flagline{font-size:14px; opacity:.9; margin-top:4px}
+  .daycard{background:#fff; margin:18px 20px; border-radius:22px; padding:22px; box-shadow:var(--shadow); text-align:center}
+  .daycard .clap{font-size:54px}
+  .daycard h3{font-size:20px; margin-top:8px}
+  .daycard p{font-size:14.5px; color:var(--muted); line-height:1.5; margin-top:8px}
+  .progress-pills{display:flex; gap:7px; justify-content:center; margin:16px 0 4px}
+  .pill{width:34px; height:8px; border-radius:5px; background:var(--soft)}
+  .pill.filled{background:var(--mint)}
+  .pill.cur{background:var(--gold)}
+
+  /* ---------- question ---------- */
+  #quiz{background:var(--paper)}
+  .q-top{padding:14px 20px 0}
+  .q-progress{display:flex; align-items:center; gap:10px}
+  .q-bar{flex:1; height:9px; background:var(--soft); border-radius:6px; overflow:hidden}
+  .q-bar i{display:block; height:100%; background:linear-gradient(90deg,var(--gold),var(--sunset)); border-radius:6px; transition:width .4s ease; width:0}
+  .q-count{font-size:13px; font-weight:700; color:var(--muted); font-variant-numeric:tabular-nums}
+  .q-body{flex:1; display:flex; flex-direction:column; padding:18px 22px 28px; overflow-y:auto; -webkit-overflow-scrolling:touch}
+  .q-body.kp-open{padding-bottom:260px}
+  .q-tag{display:inline-flex; align-self:flex-start; gap:6px; align-items:center; background:var(--soft); color:var(--sky-deep);
+    font-size:12px; font-weight:700; padding:6px 12px; border-radius:30px; margin-bottom:14px}
+  .q-text{font-size:21px; line-height:1.6; font-weight:600}
+  /* school-style vertical fractions */
+  .fi{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 2px;line-height:1;gap:0}
+  .fi .fn{font-size:.72em;font-weight:800;line-height:1.15;padding:0 2px}
+  .fi .fb{width:100%;min-width:14px;height:2.5px;background:currentColor;border-radius:2px;margin:1px 0}
+  .fi .fd{font-size:.72em;font-weight:800;line-height:1.15;padding:0 2px}
+  .mw{display:inline-flex;align-items:center;gap:3px;vertical-align:middle}
+  /* fractions inside options — slightly larger */
+  .opt .fi .fn, .opt .fi .fd{font-size:.78em}
+  /* fractions in hint/explain */
+  .hint-bubble .fi .fn, .hint-bubble .fi .fd,
+  .fb-explain .fi .fn, .fb-explain .fi .fd{font-size:.78em}
+  .q-visual{margin:18px 0; display:flex; justify-content:center}
+  .q-visual svg{max-width:100%}
+
+  .options{display:grid; grid-template-columns:1fr 1fr; gap:11px; margin-top:18px}
+  .opt{
+    background:#fff; border:2.5px solid var(--soft); border-radius:16px; padding:18px 12px;
+    font-size:20px; font-weight:700; cursor:pointer; text-align:center; transition:.15s;
+    font-variant-numeric:tabular-nums;
+  }
+  .opt:active{transform:scale(.97)}
+  .opt.correct{border-color:var(--mint); background:#e8fbf4; color:#11936b}
+  .opt.wrong{border-color:var(--coral); background:#ffeceb; color:#d8443b}
+  .opt.disabled{pointer-events:none; opacity:.55}
+
+  .answer-area{margin-top:18px}
+  .answer-input{
+    width:100%; padding:18px; font-size:24px; font-weight:700; text-align:center;
+    border:2.5px solid var(--soft); border-radius:16px; background:#fff; color:var(--ink);
+    font-variant-numeric:tabular-nums; outline:none;
+  }
+  .answer-input:focus{border-color:var(--sky)}
+  .answer-input.correct{border-color:var(--mint); background:#e8fbf4}
+  .answer-input.wrong{border-color:var(--coral); background:#ffeceb}
+  /* fraction input: numerator over denominator */
+  .frac-input{display:flex; flex-direction:column; align-items:center; gap:8px; margin-top:20px}
+  .frac-cell{
+    width:88px; height:64px; padding:6px; font-size:30px; font-weight:800; text-align:center;
+    border:2.5px solid var(--soft); border-radius:14px; background:#fff; color:var(--ink);
+    font-variant-numeric:tabular-nums; outline:none;
+  }
+  .frac-cell:focus{border-color:var(--sky)}
+  .frac-cell.correct{border-color:var(--mint); background:#e8fbf4; color:#11936b}
+  .frac-cell.wrong{border-color:var(--coral); background:#ffeceb; color:#d8443b}
+  .frac-cell::placeholder{color:#c2cae0; font-weight:600}
+  .frac-bar{width:104px; height:4px; background:var(--ink); border-radius:3px}
+  .hint-row{display:flex; gap:10px; margin-top:13px}
+  .hint-row .btn{flex:1}
+
+  /* feedback banner */
+  .feedback{
+    position:absolute; left:0; right:0; bottom:0; transform:translateY(110%);
+    background:#fff; border-radius:26px 26px 0 0; box-shadow:0 -10px 30px rgba(26,34,56,.16);
+    padding:24px 22px calc(22px + env(safe-area-inset-bottom)); transition:transform .35s cubic-bezier(.2,.9,.3,1); z-index:20;
+    max-height:80%; overflow-y:auto; -webkit-overflow-scrolling:touch;
+  }
+  .feedback.up{transform:translateY(0)}
+  .feedback .fb-emoji{font-size:46px}
+  .feedback h3{font-size:21px; margin-top:6px}
+  .feedback .fb-gain{font-size:15px; font-weight:700; color:var(--mint); margin-top:4px}
+  .feedback .fb-explain{font-size:14px; color:var(--muted); line-height:1.5; margin-top:10px;
+    background:var(--paper); padding:13px 15px; border-radius:14px}
+  .feedback .btn{margin-top:18px}
+
+  .hint-bubble{
+    margin-top:13px; background:#fff8e6; border:2px solid #ffe7a8; border-radius:14px;
+    padding:13px 15px; font-size:14px; line-height:1.5; color:#9a7a1f; display:none;
+  }
+  .hint-bubble.show{display:block; animation:pop .3s ease}
+
+  /* day complete */
+  #dayend{background:linear-gradient(160deg,#ffb44d,#ff7e5f); color:#fff}
+  #dayend .clap{font-size:96px; animation:float 3s ease-in-out infinite}
+  #dayend .summary{background:rgba(255,255,255,.18); border-radius:22px; padding:20px; margin-top:22px; backdrop-filter:blur(4px)}
+  #dayend .summary .big{font-size:40px; font-weight:800}
+  #dayend .summary .cap{font-size:14px; opacity:.9}
+  #dayend .btn{background:#fff; color:var(--sunset)}
+  #dayend .btn.ghost{background:transparent; color:#fff; border:2px solid rgba(255,255,255,.6); box-shadow:none; margin-top:10px}
+
+  /* floating followers gain */
+  .floatgain{position:absolute; font-size:18px; font-weight:800; color:var(--mint); pointer-events:none;
+    animation:rise 1.1s ease-out forwards; z-index:30}
+  @keyframes rise{0%{opacity:0; transform:translateY(0) scale(.8)}20%{opacity:1}100%{opacity:0; transform:translateY(-70px) scale(1.1)}}
+
+  .confetti{position:absolute; width:10px; height:14px; top:-20px; pointer-events:none; z-index:25; border-radius:2px}
+  @keyframes fall{to{transform:translateY(120vh) rotate(540deg); opacity:.2}}
+
+  /* settings sheet */
+  .sheet-bg{position:absolute; inset:0; background:rgba(26,34,56,.45); opacity:0; pointer-events:none; transition:.25s; z-index:40}
+  .sheet-bg.show{opacity:1; pointer-events:auto}
+  .sheet{position:absolute; left:0; right:0; bottom:0; background:#fff; border-radius:24px 24px 0 0;
+    padding:20px 22px calc(20px + env(safe-area-inset-bottom)); transform:translateY(110%); transition:transform .3s ease; z-index:41;
+    max-height:88%; overflow-y:auto; -webkit-overflow-scrolling:touch}
+  .sheet.show{transform:translateY(0)}
+  .sheet-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:6px}
+  .sheet-head h3{font-size:19px; margin:0}
+  .sheet-x{border:none; background:var(--paper); width:34px; height:34px; border-radius:50%; font-size:15px; color:var(--muted); cursor:pointer; flex-shrink:0}
+  .sheet-x:active{transform:scale(.92)}
+  .sheet h3{font-size:19px; margin-bottom:6px}
+  .sheet .opt-line{display:flex; align-items:center; justify-content:space-between; padding:14px 0; border-bottom:1px solid var(--soft)}
+  .sheet .opt-line:last-of-type{border-bottom:none}
+  .sheet .opt-line span{font-size:15px}
+  .seg{display:flex; background:var(--paper); border-radius:12px; padding:3px}
+  .seg button{border:none; background:transparent; padding:8px 12px; border-radius:9px; font-size:13px; font-weight:700; color:var(--muted); cursor:pointer}
+  .seg button.on{background:#fff; color:var(--sky-deep); box-shadow:var(--shadow)}
+
+  .lock-note{font-size:13px; color:var(--muted); text-align:center; padding:10px 30px 0; line-height:1.5}
+
+  /* ---- on-screen keypad ---- */
+  .keypad{
+    position:absolute; left:0; right:0; bottom:0; z-index:32;
+    background:#dde5f7; border-top:1.5px solid #c4cfe8;
+    padding:8px 10px calc(10px + env(safe-area-inset-bottom));
+    display:none;
+  }
+  .keypad.show{display:block}
+  .kp-row{display:flex; gap:7px; margin-bottom:7px}
+  .kp-row:last-child{margin-bottom:0}
+  .kp-btn{
+    flex:1; height:54px; border:none; border-radius:14px;
+    background:#fff; font-size:24px; font-weight:800; color:var(--ink);
+    cursor:pointer; box-shadow:0 2px 6px rgba(26,34,56,.10);
+    transition:transform .1s, background .1s;
+  }
+  .kp-btn:active{transform:scale(.91); background:#eef2fc}
+  .kp-del{background:#c8d0e8; font-size:20px; color:var(--ink)}
+  .kp-comma{background:#e8eaf6; font-size:22px; font-weight:700; color:var(--ink)}
+  .kp-ok{background:linear-gradient(135deg,var(--mint),#1fa982); color:#fff; font-size:17px; font-weight:700}
+  .kp-ok:active{background:var(--mint)}
+  /* active input highlight */
+  .frac-cell.kp-on, .answer-input.kp-on{
+    border-color:var(--sky); box-shadow:0 0 0 3px rgba(58,134,255,.22);
+  }
+
+  /* ---- landmark silhouettes in map nodes ---- */
+  .stop .node svg{display:block;width:100%;height:auto;max-height:46px}
+  .stop.done .node{color:#fff}
+  .stop.current .node{color:#fff}
+  .stop.locked .node{color:#c2cae0}
+
+  /* ---- airplane animation ---- */
+  #plane{
+    position:absolute; font-size:26px; z-index:60; pointer-events:none;
+    display:none; transition:left .85s cubic-bezier(.4,0,.2,1), top .85s cubic-bezier(.4,0,.2,1);
+    filter:drop-shadow(0 4px 8px rgba(0,0,0,.3));
+  }
+
+  /* ---- achievement toast ---- */
+  .ach-toast{
+    position:absolute; left:14px; right:14px; bottom:100px; z-index:50;
+    background:#1a2238; color:#fff; border-radius:18px; padding:14px 16px;
+    display:flex; align-items:center; gap:13px; box-shadow:0 10px 28px rgba(0,0,0,.35);
+    transform:translateY(30px); opacity:0; pointer-events:none;
+    transition:transform .4s cubic-bezier(.2,.9,.3,1), opacity .4s ease;
+  }
+  .ach-toast.show{transform:translateY(0); opacity:1;}
+  .ach-toast .ach-icon{font-size:34px; flex-shrink:0}
+  .ach-toast .ach-body .ach-label{font-size:11px; font-weight:700; color:var(--gold); letter-spacing:.5px; text-transform:uppercase}
+  .ach-toast .ach-body .ach-name{font-size:16px; font-weight:800; margin-top:1px}
+  .ach-toast .ach-body .ach-desc{font-size:12px; color:rgba(255,255,255,.7); margin-top:2px}
+
+  /* ---- gear strip in topbar ---- */
+  .gear-badge{font-size:22px; margin-left:6px}
+
+  /* ---- final screen ---- */
+  #final{background:linear-gradient(150deg,#2b0e6e,#6f2dbd,#e040fb); color:#fff}
+  #final .trophy{font-size:100px; animation:float 3s ease-in-out infinite; filter:drop-shadow(0 10px 24px rgba(0,0,0,.4))}
+  #final .ach-list{display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin:18px 0}
+  #final .ach-chip{background:rgba(255,255,255,.18); border-radius:12px; padding:8px 13px; font-size:14px; font-weight:700; backdrop-filter:blur(4px)}
+  #final .btn{background:#fff; color:#6f2dbd; margin-top:8px}
+  #final .btn.ghost{background:transparent; color:#fff; border:2px solid rgba(255,255,255,.6); box-shadow:none; margin-top:8px}
+  #final .stars-row{display:flex; gap:5px; justify-content:center; margin:10px 0}
+  #final .star{font-size:28px; animation:starPop .4s ease both}
+  @keyframes starPop{from{transform:scale(0) rotate(-30deg)}to{transform:scale(1) rotate(0)}}
+
+  /* ---- gear screen ---- */
+  #gear{background:var(--paper)}
+  .gear-list{padding:10px 18px 30px}
+  .gear-card{background:#fff; border-radius:20px; padding:18px; margin-bottom:14px; box-shadow:var(--shadow); display:flex; align-items:center; gap:16px; position:relative}
+  .gear-card .g-icon{font-size:44px; flex-shrink:0}
+  .gear-card .g-info .g-name{font-size:17px; font-weight:800}
+  .gear-card .g-info .g-desc{font-size:13px; color:var(--muted); margin-top:3px}
+  .gear-card .g-info .g-cost{font-size:13px; font-weight:700; color:var(--sky-deep); margin-top:6px}
+  .gear-card.owned .g-cost{color:var(--mint)}
+  .gear-card.current{border:3px solid var(--gold)}
+  .gear-card .g-badge{position:absolute; top:12px; right:14px; font-size:13px; font-weight:700; padding:5px 10px; border-radius:30px}
+  .gear-card.owned .g-badge{background:#e8fbf4; color:#11936b}
+  .gear-card.current .g-badge{background:#fff3d0; color:#b37800}
+  .gear-card.locked .g-badge{background:var(--soft); color:var(--muted)}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ====== WELCOME ====== -->
+  <section class="screen active pad center" id="welcome">
+    <div class="clouds" id="clouds"></div>
+    <div class="spacer"></div>
+    <div class="globe">🌍</div>
+    <h1 style="margin-top:20px">Чудеса света</h1>
+    <p class="lead" style="max-width:300px">Привет! Ты — начинающий тревел-блогер. Тебя ждёт кругосветное путешествие по самым знаменитым местам планеты!</p>
+    <div class="spacer"></div>
+    <button class="btn" onclick="go('onboard'); showSlide(0)">Поехали! ✈️</button>
+    <div style="height:8px"></div>
+  </section>
+
+  <!-- ====== ONBOARDING ====== -->
+  <section class="screen" id="onboard">
+    <div class="ob-scroll">
+      <div class="slide-wrap">
+        <!-- slide 0 -->
+        <div class="slide show" data-s="0">
+          <span class="emoji">🎬</span>
+          <h2>О чём игра</h2>
+          <p class="lead">Ты летишь по миру и снимаешь чудеса света — от Эйфелевой башни до пирамид Египта. Настоящее приключение блогера!</p>
+        </div>
+        <!-- slide 1 -->
+        <div class="slide" data-s="1">
+          <span class="emoji">🧮</span>
+          <h2>Решай и набирай</h2>
+          <p class="lead">На каждой локации тебя ждут математические задания. Решай их правильно — и набирай <b>подписчиков</b>!</p>
+        </div>
+        <!-- slide 2 -->
+        <div class="slide" data-s="2">
+          <span class="emoji">📖</span>
+          <h2>Как играть</h2>
+          <div class="howto">
+            <div class="row"><span class="ic">✍️</span><span>Реши пример или выбери правильный ответ.</span></div>
+            <div class="row"><span class="ic">💡</span><span>Ошибся — попробуй ещё раз или возьми подсказку.</span></div>
+            <div class="row"><span class="ic">🎥</span><span>За день — <b>5 заданий</b>, один съёмочный день. Не торопись!</span></div>
+            <div class="row"><span class="ic">🏁</span><span>Пройдёшь локацию — получишь флаг страны и бонус.</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="ob-bottom">
+      <div class="dots" id="dots">
+        <div class="dot on"></div><div class="dot"></div><div class="dot"></div>
+      </div>
+      <button class="btn" id="onboardBtn" onclick="nextSlide()">Дальше</button>
+    </div>
+  </section>
+
+  <!-- ====== MAP ====== -->
+  <section class="screen" id="map">
+    <div class="topbar">
+      <div class="avatar" id="mapAvatar">📱</div>
+      <div class="followers">
+        <span class="num" id="mapFollowers">0</span>
+        <span class="lbl">ПОДПИСЧИКОВ</span>
+      </div>
+      <button class="menu-btn" onclick="go('gear')" title="Техника">🎒</button>
+      <button class="menu-btn" onclick="openSheet()">⚙️</button>
+    </div>
+    <div class="map-head">
+      <h2>Твой маршрут 🗺️</h2>
+      <p>Проходи локации одну за другой</p>
+    </div>
+    <div class="grow">
+      <div class="route" id="route"></div>
+      <p class="lock-note">Проходи локации одну за другой — каждая открывает следующую. Все 10 чудес света ждут тебя!</p>
+    </div>
+  </section>
+
+  <!-- ====== LOCATION INTRO ====== -->
+  <section class="screen" id="loc">
+    <div class="hero">
+      <div class="big" id="locEmoji">🗼</div>
+      <h2 id="locName">Эйфелева башня</h2>
+      <div class="flagline" id="locFlag">🇫🇷 Франция · Окружность, доли и дроби</div>
+    </div>
+    <div class="grow">
+      <div class="daycard">
+        <div class="clap">🎬</div>
+        <h3>Съёмочный день</h3>
+        <p>Сегодня снимаем <b>5 заданий</b>. Реши их — и кадры разлетятся по сети!</p>
+        <div class="progress-pills" id="locPills"></div>
+      </div>
+      <div class="pad" style="padding-top:4px">
+        <button class="btn warm" onclick="startDay()" id="startDayBtn">Начать съёмку 🎥</button>
+        <div style="height:10px"></div>
+        <button class="btn" onclick="goNextLoc()" id="nextLocBtn" style="display:none">Дальше →</button>
+        <div style="height:10px"></div>
+        <button class="btn ghost" onclick="go('map')">← На карту</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== QUIZ ====== -->
+  <section class="screen" id="quiz">
+    <div class="topbar">
+      <div class="avatar">📸</div>
+      <div class="followers">
+        <span class="num" id="quizFollowers">0</span>
+        <span class="lbl">ПОДПИСЧИКОВ</span>
+      </div>
+    </div>
+    <div class="q-top">
+      <div class="q-progress">
+        <div class="q-bar"><i id="qBar"></i></div>
+        <span class="q-count" id="qCount">1 / 5</span>
+      </div>
+    </div>
+    <div class="q-body">
+      <span class="q-tag" id="qTag">📐 Задание</span>
+      <div class="q-text" id="qText"></div>
+      <div class="q-visual" id="qVisual"></div>
+      <div id="qInteract"></div>
+      <div class="hint-bubble" id="hintBubble"></div>
+    </div>
+    <div class="feedback" id="feedback">
+      <div class="fb-emoji" id="fbEmoji">🎉</div>
+      <h3 id="fbTitle">Отличный кадр!</h3>
+      <div class="fb-gain" id="fbGain">+100 подписчиков</div>
+      <div class="fb-explain" id="fbExplain"></div>
+      <button class="btn" id="fbNext" onclick="nextQuestion()">Дальше →</button>
+    </div>
+  </section>
+
+  <!-- ====== DAY END ====== -->
+  <section class="screen pad center" id="dayend">
+    <div class="spacer"></div>
+    <div class="clap" id="dayEndEmoji">🎬</div>
+    <h1 style="margin-top:14px" id="dayEndTitle">Съёмка завершена!</h1>
+    <p class="lead" style="color:rgba(255,255,255,.92); max-width:300px" id="dayEndMsg"></p>
+    <div class="summary">
+      <div class="big" id="dayEndGain">+0</div>
+      <div class="cap">подписчиков за сегодня</div>
+    </div>
+    <div class="spacer"></div>
+    <button class="btn" id="dayEndBtn">Продолжить</button>
+    <button class="btn ghost" id="dayEndMapBtn" onclick="go('map')">На карту 🗺️</button>
+    <div style="height:6px"></div>
+  </section>
+
+  <!-- ====== FINAL SCREEN ====== -->
+  <section class="screen pad center" id="final">
+    <div class="spacer"></div>
+    <div class="trophy">🏆</div>
+    <h1 style="margin-top:16px">Ты — Капитан дробей!</h1>
+    <p class="lead" style="color:rgba(255,255,255,.88); max-width:300px">Ты объездил все 10 чудес света и прошёл математику дробей от начала до конца. Так держать!</p>
+    <div class="stars-row" id="finalStars"></div>
+    <div class="ach-list" id="finalAchList"></div>
+    <div class="spacer"></div>
+    <div style="font-size:20px;font-weight:800;color:rgba(255,255,255,.9)" id="finalFollowers"></div>
+    <button class="btn" style="margin-top:16px" onclick="go('map')">Смотреть карту 🗺️</button>
+    <button class="btn ghost" onclick="resetProgress()">Начать заново</button>
+    <div style="height:8px"></div>
+  </section>
+
+  <!-- ====== GEAR SCREEN ====== -->
+  <section class="screen" id="gear">
+    <div class="topbar">
+      <button class="menu-btn" onclick="go('map')" style="margin-left:0;margin-right:auto">←</button>
+      <div class="followers">
+        <span class="num" id="gearFollowers">0</span>
+        <span class="lbl">ПОДПИСЧИКОВ</span>
+      </div>
+    </div>
+    <div class="map-head">
+      <h2>Техника блогера 📸</h2>
+      <p>Прокачивай снаряжение за подписчиков</p>
+    </div>
+    <div class="grow">
+      <div class="gear-list" id="gearList"></div>
+    </div>
+  </section>
+
+  <!-- ====== KEYPAD ====== -->
+  <div id="keypad" class="keypad">
+    <div class="kp-row">
+      <button class="kp-btn" onclick="kpPress('7')">7</button>
+      <button class="kp-btn" onclick="kpPress('8')">8</button>
+      <button class="kp-btn" onclick="kpPress('9')">9</button>
+    </div>
+    <div class="kp-row">
+      <button class="kp-btn" onclick="kpPress('4')">4</button>
+      <button class="kp-btn" onclick="kpPress('5')">5</button>
+      <button class="kp-btn" onclick="kpPress('6')">6</button>
+    </div>
+    <div class="kp-row">
+      <button class="kp-btn" onclick="kpPress('1')">1</button>
+      <button class="kp-btn" onclick="kpPress('2')">2</button>
+      <button class="kp-btn" onclick="kpPress('3')">3</button>
+    </div>
+    <div class="kp-row">
+      <button class="kp-btn kp-del" onclick="kpPress('del')">⌫</button>
+      <button class="kp-btn" onclick="kpPress('0')">0</button>
+      <button class="kp-btn kp-comma" onclick="kpPress(',')">，</button>
+      <button class="kp-btn kp-ok" onclick="kpPress('ok')">Ввод ✓</button>
+    </div>
+  </div>
+
+  <!-- ====== AIRPLANE ====== -->
+  <div id="plane">✈️</div>
+
+  <!-- ====== ACHIEVEMENT TOAST ====== -->
+  <div class="ach-toast" id="achToast">
+    <div class="ach-icon" id="achToastIcon">🏆</div>
+    <div class="ach-body">
+      <div class="ach-label">Достижение разблокировано!</div>
+      <div class="ach-name" id="achToastName"></div>
+      <div class="ach-desc" id="achToastDesc"></div>
+    </div>
+  </div>
+
+  <!-- ====== SETTINGS SHEET ====== -->
+  <div class="sheet-bg" id="sheetBg" onclick="closeSheet()"></div>
+  <div class="sheet" id="sheet">
+    <div class="sheet-head">
+      <h3>Настройки</h3>
+      <button class="sheet-x" onclick="closeSheet()" aria-label="Закрыть">✕</button>
+    </div>
+    <div class="opt-line">
+      <span>Лимит заданий в день</span>
+      <div class="seg" id="limitSeg">
+        <button data-lim="soft" class="on">Мягкий</button>
+        <button data-lim="hard">Жёсткий</button>
+        <button data-lim="off">Без</button>
+      </div>
+    </div>
+    <p style="font-size:12.5px;color:var(--muted);line-height:1.5;margin:8px 0 14px">
+      <b>Мягкий</b> — после 5 заданий игра предложит паузу, но даст продолжить.
+      <b>Жёсткий</b> — стоп до завтра. <b>Без</b> — без ограничений.
+    </p>
+    <div class="opt-line" style="border-bottom:none">
+      <span>Заданий сегодня: <b id="dayCountLabel">0</b> из 5</span>
+      <button class="btn small ghost" onclick="resetDay()">Сбросить день</button>
+    </div>
+    <div style="height:10px"></div>
+    <button class="btn ghost" onclick="resetProgress()">Сбросить весь прогресс</button>
+    <div style="height:10px"></div>
+    <button class="btn" onclick="closeSheet()">Готово</button>
+  </div>
+
+</div>
+
+<script>
+/* ============ STATE ============ */
+const SAVE_KEY = 'chudesa_save_v5';
+const TOTAL_LOCATIONS = 10;
+const QUESTIONS_PER_LOCATION = 5; // fixed length per location
+const EMPTY_PROGRESS = ()=>Object.fromEntries([...Array(10)].map((_,i)=>[i,0]));
+let state = {
+  followers: 0,
+  progress: EMPTY_PROGRESS(),
+  rounds: EMPTY_PROGRESS(),
+  limit: 'soft',
+  dayStamp: '',
+  dayCount: 0,
+  achievements: [],   // array of earned achievement ids
+  gearLevel: 0        // 0=phone,1=camera,2=drone,3=satellite
+};
+let currentLoc = 0;       // which location is being played
+function todayStr(){ const d=new Date(); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
+function refreshDay(){
+  // reset the daily counter when a new calendar day starts
+  const t=todayStr();
+  if(state.dayStamp!==t){ state.dayStamp=t; state.dayCount=0; save(); }
+}
+function load(){
+  try{ const s = JSON.parse(localStorage.getItem(SAVE_KEY)); if(s) state = Object.assign(state, s); }catch(e){}
+  if(!state.progress) state.progress = EMPTY_PROGRESS();
+  if(!state.rounds) state.rounds = EMPTY_PROGRESS();
+  if(!state.achievements) state.achievements = [];
+  if(state.gearLevel===undefined) state.gearLevel = 0;
+}
+function save(){ try{ localStorage.setItem(SAVE_KEY, JSON.stringify(state)); }catch(e){} }
+load();
+refreshDay();
+
+/* ============ GEAR ============ */
+const GEAR = [
+  {emoji:'📱', name:'Смартфон',          desc:'Твой стартовый инструмент блогера.',       cost:0},
+  {emoji:'📷', name:'Камера',            desc:'Качество видео выросло! Красивые кадры.',  cost:1000},
+  {emoji:'🚁', name:'Дрон',             desc:'Съёмка с воздуха! Виды стали ещё круче.',  cost:3500},
+  {emoji:'📡', name:'Спутниковая связь', desc:'Вещаешь из любой точки планеты!',          cost:7500},
+];
+function gearEmoji(){ return GEAR[state.gearLevel||0].emoji; }
+function renderGear(){
+  const el=document.getElementById('gearList'); if(!el) return;
+  const fEl=document.getElementById('gearFollowers'); if(fEl) fEl.textContent=state.followers.toLocaleString('ru-RU');
+  el.innerHTML='';
+  GEAR.forEach((g,i)=>{
+    const owned=i<=state.gearLevel, current=i===state.gearLevel, canBuy=!owned&&state.followers>=g.cost&&i===state.gearLevel+1;
+    const card=document.createElement('div');
+    card.className='gear-card '+(current?'current':owned?'owned':'locked');
+    const badgeText=current?'Используется ✓':owned?'Есть ✓':state.followers>=g.cost?'Купить':'🔒 '+g.cost.toLocaleString('ru-RU')+' подп.';
+    card.innerHTML=`
+      <div class="g-icon">${g.emoji}</div>
+      <div class="g-info">
+        <div class="g-name">${g.name}</div>
+        <div class="g-desc">${g.desc}</div>
+        ${canBuy?`<button class="btn small" style="margin-top:8px;width:auto" onclick="buyGear(${i})">Купить за ${g.cost.toLocaleString('ru-RU')} 👤</button>`:
+          !owned?`<div class="g-cost">Нужно: ${g.cost.toLocaleString('ru-RU')} подписчиков</div>`:''}
+      </div>
+      <div class="g-badge">${badgeText}</div>`;
+    el.appendChild(card);
+  });
+}
+function buyGear(level){
+  if(state.followers<GEAR[level].cost) return;
+  state.gearLevel=level; save();
+  syncAvatar(); renderGear();
+  showAchToast(GEAR[level].emoji, 'Новая техника!', GEAR[level].desc);
+  checkAchievements();
+}
+
+/* ============ ACHIEVEMENTS ============ */
+const ACHIEVEMENTS = [
+  {id:'clean_shot',  emoji:'⭐', name:'Чистый кадр',       desc:'Первый раз ответил правильно сразу, без подсказки'},
+  {id:'hype',        emoji:'🔥', name:'Хайп!',             desc:'Прошёл локацию без единой ошибки'},
+  {id:'explorer5',   emoji:'🗺️', name:'Первооткрыватель',  desc:'Открыл и прошёл 5 чудес света'},
+  {id:'followers2k', emoji:'👥', name:'2000 подписчиков',  desc:'Набрал 2000 подписчиков'},
+  {id:'followers5k', emoji:'💫', name:'5000 подписчиков',  desc:'Набрал 5000 подписчиков'},
+  {id:'drone',       emoji:'🚁', name:'Дрон в кадре',      desc:'Купил дрон для съёмок'},
+  {id:'world_tour',  emoji:'🌍', name:'Кругосветка',        desc:'Прошёл все 10 чудес света'},
+  {id:'captain',     emoji:'👑', name:'Капитан дробей',    desc:'Завершил полное путешествие!'},
+];
+let _achQueue=[];
+function unlockAchievement(id){
+  if(state.achievements.includes(id)) return;
+  state.achievements.push(id); save();
+  const a=ACHIEVEMENTS.find(x=>x.id===id); if(!a) return;
+  _achQueue.push(a);
+  if(_achQueue.length===1) _flushAch();
+}
+function _flushAch(){
+  if(!_achQueue.length) return;
+  const a=_achQueue[0];
+  showAchToast(a.emoji, a.name, a.desc, ()=>{ _achQueue.shift(); _flushAch(); });
+}
+function showAchToast(emoji, name, desc, onDone){
+  const t=document.getElementById('achToast');
+  document.getElementById('achToastIcon').textContent=emoji;
+  document.getElementById('achToastName').textContent=name;
+  document.getElementById('achToastDesc').textContent=desc;
+  t.classList.add('show');
+  setTimeout(()=>{ t.classList.remove('show'); if(onDone) setTimeout(onDone,400); }, 3200);
+}
+let _perfectCurrentLoc=true; // resets per location start
+function checkAchievements(){
+  // follower milestones
+  if(state.followers>=2000) unlockAchievement('followers2k');
+  if(state.followers>=5000) unlockAchievement('followers5k');
+  // gear
+  if(state.gearLevel>=2) unlockAchievement('drone');
+  // locations done count
+  const doneCount=Object.keys(state.progress).filter(k=>locDone(Number(k))).length;
+  if(doneCount>=5) unlockAchievement('explorer5');
+  if(doneCount>=10){ unlockAchievement('world_tour'); unlockAchievement('captain'); }
+}
+function checkHype(){
+  if(_perfectCurrentLoc) unlockAchievement('hype');
+}
+
+/* progress helpers */
+function locLength(i){ return QUESTIONS_PER_LOCATION; }
+function locProgress(i){ return state.progress[i] || 0; }
+function locDone(i){ return locProgress(i) >= locLength(i); }
+function locUnlocked(i){ return i===0 || locDone(i-1); }
+function locRound(i){ return state.rounds[i] || 0; }
+
+/* ============ NAV ============ */
+function go(id){
+  hideKeypad();
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if(id==='map'){ renderMap(); syncAvatar(); }
+  if(id==='loc') renderLoc();
+  if(id==='gear') renderGear();
+  if(id==='final') renderFinal();
+  syncFollowers();
+}
+function syncFollowers(){
+  ['mapFollowers','quizFollowers','gearFollowers'].forEach(idv=>{
+    const el=document.getElementById(idv); if(el) el.textContent = state.followers.toLocaleString('ru-RU');
+  });
+  syncAvatar();
+}
+function renderFinal(){
+  document.getElementById('finalFollowers').textContent='👤 '+state.followers.toLocaleString('ru-RU')+' подписчиков';
+  // stars (one per location done)
+  const doneCount=Object.keys(state.progress).filter(k=>locDone(Number(k))).length;
+  const stars=document.getElementById('finalStars'); stars.innerHTML='';
+  for(let i=0;i<Math.min(doneCount,10);i++){
+    const s=document.createElement('span'); s.className='star'; s.textContent='⭐';
+    s.style.animationDelay=(i*0.07)+'s'; stars.appendChild(s);
+  }
+  // achievements earned
+  const list=document.getElementById('finalAchList'); list.innerHTML='';
+  ACHIEVEMENTS.forEach(a=>{
+    if(state.achievements.includes(a.id)){
+      const chip=document.createElement('div'); chip.className='ach-chip';
+      chip.textContent=a.emoji+' '+a.name; list.appendChild(chip);
+    }
+  });
+}
+
+/* ============ WELCOME clouds ============ */
+(function(){
+  const c=document.getElementById('clouds');
+  ['☁️','☁️','🌤️','☁️'].forEach((e,i)=>{
+    const d=document.createElement('div'); d.className='cloud'; d.textContent=e;
+    d.style.top=(12+i*22)+'%'; d.style.animationDuration=(16+i*5)+'s'; d.style.animationDelay=(-i*4)+'s';
+    c.appendChild(d);
+  });
+})();
+
+/* ============ ONBOARDING ============ */
+let slide=0;
+function showSlide(n){
+  slide=n;
+  document.querySelectorAll('#onboard .slide').forEach(s=>s.classList.toggle('show', +s.dataset.s===n));
+  document.querySelectorAll('#dots .dot').forEach((d,i)=>d.classList.toggle('on', i===n));
+  document.getElementById('onboardBtn').textContent = n===2 ? 'Начать путешествие 🌍' : 'Дальше';
+}
+function nextSlide(){
+  if(slide<2){ showSlide(slide+1); }
+  else{ go('map'); }
+}
+
+/* ============ MAP ============ */
+const LOCATIONS = [
+  {emoji:'🗼', name:'Эйфелева башня', flag:'🇫🇷', sub:'Франция · Доли и дроби'},
+  {emoji:'🏟️', name:'Колизей',         flag:'🇮🇹', sub:'Италия · Сравнение дробей'},
+  {emoji:'🗿', name:'Мачу-Пикчу',      flag:'🇵🇪', sub:'Перу · Сложение и вычитание дробей'},
+  {emoji:'🕌', name:'Тадж-Махал',      flag:'🇮🇳', sub:'Индия · Смешанные числа'},
+  {emoji:'🏯', name:'Великая стена',   flag:'🇨🇳', sub:'Китай · Свойства дробей'},
+  {emoji:'🗽', name:'Статуя Свободы', flag:'🇺🇸', sub:'США · Умножение и деление дробей'},
+  {emoji:'✝️', name:'Христос-Искупитель', flag:'🇧🇷', sub:'Бразилия · Десятичные дроби'},
+  {emoji:'🏛️', name:'Парфенон',        flag:'🇬🇷', sub:'Греция · Сложение, вычитание, округление'},
+  {emoji:'🔺', name:'Пирамиды',        flag:'🇪🇬', sub:'Египет · Умножение и деление десятичных'},
+  {emoji:'🌹', name:'Петра',           flag:'🇯🇴', sub:'Иордания · Углы и транспортир'},
+];
+/* ---- SVG silhouettes — map nodes (currentColor, ~42px) ---- */
+const LOC_SVG = [
+  /* 0 Эйфелева башня */
+  `<svg viewBox="0 0 42 56" width="38" height="48"><polygon points="21,2 25,22 17,22" fill="currentColor"/><rect x="15" y="20" width="12" height="4" rx="2" fill="currentColor"/><path d="M17,23 L30,54 L12,54 L25,23Z" fill="currentColor"/><rect x="10" y="43" width="22" height="4" rx="2" fill="currentColor" opacity="0.55"/><rect x="12" y="50" width="18" height="4" rx="2" fill="currentColor" opacity="0.45"/><circle cx="21" cy="2" r="2.5" fill="currentColor"/></svg>`,
+  /* 1 Колизей */
+  `<svg viewBox="0 0 50 38" width="46" height="36"><ellipse cx="25" cy="19" rx="23" ry="17" fill="none" stroke="currentColor" stroke-width="5.5"/><line x1="10" y1="4" x2="10" y2="34" stroke="currentColor" stroke-width="2.5"/><line x1="18" y1="2" x2="18" y2="36" stroke="currentColor" stroke-width="2.5"/><line x1="25" y1="2" x2="25" y2="36" stroke="currentColor" stroke-width="2.5"/><line x1="32" y1="2" x2="32" y2="36" stroke="currentColor" stroke-width="2.5"/><line x1="40" y1="4" x2="40" y2="34" stroke="currentColor" stroke-width="2.5"/><ellipse cx="25" cy="19" rx="12" ry="8" fill="none" stroke="currentColor" stroke-width="2.5"/></svg>`,
+  /* 2 Мачу-Пикчу */
+  `<svg viewBox="0 0 48 40" width="44" height="38"><polygon points="24,2 44,26 4,26" fill="currentColor" opacity="0.35"/><rect x="4" y="24" width="40" height="6" rx="2" fill="currentColor"/><rect x="9" y="17" width="30" height="6" rx="2" fill="currentColor"/><rect x="15" y="10" width="18" height="6" rx="2" fill="currentColor"/><rect x="5" y="30" width="38" height="8" rx="2" fill="currentColor" opacity="0.6"/><rect x="20" y="7" width="5" height="4" rx="1" fill="currentColor"/><rect x="26" y="8" width="4" height="3" rx="1" fill="currentColor"/></svg>`,
+  /* 3 Тадж-Махал */
+  `<svg viewBox="0 0 52 52" width="46" height="48"><ellipse cx="26" cy="18" rx="11" ry="14" fill="currentColor"/><line x1="26" y1="4" x2="26" y2="0" stroke="currentColor" stroke-width="2.5"/><circle cx="26" cy="4" r="2" fill="currentColor"/><rect x="13" y="28" width="26" height="16" rx="1" fill="currentColor"/><rect x="5" y="20" width="6" height="24" rx="3" fill="currentColor"/><rect x="41" y="20" width="6" height="24" rx="3" fill="currentColor"/><ellipse cx="8" cy="19" rx="4.5" ry="6" fill="currentColor"/><ellipse cx="44" cy="19" rx="4.5" ry="6" fill="currentColor"/><path d="M17,44 Q17,35 26,35 Q35,35 35,44" fill="white" opacity="0.22"/><rect x="7" y="44" width="38" height="4" rx="1.5" fill="currentColor"/><rect x="4" y="48" width="44" height="4" rx="2" fill="currentColor" opacity="0.65"/></svg>`,
+  /* 4 Великая стена */
+  `<svg viewBox="0 0 52 36" width="48" height="34"><path d="M2,26 Q8,16 16,20 Q22,11 30,16 Q36,8 44,13 L50,21 L50,34 L2,34Z" fill="currentColor" opacity="0.45"/><rect x="0" y="18" width="9" height="16" rx="2" fill="currentColor"/><rect x="14" y="12" width="9" height="20" rx="2" fill="currentColor"/><rect x="28" y="8" width="9" height="24" rx="2" fill="currentColor"/><rect x="42" y="5" width="10" height="27" rx="2" fill="currentColor"/><rect x="0" y="15" width="3" height="5" fill="currentColor"/><rect x="4" y="15" width="3" height="5" fill="currentColor"/><rect x="14" y="9" width="3" height="5" fill="currentColor"/><rect x="18" y="9" width="3" height="5" fill="currentColor"/><rect x="28" y="5" width="3" height="5" fill="currentColor"/><rect x="32" y="5" width="3" height="5" fill="currentColor"/></svg>`,
+  /* 5 Статуя Свободы */
+  `<svg viewBox="0 0 36 56" width="32" height="50"><rect x="16" y="2" width="3.5" height="8" rx="1.5" fill="currentColor"/><ellipse cx="13" cy="3" rx="4" ry="3.5" fill="#ffc94d" opacity="0.85"/><path d="M17.5,10 L27,17 L25,22 L16,15Z" fill="currentColor"/><circle cx="17.5" cy="23" r="6.5" fill="currentColor"/><path d="M11,18 L9,13" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><path d="M17.5,17 L17.5,11" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><path d="M24,18 L26,13" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><path d="M10,27 L6,52 L28,52 L24,27 Q18,30 10,27Z" fill="currentColor"/><rect x="4" y="52" width="26" height="4" rx="2" fill="currentColor"/></svg>`,
+  /* 6 Христос-Искупитель */
+  `<svg viewBox="0 0 48 52" width="44" height="48"><polygon points="24,32 38,50 10,50" fill="currentColor" opacity="0.45"/><rect x="20" y="14" width="8" height="28" rx="4" fill="currentColor"/><rect x="4" y="20" width="40" height="8" rx="4" fill="currentColor"/><circle cx="24" cy="10" r="8" fill="currentColor"/><rect x="14" y="42" width="20" height="4" rx="2" fill="currentColor"/><rect x="10" y="46" width="28" height="5" rx="2" fill="currentColor"/></svg>`,
+  /* 7 Парфенон */
+  `<svg viewBox="0 0 52 44" width="48" height="42"><polygon points="4,22 26,4 48,22" fill="currentColor"/><rect x="3" y="22" width="46" height="5" rx="1" fill="currentColor"/><rect x="4" y="27" width="6" height="13" rx="1" fill="currentColor"/><rect x="13" y="27" width="6" height="13" rx="1" fill="currentColor"/><rect x="23" y="27" width="6" height="13" rx="1" fill="currentColor"/><rect x="33" y="27" width="6" height="13" rx="1" fill="currentColor"/><rect x="42" y="27" width="6" height="13" rx="1" fill="currentColor"/><rect x="1" y="40" width="50" height="4" rx="1" fill="currentColor"/></svg>`,
+  /* 8 Пирамиды */
+  `<svg viewBox="0 0 56 38" width="52" height="36"><polygon points="28,2 54,36 2,36" fill="currentColor"/><polygon points="44,14 56,36 32,36" fill="currentColor" opacity="0.68"/><polygon points="9,22 17,36 1,36" fill="currentColor" opacity="0.6"/><rect x="0" y="34" width="56" height="4" rx="2" fill="currentColor" opacity="0.4"/></svg>`,
+  /* 9 Петра */
+  `<svg viewBox="0 0 48 50" width="44" height="48"><polygon points="5,20 24,3 43,20" fill="currentColor"/><ellipse cx="24" cy="13" rx="6" ry="7" fill="white" opacity="0.3"/><rect x="5" y="20" width="7" height="5" fill="currentColor"/><rect x="36" y="20" width="7" height="5" fill="currentColor"/><rect x="7" y="25" width="5" height="15" rx="2.5" fill="currentColor"/><rect x="16" y="25" width="5" height="15" rx="2.5" fill="currentColor"/><rect x="27" y="25" width="5" height="15" rx="2.5" fill="currentColor"/><rect x="36" y="25" width="5" height="15" rx="2.5" fill="currentColor"/><rect x="5" y="40" width="38" height="4" fill="currentColor"/><rect x="4" y="44" width="7" height="8" rx="2" fill="currentColor"/><rect x="14" y="44" width="7" height="8" rx="2" fill="currentColor"/><rect x="27" y="44" width="7" height="8" rx="2" fill="currentColor"/><rect x="37" y="44" width="7" height="8" rx="2" fill="currentColor"/></svg>`,
+];
+
+/* ---- SVG silhouettes — hero section (white, large ~90px) ---- */
+const LOC_SVG_HERO = [
+  /* 0 Эйфелева башня */
+  `<svg viewBox="0 0 70 96" width="70" height="88"><polygon points="35,2 42,34 28,34" fill="currentColor"/><rect x="25" y="31" width="20" height="6" rx="3" fill="currentColor"/><path d="M28,36 L46,90 L24,90 L42,36Z" fill="currentColor"/><rect x="18" y="72" width="34" height="6" rx="3" fill="white" opacity="0.35"/><rect x="22" y="82" width="26" height="6" rx="3" fill="white" opacity="0.28"/><circle cx="35" cy="3" r="4" fill="#ffc94d" opacity="0.9"/><rect x="33" y="3" width="4" height="28" rx="2" fill="currentColor"/></svg>`,
+  /* 1 Колизей */
+  `<svg viewBox="0 0 88 66" width="88" height="66"><ellipse cx="44" cy="33" rx="42" ry="31" fill="none" stroke="currentColor" stroke-width="8"/><ellipse cx="44" cy="33" rx="24" ry="16" fill="none" stroke="currentColor" stroke-width="4"/><line x1="18" y1="5" x2="18" y2="61" stroke="currentColor" stroke-width="4"/><line x1="31" y1="2" x2="31" y2="64" stroke="currentColor" stroke-width="4"/><line x1="44" y1="2" x2="44" y2="64" stroke="currentColor" stroke-width="4"/><line x1="57" y1="2" x2="57" y2="64" stroke="currentColor" stroke-width="4"/><line x1="70" y1="5" x2="70" y2="61" stroke="currentColor" stroke-width="4"/></svg>`,
+  /* 2 Мачу-Пикчу */
+  `<svg viewBox="0 0 88 76" width="88" height="76"><polygon points="44,3 80,44 8,44" fill="currentColor" opacity="0.32"/><rect x="6" y="42" width="76" height="10" rx="4" fill="currentColor"/><rect x="14" y="30" width="60" height="10" rx="4" fill="currentColor"/><rect x="22" y="18" width="44" height="10" rx="4" fill="currentColor"/><rect x="6" y="52" width="76" height="20" rx="4" fill="currentColor" opacity="0.55"/><rect x="34" y="10" width="9" height="9" rx="2" fill="currentColor"/><rect x="46" y="12" width="7" height="7" rx="2" fill="currentColor"/></svg>`,
+  /* 3 Тадж-Махал */
+  `<svg viewBox="0 0 90 88" width="90" height="88"><ellipse cx="45" cy="30" rx="19" ry="24" fill="currentColor"/><line x1="45" y1="6" x2="45" y2="0" stroke="currentColor" stroke-width="4"/><circle cx="45" cy="5" r="4" fill="#ffc94d" opacity="0.9"/><rect x="22" y="48" width="46" height="26" rx="2" fill="currentColor"/><rect x="7" y="34" width="11" height="40" rx="5.5" fill="currentColor"/><rect x="72" y="34" width="11" height="40" rx="5.5" fill="currentColor"/><ellipse cx="12.5" cy="32" rx="8" ry="11" fill="currentColor"/><ellipse cx="77.5" cy="32" rx="8" ry="11" fill="currentColor"/><path d="M28,74 Q28,60 45,60 Q62,60 62,74" fill="white" opacity="0.2"/><rect x="10" y="74" width="70" height="8" rx="3" fill="currentColor"/></svg>`,
+  /* 4 Великая стена */
+  `<svg viewBox="0 0 96 58" width="96" height="56"><path d="M2,44 Q14,26 28,33 Q38,18 52,26 Q62,13 78,22 L94,36 L94,58 L2,58Z" fill="currentColor" opacity="0.38"/><rect x="0" y="28" width="16" height="30" rx="3" fill="currentColor"/><rect x="24" y="18" width="16" height="38" rx="3" fill="currentColor"/><rect x="48" y="11" width="16" height="45" rx="3" fill="currentColor"/><rect x="73" y="5" width="18" height="50" rx="3" fill="currentColor"/><rect x="1" y="24" width="5" height="8" fill="currentColor"/><rect x="8" y="24" width="5" height="8" fill="currentColor"/><rect x="25" y="14" width="5" height="8" fill="currentColor"/><rect x="32" y="14" width="5" height="8" fill="currentColor"/><rect x="49" y="7" width="5" height="8" fill="currentColor"/><rect x="56" y="7" width="5" height="8" fill="currentColor"/><rect x="74" y="1" width="5" height="8" fill="currentColor"/><rect x="81" y="1" width="5" height="8" fill="currentColor"/></svg>`,
+  /* 5 Статуя Свободы */
+  `<svg viewBox="0 0 64 96" width="56" height="88"><rect x="28" y="3" width="6" height="12" rx="3" fill="currentColor"/><ellipse cx="24" cy="5" rx="7" ry="5.5" fill="#ffc94d" opacity="0.88"/><path d="M31,15 L46,28 L43,36 L29,23Z" fill="currentColor"/><circle cx="31" cy="40" rx="11" fill="currentColor"/><circle cx="31" cy="40" r="11" fill="currentColor"/><path d="M19,32 L15,21" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><path d="M31,30 L31,18" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><path d="M43,32 L47,21" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><path d="M19,46 L13,88 L49,88 L43,46 Q36,51 19,46Z" fill="currentColor"/><rect x="10" y="88" width="42" height="7" rx="3.5" fill="currentColor"/></svg>`,
+  /* 6 Христос-Искупитель */
+  `<svg viewBox="0 0 88 90" width="88" height="88"><polygon points="44,52 66,84 22,84" fill="currentColor" opacity="0.42"/><rect x="36" y="22" width="16" height="48" rx="8" fill="currentColor"/><rect x="6" y="34" width="76" height="14" rx="7" fill="currentColor"/><circle cx="44" cy="16" r="14" fill="currentColor"/><rect x="24" y="70" width="40" height="8" rx="4" fill="currentColor"/><rect x="16" y="78" width="56" height="9" rx="4.5" fill="currentColor"/></svg>`,
+  /* 7 Парфенон */
+  `<svg viewBox="0 0 90 72" width="90" height="72"><polygon points="6,34 45,6 84,34" fill="currentColor"/><rect x="5" y="34" width="80" height="8" rx="2" fill="currentColor"/><rect x="7" y="42" width="11" height="22" rx="2" fill="currentColor"/><rect x="22" y="42" width="11" height="22" rx="2" fill="currentColor"/><rect x="39.5" y="42" width="11" height="22" rx="2" fill="currentColor"/><rect x="57" y="42" width="11" height="22" rx="2" fill="currentColor"/><rect x="72" y="42" width="11" height="22" rx="2" fill="currentColor"/><rect x="3" y="64" width="84" height="6" rx="2" fill="currentColor"/><rect x="0" y="70" width="90" height="4" rx="2" fill="currentColor" opacity="0.7"/></svg>`,
+  /* 8 Пирамиды */
+  `<svg viewBox="0 0 96 62" width="96" height="60"><polygon points="48,3 94,60 2,60" fill="currentColor"/><polygon points="76,22 96,60 56,60" fill="currentColor" opacity="0.68"/><polygon points="14,34 26,60 2,60" fill="currentColor" opacity="0.6"/><rect x="0" y="56" width="96" height="6" rx="3" fill="currentColor" opacity="0.38"/></svg>`,
+  /* 9 Петра */
+  `<svg viewBox="0 0 88 88" width="88" height="88"><polygon points="8,34 44,4 80,34" fill="currentColor"/><ellipse cx="44" cy="22" rx="11" ry="13" fill="white" opacity="0.3"/><rect x="8" y="34" width="14" height="8" fill="currentColor"/><rect x="66" y="34" width="14" height="8" fill="currentColor"/><rect x="10" y="42" width="10" height="26" rx="5" fill="currentColor"/><rect x="26" y="42" width="10" height="26" rx="5" fill="currentColor"/><rect x="52" y="42" width="10" height="26" rx="5" fill="currentColor"/><rect x="68" y="42" width="10" height="26" rx="5" fill="currentColor"/><rect x="8" y="68" width="72" height="7" fill="currentColor"/><rect x="6" y="75" width="14" height="15" rx="4" fill="currentColor"/><rect x="24" y="75" width="14" height="15" rx="4" fill="currentColor"/><rect x="50" y="75" width="14" height="15" rx="4" fill="currentColor"/><rect x="68" y="75" width="14" height="15" rx="4" fill="currentColor"/></svg>`,
+];
+
+/* ---- avatar by follower count ---- */
+function followerAvatar(){
+  const f=state.followers;
+  if(f>=10000) return '🔥';
+  if(f>=5000)  return '🌟';
+  if(f>=2000)  return '😎';
+  if(f>=500)   return '😊';
+  return '👶';
+}
+function syncAvatar(){ const a=document.getElementById('mapAvatar'); if(a) a.textContent=followerAvatar(); }
+
+/* ---- airplane between stops ---- */
+let _prevUnlocked=1; // start at 1 (loc 0 always open)
+function flyPlane(fromIdx, toIdx){
+  const route=document.getElementById('route');
+  if(!route) return;
+  const stops=route.querySelectorAll('.stop');
+  const from=stops[fromIdx], to=stops[toIdx];
+  if(!from||!to) return;
+  const app=document.getElementById('app');
+  const appRect=app.getBoundingClientRect();
+  const fr=from.getBoundingClientRect(), tr=to.getBoundingClientRect();
+  const sx=fr.left-appRect.left+fr.width/2-14, sy=fr.top-appRect.top+fr.height/2-14;
+  const ex=tr.left-appRect.left+tr.width/2-14, ey=tr.top-appRect.top+tr.height/2-14;
+  const plane=document.getElementById('plane');
+  plane.style.transition='none';
+  plane.style.left=sx+'px'; plane.style.top=sy+'px'; plane.style.display='block';
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    plane.style.transition='left .85s cubic-bezier(.4,0,.2,1), top .85s cubic-bezier(.4,0,.2,1)';
+    plane.style.left=ex+'px'; plane.style.top=ey+'px';
+    setTimeout(()=>{ plane.style.display='none'; },950);
+  }));
+}
+
+function renderMap(){
+  const r=document.getElementById('route'); r.innerHTML='<div class="connector"></div>';
+
+  // detect newly unlocked location → trigger plane
+  const nowUnlocked=LOCATIONS.filter((_,i)=>i<TOTAL_LOCATIONS&&locUnlocked(i)).length;
+  const shouldFly = nowUnlocked > _prevUnlocked && _prevUnlocked > 0;
+  const newLocIdx = nowUnlocked - 1;
+
+  LOCATIONS.forEach((loc,i)=>{
+    const playable = i < TOTAL_LOCATIONS;
+    const unlocked = playable && locUnlocked(i);
+    const done = playable && locDone(i);
+    let cls='locked', right=`<span class="lock">🔒</span>`;
+    if(done){ cls='done'; right=`<span class="flag">${loc.flag} ✅</span>`; }
+    else if(unlocked){ cls='current'; right=`<span class="flag">${loc.flag}</span>`; }
+    const tappable = unlocked ? 'tappable' : '';
+    const nodeContent = LOC_SVG[i] || loc.emoji;
+    const div=document.createElement('div');
+    div.className=`stop ${cls} ${tappable}`;
+    div.innerHTML=`
+      <div class="node">${nodeContent}</div>
+      <div class="info"><div class="name">${loc.name}</div><div class="sub">${loc.sub}</div></div>
+      ${right}`;
+    if(unlocked) div.onclick=()=>openLocation(i);
+    r.appendChild(div);
+  });
+
+  // fly plane to newly opened location after DOM settles
+  if(shouldFly){
+    _prevUnlocked = nowUnlocked;
+    setTimeout(()=>flyPlane(newLocIdx-1, newLocIdx), 350);
+  } else {
+    _prevUnlocked = nowUnlocked;
+  }
+}
+function openLocation(i){
+  currentLoc = i;
+  // build fresh questions for the current round (if not mid-round)
+  if(locProgress(i)===0){
+    QUESTIONS = buildLocationQuestions(i, locRound(i));
+    locQCache[i] = QUESTIONS;
+  } else {
+    QUESTIONS = locQCache[i] || buildLocationQuestions(i, locRound(i));
+    locQCache[i] = QUESTIONS;
+  }
+  go('loc');
+}
+/* cache the generated questions per location so mid-round refresh keeps same set */
+const locQCache = {};
+
+/* ============ TASK GENERATORS + SIGNATURE TASKS ============ */
+/* random helpers */
+function rnd(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+function pick(arr){ return arr[rnd(0,arr.length-1)]; }
+function shuffle(arr){ const a=arr.slice(); for(let i=a.length-1;i>0;i--){ const j=rnd(0,i); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function gcd(a,b){ return b===0?a:gcd(b,a%b); }
+/* build 4 options around a correct fraction string */
+function fracOptions(correct, pool){
+  const set=new Set([correct]);
+  while(set.size<4 && pool.length){ set.add(pool.pop()); }
+  return shuffle([...set]);
+}
+
+/* ---- GENERATORS for location 0 (Эйфелева башня: доли, дроби, прямая) ---- */
+const GEN_EIFFEL = [
+  /* shaded sectors of a circle -> fraction (choice) */
+  function(){
+    const d=rnd(3,8), n=rnd(1,d-1);
+    const wrong=shuffle([`${d}/${n}`,`${n}/${n+1}`,`1/${d}`,`${n+1}/${d}`].filter(x=>x!==`${n}/${d}`)).slice(0,3);
+    return {
+      tag:'🍩 Доли', type:'choice',
+      text:`Круглую смотровую площадку у башни разделили на ${d} равных частей и ${n} закрасили для фото. Какая дробь закрашена?`,
+      visual: circleSVG(d,n),
+      options: shuffle([`${n}/${d}`,...wrong]), answer:`${n}/${d}`,
+      hint:`Всего частей — ${d} (знаменатель). Закрашено ${n} (числитель).`,
+      explain:`${n} частей из ${d} — это дробь ${n}/${d}.`
+    };
+  },
+  /* point on number line (input) */
+  function(){
+    const d=rnd(4,8), n=rnd(1,d-1);
+    return {
+      tag:'📏 Координатная прямая', type:'input',
+      text:`Отрезок от 0 до 1 разделили на ${d} равных частей. Какую дробь показывает отмеченная точка?`,
+      visual: numberlineSVG(d,n),
+      answer:[`${n}/${d}`], placeholder:'напр. 2/'+d,
+      hint:`Считай деления от нуля до точки. Всего делений между 0 и 1 — ${d}.`,
+      explain:`От 0 до точки — ${n} делений из ${d}. Значит, точка показывает ${n}/${d}.`
+    };
+  },
+  /* whole = all parts (input) */
+  function(){
+    const d=rnd(4,9);
+    return {
+      tag:'🔢 Доли целого', type:'input',
+      text:`Высоту башни разделили на ${d} равных частей. Сколько таких частей составляют всю башню целиком?`,
+      visual: circleSVG(d,d),
+      answer:[`${d}`], placeholder:'введи число',
+      hint:'Целое — это когда взяты ВСЕ части. Сколько всего частей?',
+      explain:`Все ${d} частей из ${d} дают целое: ${d}/${d} = 1. Ответ — ${d}.`
+    };
+  },
+  /* compare two unit fractions (choice) */
+  function(){
+    let a=rnd(2,9), b=rnd(2,9); while(a===b){ b=rnd(2,9); }
+    const bigger = a<b ? `1/${a}` : `1/${b}`; // smaller denom = bigger
+    return {
+      tag:'⚖️ Сравнение долей', type:'choice',
+      text:`Один блогер снял 1/${a} башни, другой — 1/${b}. У кого в кадр попала бо́льшая часть?`,
+      visual: compareBarsSVG(1,a,1,b),
+      options: shuffle([`1/${a}`,`1/${b}`,'Поровну','Не понять']), answer:bigger,
+      hint:'Чем на меньшее число частей делим целое, тем каждая часть крупнее.',
+      explain:`Меньше знаменатель — крупнее доля. Поэтому ${bigger} больше.`
+    };
+  },
+  /* how many parts left unshaded (input) */
+  function(){
+    const d=rnd(4,9), n=rnd(1,d-1);
+    return {
+      tag:'🍩 Доли', type:'input',
+      text:`Клумбу у башни поделили на ${d} равных секторов и сняли ${n} из них. Какая дробь ОСТАЛАСЬ неснятой?`,
+      visual: circleSVG(d,n),
+      answer:[`${d-n}/${d}`], placeholder:'напр. 2/'+d,
+      hint:`Всего ${d}, сняли ${n}. Осталось ${d}−${n} = ${d-n}.`,
+      explain:`Осталось ${d-n} частей из ${d}: дробь ${d-n}/${d}.`
+    };
+  },
+  /* ЗАДАЧА: нахождение дроби от числа */
+  function(){
+    const data=[[120,[1,2]],[80,[3,4]],[200,[2,5]],[150,[1,3]],[240,[3,4]],[300,[2,3]],[180,[5,6]]];
+    const [whole,[n,d]]=pick(data);
+    const res=(whole/d)*n;
+    const wrong=[res+d, res-n, whole-res].filter(x=>x>0&&x!==res);
+    return {tag:'🌿 Задача', type:'choice',
+      text:`На Эйфелеву башню поднялись ${whole} туристов. ${n}/${d} из них сделали фото с вершины. Сколько человек сфотографировались?`,
+      options:shuffle([`${res}`,...wrong.slice(0,3).map(String)]), answer:`${res}`,
+      hint:`Шаг 1: ${whole} ÷ ${d} = ${whole/d}. Шаг 2: ${whole/d} × ${n} = ${res}.`,
+      explain:`${n}/${d} от ${whole}: ${whole}÷${d}=${whole/d}, затем ×${n}=${res} туристов.`};
+  },
+  /* ЗАДАЧА: бочка/бак — расход */
+  function(){
+    const data=[[130,[3,5],78],[120,[2,3],80],[200,[3,4],150],[180,[5,6],150],[160,[1,4],40]];
+    const [total,[n,d],used]=pick(data);
+    const left=total-used;
+    return {tag:'🌿 Задача', type:'choice',
+      text:`В баке ${total} л воды. Израсходовали ${n}/${d} всей воды. Сколько литров израсходовали?`,
+      options:shuffle([`${used}`,`${left}`,`${total}`,`${used+d}`]), answer:`${used}`,
+      hint:`Шаг 1: ${total} ÷ ${d} = ${total/d}. Шаг 2: ${total/d} × ${n} = ${used}.`,
+      explain:`${n}/${d} от ${total}: ${total}÷${d}=${total/d}, затем ×${n}=${used} л.`};
+  },
+  /* ЗАДАЧА: длина окружности C = 2πr (§25) */
+  function(){
+    const data=[[5,31.4],[3,18.84],[4,25.12],[7,43.96],[10,62.8]];
+    const [r,C]=pick(data);
+    const wrong=[r*2, Math.round(C+5), r*4].filter(x=>x!==C);
+    return {tag:'⭕ Длина окружности', type:'choice',
+      text:`Круглая клумба у основания башни имеет радиус ${r} м. Найди длину ограждения (длину окружности). Используй π ≈ 3,14.`,
+      options:shuffle([`${C} м`,...wrong.slice(0,3).map(x=>`${x} м`)]), answer:`${C} м`,
+      hint:`Длина окружности: C = 2 · π · r = 2 × 3,14 × ${r} = ${C} м.`,
+      explain:`C = 2 · 3,14 · ${r} = ${C} м.`};
+  },
+  /* задача: нахождение числа по его дроби (§38) */
+  function(){
+    const data=[
+      {frac:'3/4',part:243,total:324,ctx:'3/4 высоты башни составляет'},
+      {frac:'2/3',part:200,total:300,ctx:'2/3 длины моста составляет'},
+      {frac:'5/8',part:50,total:80,ctx:'5/8 от числа туристов —'},
+      {frac:'3/5',part:180,total:300,ctx:'3/5 от площади парка составляет'},
+      {frac:'7/10',part:210,total:300,ctx:'7/10 пути туристы прошли —'},
+    ];
+    const q=pick(data);
+    const [n,d]=q.frac.split('/').map(Number);
+    const wrong=[q.total+10,q.total-20,Math.round(q.part*d/n)+5].filter(v=>v>0&&v!==q.total);
+    return {tag:'🌿 Найди число по его доле', type:'choice',
+      text:`${q.ctx} ${q.part}. Найди целое число.`,
+      options:shuffle([String(q.total),...wrong.slice(0,3).map(String)]), answer:String(q.total),
+      hint:`${q.part} — это ${n}/${d} целого. Целое = ${q.part} ÷ ${n} × ${d} = ${q.total}.`,
+      explain:`Целое = ${q.part} × ${d}/${n} = ${q.total}.`};
+  },
+  /* уравнение: x ÷ d = n (§30) */
+  function(){
+    const n=rnd(10,30), d=rnd(2,9), x=n*d;
+    const wrong=[x+d,x-d,n*d+d].filter(v=>v!==x);
+    return {tag:'🔡 Уравнение (§30)', type:'choice',
+      text:`Реши уравнение: x ÷ ${d} = ${n}`,
+      options:shuffle([String(x),...wrong.slice(0,3).map(String)]), answer:String(x),
+      hint:`x = ${n} × ${d} = ${x}.`,
+      explain:`x = ${n} × ${d} = ${x}.`};
+  }
+];
+
+/* ---- GENERATORS for location 1 (Колизей: сравнение, правильные/неправильные) ---- */
+const GEN_COLOSSEUM = [
+  /* compare same denominator (choice) */
+  function(){
+    const d=rnd(4,9); let n1=rnd(1,d-1), n2=rnd(1,d-1); while(n1===n2){ n2=rnd(1,d-1); }
+    const bigger = n1>n2 ? `${n1}/${d}` : `${n2}/${d}`;
+    return {
+      tag:'⚖️ Сравнение', type:'choice',
+      text:`В Колизее сняли ${n1}/${d} нижнего яруса и ${n2}/${d} верхнего. Какая дробь больше?`,
+      visual: compareBarsSVG(n1,d,n2,d),
+      options: shuffle([`${n1}/${d}`,`${n2}/${d}`,'Равны','Нельзя сравнить']), answer:bigger,
+      hint:'Знаменатели одинаковые. Тогда больше та дробь, у которой числитель больше.',
+      explain:`Одинаковый знаменатель — сравниваем числители: ${Math.max(n1,n2)} > ${Math.min(n1,n2)}, значит ${bigger} больше.`
+    };
+  },
+  /* compare same numerator (choice) */
+  function(){
+    let d1=rnd(2,9), d2=rnd(2,9); while(d1===d2){ d2=rnd(2,9); }
+    const n=rnd(1,Math.min(d1,d2)-0); const nn=Math.max(1,Math.min(n,Math.min(d1,d2)-1));
+    const bigger = d1<d2 ? `${nn}/${d1}` : `${nn}/${d2}`;
+    return {
+      tag:'⚖️ Сравнение долей', type:'choice',
+      text:`Сравни дроби с одинаковым числителем: ${nn}/${d1} и ${nn}/${d2}. Какая больше?`,
+      visual: compareBarsSVG(nn,d1,nn,d2),
+      options: shuffle([`${nn}/${d1}`,`${nn}/${d2}`,'Равны','Не понять']), answer:bigger,
+      hint:'Числители равны. Больше дробь с МЕНЬШИМ знаменателем — её доли крупнее.',
+      explain:`Доли с меньшим знаменателем крупнее, поэтому ${bigger} больше.`
+    };
+  },
+  /* pick the proper fraction (choice) */
+  function(){
+    function proper(){ const d=rnd(3,9); return `${rnd(1,d-1)}/${d}`; }
+    function improper(){ const n=rnd(2,9); return `${n}/${rnd(1,n)}`; }
+    const correct=proper();
+    const opts=new Set([correct]);
+    while(opts.size<4){ opts.add(improper()); }
+    return {
+      tag:'🔻 Правильная дробь', type:'choice',
+      text:'Какая из дробей правильная (числитель меньше знаменателя)?',
+      options: shuffle([...opts]), answer:correct,
+      hint:'В правильной дроби верхнее число меньше нижнего.',
+      explain:`У ${correct} числитель меньше знаменателя — это правильная дробь.`
+    };
+  },
+  /* pick the improper fraction (choice) */
+  function(){
+    function proper(){ const d=rnd(3,9); return `${rnd(1,d-1)}/${d}`; }
+    const n=rnd(2,9); const correct=`${n}/${rnd(1,n-1>0?n-1:1)}`;
+    const opts=new Set([correct]);
+    while(opts.size<4){ opts.add(proper()); }
+    return {
+      tag:'🔺 Неправильная дробь', type:'choice',
+      text:'Какая дробь неправильная (она больше или равна 1)?',
+      options: shuffle([...opts]), answer:correct,
+      hint:'Неправильная дробь — где числитель больше или равен знаменателю.',
+      explain:`У ${correct} числитель не меньше знаменателя, поэтому дробь ≥ 1 — неправильная.`
+    };
+  },
+  /* compare fraction with 1 (choice) */
+  function(){
+    const type=rnd(0,2); let n,d,ans;
+    if(type===0){ d=rnd(2,9); n=d; ans='='; }
+    else if(type===1){ d=rnd(3,9); n=rnd(1,d-1); ans='<'; }
+    else { n=rnd(2,9); d=rnd(1,n-1>0?n-1:1); ans='>'; }
+    return {
+      tag:'⚖️ Сравнение с 1', type:'choice',
+      text:`Поставь знак: дробь ${n}/${d} … 1`,
+      options:['<','>','=','нельзя'], answer:ans,
+      hint:'Сравни числитель и знаменатель. Равны → дробь равна 1; числитель меньше → меньше 1; больше → больше 1.',
+      explain: ans==='=' ? `${n}/${d}: числитель равен знаменателю, значит = 1.` :
+               ans==='<' ? `${n}/${d}: числитель меньше знаменателя, значит < 1.` :
+                           `${n}/${d}: числитель больше знаменателя, значит > 1.`
+    };
+  },
+  /* ЗАДАЧА: нахождение дроби от числа (в контексте Колизея) */
+  function(){
+    const data=[[80,[1,2],40],[120,[3,4],90],[200,[2,5],80],[150,[2,3],100],[240,[5,6],200]];
+    const [total,[n,d],res]=pick(data);
+    const wrong=[total-res, res+d, Math.round(total/d)].filter(x=>x>0&&x!==res);
+    return {tag:'🌿 Задача', type:'choice',
+      text:`В Колизее ${total} мест на трибунах. На представлении заняли ${n}/${d} всех мест. Сколько мест занято?`,
+      options:shuffle([`${res}`,...wrong.slice(0,3).map(String)]), answer:`${res}`,
+      hint:`Шаг 1: ${total} ÷ ${d} = ${total/d}. Шаг 2: ${total/d} × ${n} = ${res}.`,
+      explain:`${n}/${d} от ${total}: ${total}÷${d}=${total/d}, затем ×${n}=${res} мест.`};
+  },
+  /* УРАВНЕНИЕ с дробями */
+  function(){
+    const d=rnd(3,8); const x=rnd(1,d-2); const b=rnd(x+1,d-1);
+    const a=b-x;
+    return {tag:'🔡 Уравнение', type:'input',
+      text:`Реши уравнение: x + ${a}/${d} = ${b}/${d}`,
+      answer:[`${x}/${d}`], placeholder:`напр. 1/${d}`,
+      hint:`x = ${b}/${d} − ${a}/${d}. Знаменатели одинаковые, вычитаем числители.`,
+      explain:`x = ${b}/${d} − ${a}/${d} = ${b-a}/${d}${b-a===x?'':' = '+x+'/'+d}.`};
+  },
+  /* задача: неправильная дробь > 1 от числа (§28) */
+  function(){
+    const data=[
+      {frac:'6/5',base:40,ans:48,ctx:'Реставрация Колизея должна была занять',unit:'дней',extra:'но фактически заняла 6/5 от плана'},
+      {frac:'7/5',base:35,ans:49,ctx:'Планировалось потратить',unit:'часов',extra:'но работа заняла 7/5 от плана'},
+      {frac:'5/4',base:48,ans:60,ctx:'По плану строительство займёт',unit:'дней',extra:'но фактически заняло 5/4 от плана'},
+      {frac:'8/5',base:25,ans:40,ctx:'Поход должен был занять',unit:'км',extra:'но маршрут оказался 8/5 от плана'},
+    ];
+    const q=pick(data);
+    const [n,d2]=q.frac.split('/').map(Number);
+    const wrong=[q.ans+5,q.ans-8,q.base].filter(v=>v>0&&v!==q.ans);
+    return {tag:'🌿 Неправильная дробь от числа', type:'choice',
+      text:`${q.ctx} ${q.base} ${q.unit}, ${q.extra}. Сколько ${q.unit} ушло фактически?`,
+      options:shuffle([`${q.ans} ${q.unit}`,...wrong.slice(0,3).map(x=>`${x} ${q.unit}`)]),
+      answer:`${q.ans} ${q.unit}`,
+      hint:`${q.base} ÷ ${d2} × ${n} = ${q.ans}.`,
+      explain:`${q.frac} × ${q.base} = ${q.base}÷${d2}×${n} = ${q.ans} ${q.unit}.`};
+  },
+  /* уравнение: n · x = m (§30, x — дробь) */
+  function(){
+    const data=[{n:7,m:13,xs:'13/7'},{n:5,m:12,xs:'12/5'},{n:9,m:7,xs:'7/9'},{n:11,m:8,xs:'8/11'},{n:13,m:5,xs:'5/13'}];
+    const q=pick(data);
+    const wrong=[`${q.m+1}/${q.n}`,`${q.m}/${q.n+1}`,`${q.n}/${q.m}`].filter(v=>v!==q.xs);
+    return {tag:'🔡 Уравнение (§30)', type:'choice',
+      text:`Реши уравнение: ${q.n} · x = ${q.m}`,
+      options:shuffle([q.xs,...wrong.slice(0,3)]), answer:q.xs,
+      hint:`x = ${q.m} ÷ ${q.n} = ${q.xs}.`,
+      explain:`x = ${q.m}/${q.n} (результат деления натурального числа — это дробь).`};
+  }
+];
+
+/* ---- GENERATORS for location 2 (Мачу-Пикчу: сложение/вычитание дробей с одинаковыми знаменателями) ---- */
+const GEN_MACHU = [
+  function(){
+    const d=rnd(3,9); let n1=rnd(1,d-2), n2=rnd(1,d-n1-1)||1;
+    const sum=n1+n2, g=gcd(sum,d);
+    const red=g>1?`${sum/g}/${d/g}`:`${sum}/${d}`;
+    const ans=sum===d?'1':(g>1?red:`${sum}/${d}`);
+    const answers=[ans]; if(g>1&&sum!==d) answers.push(`${sum}/${d}`); if(sum===d) answers.push(`${d}/${d}`);
+    return {tag:'➕ Сложение дробей', type:'input',
+      text:`Блогер снял ${n1}/${d} террасы утром и ещё ${n2}/${d} вечером. Какую часть снял всего?`,
+      visual:compareBarsSVG(n1,d,n2,d), answer:answers,
+      hint:`Знаменатели одинаковые — складываем числители: ${n1}+${n2}=${sum}.`,
+      explain:`${n1}/${d} + ${n2}/${d} = ${sum}/${d}${g>1&&sum!==d?' = '+red:''}${sum===d?' = 1':''}.`};
+  },
+  function(){
+    const d=rnd(3,9), n1=rnd(2,d-1), n2=rnd(1,n1-1), diff=n1-n2, g=gcd(diff,d);
+    const ans=g>1?`${diff/g}/${d/g}`:`${diff}/${d}`;
+    const answers=[ans]; if(g>1) answers.push(`${diff}/${d}`);
+    return {tag:'➖ Вычитание дробей', type:'input',
+      text:`Из ${n1}/${d} пути уже прошли ${n2}/${d}. Сколько осталось?`,
+      visual:compareBarsSVG(n1,d,n2,d), answer:answers,
+      hint:`Знаменатели одинаковые — вычитаем числители: ${n1}−${n2}=${diff}.`,
+      explain:`${n1}/${d} − ${n2}/${d} = ${diff}/${d}${g>1?' = '+ans:''}.`};
+  },
+  function(){
+    const d=rnd(4,9), n1=rnd(1,d-2), sum=rnd(n1+1,d), miss=sum-n1;
+    return {tag:'🔢 Найди числитель', type:'input',
+      text:`${n1}/${d} + ?/${d} = ${sum}/${d}. Найди пропущенный числитель.`,
+      answer:[`${miss}`], hint:`${sum} − ${n1} = ${miss}.`,
+      explain:`Из суммы вычти данный числитель: ${sum}−${n1}=${miss}.`};
+  },
+  function(){
+    const d=rnd(3,8), n1=rnd(1,d-1), n2=rnd(1,d-1), sum=n1+n2;
+    const g=gcd(sum,d), rn=sum/g, rd=d/g;
+    const correct=sum>=d?(sum===d?'1':`${rn}/${rd}`):`${rn}/${rd}`;
+    const wrong=[`${n1+n2+1}/${d}`,`${n1*n2}/${d}`,`${sum}/${d+1}`].filter(x=>x!==correct);
+    return {tag:'➕ Выбери ответ', type:'choice',
+      text:`${n1}/${d} + ${n2}/${d} = ?`,
+      options:shuffle([correct,...wrong.slice(0,3)]), answer:correct,
+      hint:'Знаменатель не меняется, складываем только числители.',
+      explain:`${n1}+${n2}=${sum}, знаменатель ${d}: ответ ${sum}/${d}${g>1?' = '+correct:''}${sum===d?' = 1':''}.`};
+  },
+  function(){
+    const d=rnd(3,8), n=rnd(1,d-1), rest=d-n;
+    return {tag:'🌿 Задача', type:'choice',
+      text:`Маршрут состоит из ${d} частей. Блогер прошёл ${n}/${d} пути. Сколько осталось?`,
+      options:shuffle([`${rest}/${d}`,`${n}/${d}`,`${d}/${rest}`,`${n+1}/${d}`]),
+      answer:`${rest}/${d}`,
+      hint:`Весь маршрут = ${d}/${d}. Осталось: ${d}/${d} − ${n}/${d}.`,
+      explain:`${d}/${d} − ${n}/${d} = ${rest}/${d}.`};
+  },
+  /* ЗАДАЧА: дачный участок (по учебнику 5.495) */
+  function(){
+    const data=[[15,[2,5],[3,10],9],[20,[1,4],[2,5],13],[24,[1,3],[1,4],14],[18,[1,2],[1,6],12]];
+    const [area,[n1,d1],[n2,d2],total]=pick(data);
+    const p1=(area/d1)*n1, p2=(area/d2)*n2;
+    const wrong=[p1,p2,area-p1].filter(x=>x!==total);
+    return {tag:'🌿 Задача', type:'choice',
+      text:`Участок площадью ${area} соток. Огород занимает ${n1}/${d1}, а сад — ${n2}/${d2} всего участка. Какова общая площадь огорода и сада (в сотках)?`,
+      options:shuffle([`${total}`,...wrong.slice(0,3).map(String)]), answer:`${total}`,
+      hint:`Огород: ${area}÷${d1}×${n1}=${p1} соток. Сад: ${area}÷${d2}×${n2}=${p2} соток. Вместе: ${p1}+${p2}=${total}.`,
+      explain:`${p1} + ${p2} = ${total} соток.`};
+  },
+  /* УРАВНЕНИЕ: x + a/d = b/d */
+  function(){
+    const d=rnd(4,9); const a=rnd(1,d-2); const sum=rnd(a+1,d);
+    const x=sum-a;
+    return {tag:'🔡 Уравнение', type:'input',
+      text:`Реши уравнение: x + ${a}/${d} = ${sum}/${d}`,
+      answer:[`${x}/${d}`], placeholder:`напр. 2/${d}`,
+      hint:`x = ${sum}/${d} − ${a}/${d} = ${x}/${d}.`,
+      explain:`Вычитаем числители: ${sum} − ${a} = ${x}. Ответ: ${x}/${d}.`};
+  },
+  /* задача: остаток дробей (§29) */
+  function(){
+    const data=[
+      {total:120,d:24,n1:9,n2:7,item:'картофеля',unit:'т'},
+      {total:60,d:12,n1:3,n2:5,item:'яблок',unit:'кг'},
+      {total:90,d:15,n1:4,n2:6,item:'зерна',unit:'ц'},
+      {total:40,d:8,n1:3,n2:2,item:'муки',unit:'кг'},
+    ];
+    const q=pick(data);
+    const sent=q.n1+q.n2, rem=q.d-sent;
+    const remAmt=q.total/q.d*rem;
+    const wrong=[remAmt+10,remAmt-5,q.total/q.d*(q.n1+q.n2)].filter(v=>v>0&&v!==remAmt);
+    return {tag:'🌿 Задача: остаток дробей', type:'choice',
+      text:`На складе ${q.total} ${q.unit} ${q.item}. В первый день отправили ${q.n1}/${q.d} общего количества, во второй — ${q.n2}/${q.d}. Сколько ${q.unit} осталось?`,
+      options:shuffle([`${remAmt} ${q.unit}`,...wrong.slice(0,3).map(x=>`${x} ${q.unit}`)]),
+      answer:`${remAmt} ${q.unit}`,
+      hint:`Отправили: (${q.n1}+${q.n2})/${q.d} = ${sent}/${q.d}. Осталось: ${rem}/${q.d} от ${q.total} = ${remAmt}.`,
+      explain:`Остаток: ${rem}/${q.d} × ${q.total} = ${remAmt} ${q.unit}.`};
+  },
+  /* уравнение: a/d − x = b/d (§29) */
+  function(){
+    const d=rnd(5,10); const x=rnd(1,d-2); const b=rnd(1,d-1-x);
+    const a=b+x;
+    return {tag:'🔡 Уравнение (вычитание)', type:'input',
+      text:`Реши уравнение: ${a}/${d} − x = ${b}/${d}`,
+      answer:[`${x}/${d}`], placeholder:`напр. 2/${d}`,
+      hint:`x = ${a}/${d} − ${b}/${d} = ${x}/${d}.`,
+      explain:`Переносим: x = ${a}/${d} − ${b}/${d} = ${x}/${d}.`};
+  }
+];
+
+/* ---- GENERATORS for location 3 (Тадж-Махал: смешанные числа) ---- */
+const GEN_TAJ = [
+  function(){
+    const d=rnd(2,7), whole=rnd(1,4), rem=rnd(1,d-1), num=whole*d+rem;
+    return {tag:'🔄 В смешанное', type:'input',
+      text:`Переведи неправильную дробь ${num}/${d} в смешанное число. Запиши только целую часть.`,
+      answer:[`${whole}`],
+      hint:`${num} ÷ ${d} = ${whole} (ост. ${rem}). Целая часть = ${whole}.`,
+      explain:`${num} ÷ ${d} = ${whole} (ост. ${rem}), значит ${num}/${d} = ${whole} ${rem}/${d}. Целая часть: ${whole}.`};
+  },
+  function(){
+    const d=rnd(2,7), whole=rnd(1,4), rem=rnd(1,d-1), num=whole*d+rem;
+    const correct=`${num}/${d}`;
+    const wrong=[`${whole*d}/${d}`,`${num+1}/${d}`,`${num}/${d+1}`].filter(x=>x!==correct);
+    return {tag:'🔄 В дробь', type:'choice',
+      text:`Переведи смешанное число ${whole} ${rem}/${d} в неправильную дробь.`,
+      options:shuffle([correct,...wrong.slice(0,3)]), answer:correct,
+      hint:`${whole}×${d}+${rem}=${num}, знаменатель ${d}.`,
+      explain:`${whole}×${d}+${rem}=${num}, знаменатель ${d}: ${num}/${d}.`};
+  },
+  function(){
+    const d=rnd(2,6), w1=rnd(1,3), w2=rnd(1,3), n1=rnd(1,d-2), n2=rnd(1,d-n1-1)||1;
+    const ws=w1+w2, ns=n1+n2, g=gcd(ns,d), fr=g>1?`${ns/g}/${d/g}`:`${ns}/${d}`;
+    const ans=`${ws} ${fr}`;
+    return {tag:'➕ Смешанные числа', type:'choice',
+      text:`${w1} ${n1}/${d} + ${w2} ${n2}/${d} = ?`,
+      options:shuffle([ans,`${ws+1} ${n1}/${d}`,`${ws} ${n1+n2+1}/${d}`,`${ws-1} ${ns}/${d}`]),
+      answer:ans,
+      hint:`Целые: ${w1}+${w2}=${ws}. Дроби: ${n1}/${d}+${n2}/${d}=${ns}/${d}.`,
+      explain:`${w1}+${w2}=${ws}, ${n1}+${n2}=${ns} → ${ws} ${ns}/${d}${g>1?' = '+ans:''}.`};
+  },
+  function(){
+    const d=rnd(2,6), w1=rnd(2,5), w2=rnd(1,w1-1), n1=rnd(2,d-1), n2=rnd(1,n1-1);
+    const wd=w1-w2, nd=n1-n2, g=gcd(nd,d), fr=g>1?`${nd/g}/${d/g}`:`${nd}/${d}`;
+    const ans=nd===0?`${wd}`:`${wd} ${fr}`;
+    return {tag:'➖ Смешанные числа', type:'choice',
+      text:`${w1} ${n1}/${d} − ${w2} ${n2}/${d} = ?`,
+      options:shuffle([ans,`${wd+1} ${nd}/${d}`,`${wd} ${nd+1}/${d}`,`${wd-1} ${n1}/${d}`].filter((v,i,a)=>a.indexOf(v)===i).slice(0,4)),
+      answer:ans,
+      hint:`Целые: ${w1}−${w2}=${wd}. Дроби: ${n1}/${d}−${n2}/${d}=${nd}/${d}.`,
+      explain:`${w1}−${w2}=${wd}, ${n1}−${n2}=${nd} → ${ans}.`};
+  },
+  function(){
+    const d=rnd(2,7), whole=rnd(2,5), rem=rnd(1,d-1);
+    return {tag:'⚖️ Сравни', type:'choice',
+      text:`Сравни смешанное число ${whole} ${rem}/${d} и целое число ${whole}.`,
+      options:['>', '<', '=', 'нельзя'],
+      answer:'>',
+      hint:`${whole} ${rem}/${d} = ${whole} + ${rem}/${d}. Дробная часть больше нуля!`,
+      explain:`${whole} ${rem}/${d} > ${whole}, потому что добавляется дробная часть ${rem}/${d}.`};
+  },
+  /* ЗАДАЧА: стройка — смешанные числа (по стилю учебника) */
+  function(){
+    const d=rnd(2,5), w1=rnd(3,6), n1=rnd(1,d-1), w2=rnd(1,w1-1), n2=rnd(1,n1>1?n1-1:1);
+    const wd=w1-w2, nd=n1-n2;
+    const ans=nd===0?`${wd}`:`${wd} ${nd}/${d}`;
+    return {tag:'🌿 Задача', type:'choice',
+      text:`На стройку привезли ${w1} ${n1}/${d} т кирпича. Использовали ${w2} ${n2}/${d} т. Сколько тонн осталось?`,
+      options:shuffle([ans,`${wd+1} ${nd}/${d}`,`${wd} ${nd+1}/${d}`,`${w1+w2} ${n1}/${d}`].filter((v,i,a)=>a.indexOf(v)===i).slice(0,4)),
+      answer:ans,
+      hint:`Вычитаем отдельно: целые ${w1}−${w2}=${wd}, дроби ${n1}/${d}−${n2}/${d}=${nd}/${d}.`,
+      explain:`${w1} ${n1}/${d} − ${w2} ${n2}/${d} = ${ans} т.`};
+  },
+  /* УРАВНЕНИЕ со смешанными числами */
+  function(){
+    const d=rnd(2,5), w=rnd(1,4), n=rnd(1,d-1), bw=rnd(w+1,w+3), bn=rnd(n+1,d-1)||d-1;
+    const xw=bw-w, xn=bn-n;
+    const xStr=xn===0?`${xw}`:`${xw} ${xn}/${d}`;
+    return {tag:'🔡 Уравнение', type:'input',
+      text:`Реши уравнение: x + ${w} ${n}/${d} = ${bw} ${bn}/${d}. Напиши целую часть ответа.`,
+      answer:[`${xw}`],
+      hint:`x = ${bw} ${bn}/${d} − ${w} ${n}/${d}. Целые: ${bw}−${w}=${xw}. Дроби: ${bn}−${n}=${xn}.`,
+      explain:`Целые: ${bw}−${w}=${xw}. Дроби: ${bn}/${d}−${n}/${d}=${xn}/${d}. Ответ: ${xStr}.`};
+  },
+  /* задача: смешанные числа × натуральное (§32) */
+  function(){
+    const data=[
+      {v:'8 1/2',vn:8.5,t:4,ans:34,item:'улитки'},
+      {v:'1 3/4',vn:1.75,t:8,ans:14,item:'пешехода'},
+      {v:'2 2/3',vn:8/3,t:6,ans:16,item:'лодки'},
+      {v:'3 1/2',vn:3.5,t:6,ans:21,item:'велосипедиста'},
+      {v:'4 1/4',vn:4.25,t:8,ans:34,item:'пловца'},
+    ];
+    const q=pick(data);
+    const wrong=[q.ans+2,q.ans-4,q.ans+q.t].filter(v=>v>0&&v!==q.ans);
+    return {tag:'🌿 Задача: смешанные числа', type:'choice',
+      text:`Скорость ${q.item} — ${q.v} км/ч. Какое расстояние она преодолеет за ${q.t} ч?`,
+      options:shuffle([`${q.ans} км`,...wrong.slice(0,3).map(x=>`${x} км`)]), answer:`${q.ans} км`,
+      hint:`${q.v} × ${q.t} = ${q.vn} × ${q.t} = ${q.ans} км.`,
+      explain:`Расстояние: ${q.v} × ${q.t} = ${q.ans} км.`};
+  },
+  /* уравнение: x − смешанное = смешанное (§32) */
+  function(){
+    const data=[
+      {sub:'1 2/3',rhs:'3 1/3',ans:'5'},
+      {sub:'2 1/4',rhs:'4 3/4',ans:'7'},
+      {sub:'1 3/5',rhs:'2 2/5',ans:'4'},
+      {sub:'3 1/2',rhs:'2 1/2',ans:'6'},
+      {sub:'1 5/8',rhs:'5 3/8',ans:'7'},
+    ];
+    const q=pick(data);
+    return {tag:'🔡 Уравнение (§32)', type:'input',
+      text:`Реши уравнение: x − ${q.sub} = ${q.rhs}`,
+      answer:[q.ans], placeholder:`целое число`,
+      hint:`x = ${q.rhs} + ${q.sub}. Сложи целые и дроби отдельно.`,
+      explain:`x = ${q.rhs} + ${q.sub} = ${q.ans}.`};
+  }
+];
+
+/* ---- GENERATORS for location 4 (Великая стена: свойства дробей, сокращение, общий знаменатель) ---- */
+const GEN_WALL = [
+  function(){
+    const d1=rnd(2,6), n1=rnd(1,d1-1), k=rnd(2,5), d2=d1*k, n2=n1*k;
+    const wrong=[n2+1,n2-1,n1*k+k].filter(x=>x>0&&x!==n2);
+    return {tag:'🔢 Основное свойство', type:'choice',
+      text:`${n1}/${d1} = ?/${d2}. Найди пропущенный числитель.`,
+      options:shuffle([`${n2}`,...wrong.slice(0,3).map(String)]), answer:`${n2}`,
+      hint:`Знаменатель увеличился в ${k} раз. Числитель тоже умножь на ${k}: ${n1}×${k}=${n2}.`,
+      explain:`${n1}/${d1} = ${n2}/${d2} (умножили на ${k}).`};
+  },
+  function(){
+    const nd=rnd(2,6), k=rnd(2,4), n=nd*k, d=nd*(k+rnd(1,3));
+    const g2=gcd(n,d), rn=n/g2, rd=d/g2;
+    const correct=`${rn}/${rd}`;
+    const wrong=[`${n-1}/${d}`,`${rn+1}/${rd}`,`${n}/${d}`].filter(x=>x!==correct);
+    return {tag:'✂️ Сокращение', type:'choice',
+      text:`Сократи дробь ${n}/${d}.`,
+      options:shuffle([correct,...wrong.slice(0,3)]), answer:correct,
+      hint:`НОД(${n},${d})=${g2}. Делим числитель и знаменатель на ${g2}.`,
+      explain:`${n}÷${g2}=${rn}, ${d}÷${g2}=${rd}. Ответ: ${rn}/${rd}.`};
+  },
+  function(){
+    const pairs=[[1,2,1,3],[1,2,1,4],[1,3,1,4],[1,3,2,5],[2,3,1,4],[1,4,1,5],[1,2,2,3]];
+    const [n1,d1,n2,d2]=pick(pairs);
+    const lcm=(a,b)=>a*b/gcd(a,b); const ld=lcm(d1,d2);
+    const num=n1*(ld/d1)+n2*(ld/d2), g=gcd(num,ld);
+    const rn=num/g, rd=ld/g;
+    const correct=rn>=rd?`${Math.floor(rn/rd)}${rn%rd>0?' '+rn%rd+'/'+rd:''}`.trim():`${rn}/${rd}`;
+    return {tag:'➕ Разные знаменатели', type:'choice',
+      text:`${n1}/${d1} + ${n2}/${d2} = ?`,
+      options:shuffle([correct,`${n1+n2}/${d1}`,`${n1}/${d1+d2}`,`${rn+1}/${rd}`].filter((v,i,a)=>a.indexOf(v)===i).slice(0,4)),
+      answer:correct,
+      hint:`Общий знаменатель = НОК(${d1},${d2})=${ld}. Приводим и складываем числители.`,
+      explain:`${n1*(ld/d1)}/${ld} + ${n2*(ld/d2)}/${ld} = ${num}/${ld} = ${correct}.`};
+  },
+  function(){
+    const pairs=[[3,4,1,2],[2,3,1,2],[3,4,2,3],[5,6,1,3],[3,5,1,2],[4,5,1,3]];
+    const [n1,d1,n2,d2]=pick(pairs);
+    const lcm=(a,b)=>a*b/gcd(a,b); const ld=lcm(d1,d2);
+    const num=n1*(ld/d1)-n2*(ld/d2); const g=gcd(Math.max(num,1),ld);
+    const correct=num<=0?'0':`${num/g}/${ld/g}`;
+    return {tag:'➖ Разные знаменатели', type:'choice',
+      text:`${n1}/${d1} − ${n2}/${d2} = ?`,
+      options:shuffle([correct,`${n1-n2}/${d1}`,`${n1}/${d1-d2}`,`${n1+n2}/${d1+d2}`].filter((v,i,a)=>a.indexOf(v)===i).slice(0,4)),
+      answer:correct,
+      hint:`Общий знаменатель ${ld}: ${n1}/${d1}=${n1*(ld/d1)}/${ld}, ${n2}/${d2}=${n2*(ld/d2)}/${ld}.`,
+      explain:`${n1*(ld/d1)}/${ld} − ${n2*(ld/d2)}/${ld} = ${num}/${ld} = ${correct}.`};
+  },
+  function(){
+    const irred=[[1,2],[2,3],[3,5],[4,7],[3,8],[5,9]];
+    const red=[[2,4],[3,6],[4,8],[6,9],[4,10],[6,8]];
+    const isRed=rnd(0,1)===1;
+    const [n,d]=isRed?pick(red):pick(irred);
+    const correct=isRed?'Да, можно сократить':'Нет, уже сокращена';
+    return {tag:'✂️ Сократима?', type:'choice',
+      text:`Можно ли сократить дробь ${n}/${d}?`,
+      options:shuffle(['Да, можно сократить','Нет, уже сокращена','Нельзя определить','Дробь неправильная']),
+      answer:correct,
+      hint:`НОД(${n},${d})=${gcd(n,d)}. Если НОД=1 — несократима.`,
+      explain:isRed?`НОД(${n},${d})=${gcd(n,d)}>1 — можно: ${n/gcd(n,d)}/${d/gcd(n,d)}.`:`НОД(${n},${d})=1 — дробь несократима.`};
+  },
+  /* ЗАДАЧА: сложение дробей с разными знаменателями (практическая) */
+  function(){
+    const pairs=[[1,2,1,4,3,4],[1,3,1,6,1,2],[1,4,3,8,5,8],[2,3,1,6,5,6],[1,2,1,3,5,6]];
+    const [n1,d1,n2,d2,rn,rd]=pick(pairs);
+    const wrong=[`${n1+n2}/${d1}`,`${rn-1}/${rd}`,`${rn+1}/${rd}`].filter(x=>x!==`${rn}/${rd}`);
+    return {tag:'🌿 Задача', type:'choice',
+      text:`Блогер снял ${n1}/${d1} стены в первый день и ${n2}/${d2} во второй. Какую часть стены он снял за два дня?`,
+      options:shuffle([`${rn}/${rd}`,...wrong.slice(0,3)]), answer:`${rn}/${rd}`,
+      hint:`Привести к общему знаменателю и сложить числители.`,
+      explain:`${n1}/${d1} + ${n2}/${d2} = ${rn}/${rd}.`};
+  },
+  /* УРАВНЕНИЕ: x − a/d = b/d */
+  function(){
+    const d=rnd(3,8); const x=rnd(2,d-1); const a=rnd(1,x-1);
+    const b=x-a;
+    return {tag:'🔡 Уравнение', type:'input',
+      text:`Реши уравнение: x − ${a}/${d} = ${b}/${d}`,
+      answer:[`${x}/${d}`], placeholder:`напр. 3/${d}`,
+      hint:`x = ${b}/${d} + ${a}/${d} = ${b+a}/${d}.`,
+      explain:`Переносим: x = ${b}/${d} + ${a}/${d} = ${x}/${d}.`};
+  },
+  /* задача: сложение разных знаменателей — питомник (§36) */
+  function(){
+    const data=[
+      {total:60,t1:'яблонями',f1:'1/4',n1:1,d1:4,t2:'грушами',f2:'1/3',n2:1,d2:3,ans:35,wrong:[25,40,30]},
+      {total:48,t1:'берёзами',f1:'1/4',n1:1,d1:4,t2:'елями',f2:'1/6',n2:1,d2:6,ans:20,wrong:[12,24,16]},
+      {total:72,t1:'яблонями',f1:'1/4',n1:1,d1:4,t2:'вишнями',f2:'1/3',n2:1,d2:3,ans:42,wrong:[18,24,54]},
+      {total:90,t1:'соснами',f1:'2/5',n1:2,d1:5,t2:'дубами',f2:'1/3',n2:1,d2:3,ans:66,wrong:[36,54,72]},
+    ];
+    const q=pick(data);
+    return {tag:'🌿 Задача: питомник', type:'choice',
+      text:`В питомнике ${q.total} га. Под ${q.t1} занято ${q.f1} площади, под ${q.t2} — ${q.f2}. Сколько га занято в целом?`,
+      options:shuffle([`${q.ans} га`,...q.wrong.slice(0,3).map(x=>`${x} га`)]),
+      answer:`${q.ans} га`,
+      hint:`Сложи дроби ${q.f1} + ${q.f2}, приведя к общему знаменателю, затем умножь на ${q.total}.`,
+      explain:`(${q.f1} + ${q.f2}) × ${q.total} = ${q.ans} га.`};
+  },
+  /* уравнение: x + a/b = c/d, разные знаменатели (§36) */
+  function(){
+    const data=[
+      {ab:'1/4',cd:'3/4',xs:'1/2',wrongs:['1/4','2/4','3/8']},
+      {ab:'1/3',cd:'5/6',xs:'1/2',wrongs:['2/6','1/6','1/3']},
+      {ab:'1/4',cd:'3/8',xs:'1/8',wrongs:['2/8','1/4','1/2']},
+      {ab:'1/6',cd:'7/12',xs:'5/12',wrongs:['2/12','1/4','6/12']},
+      {ab:'1/3',cd:'3/4',xs:'5/12',wrongs:['2/12','7/12','4/12']},
+    ];
+    const q=pick(data);
+    return {tag:'🔡 Уравнение (разные знаменатели)', type:'input',
+      text:`Реши уравнение: x + ${q.ab} = ${q.cd}`,
+      answer:[q.xs], placeholder:`напр. 1/4`,
+      hint:`x = ${q.cd} − ${q.ab}. Приведи к общему знаменателю.`,
+      explain:`x = ${q.cd} − ${q.ab} = ${q.xs}.`};
+  }
+];
+
+/* ---- GENERATORS for location 5 (Статуя Свободы: умножение/деление дробей) ---- */
+const GEN_LIBERTY = [
+  function(){
+    const d=rnd(2,8), n=rnd(1,d-1), w=rnd(2,6), num=n*w, g=gcd(num,d);
+    const rn=num/g, rd=d/g;
+    const correct=rd===1?`${rn}`:`${rn}/${rd}`;
+    const wrong=[`${n}/${d*w}`,`${n+w}/${d}`,`${rn+1}/${rd}`].filter(x=>x!==correct);
+    return {tag:'✖️ Дробь × число', type:'choice',
+      text:`Блогер снял ${n}/${d} высоты статуи ${w} раза. Какую часть снял всего?`,
+      options:shuffle([correct,...wrong.slice(0,3)]), answer:correct,
+      hint:`Умножь числитель на ${w}: ${n}×${w}=${num}, знаменатель остаётся ${d}.`,
+      explain:`${n}/${d} × ${w} = ${num}/${d}${g>1?' = '+correct:''}.`};
+  },
+  function(){
+    const bases=[10,12,15,16,20,24,30,36,40];
+    const d=pick([2,3,4,5,6]), whole=pick(bases.filter(b=>b%d===0)), n=rnd(1,d-1);
+    const result=(n*whole)/d;
+    const wrong=[result+d,result-1,whole/d].filter(x=>x>0&&x!==result);
+    return {tag:'🎯 Часть числа', type:'choice',
+      text:`Найди ${n}/${d} от числа ${whole}.`,
+      options:shuffle([`${result}`,...wrong.slice(0,3).map(String)]), answer:`${result}`,
+      hint:`Сначала найди 1/${d} от ${whole}: ${whole}÷${d}=${whole/d}. Потом умножь на ${n}.`,
+      explain:`${whole}÷${d}=${whole/d}, затем ×${n}: ${whole/d}×${n}=${result}.`};
+  },
+  function(){
+    const n1=rnd(1,4), d1=rnd(n1+1,7), n2=rnd(1,4), d2=rnd(n2+1,7);
+    const rnum=n1*n2, rden=d1*d2, g=gcd(rnum,rden);
+    const correct=g>1?`${rnum/g}/${rden/g}`:`${rnum}/${rden}`;
+    const wrong=[`${n1+n2}/${d1+d2}`,`${rnum}/${rden+1}`,`${rnum+1}/${rden}`].filter(x=>x!==correct);
+    return {tag:'✖️ Дробь × дробь', type:'choice',
+      text:`${n1}/${d1} × ${n2}/${d2} = ?`,
+      options:shuffle([correct,...wrong.slice(0,3)]), answer:correct,
+      hint:'Умножь числители между собой и знаменатели между собой.',
+      explain:`(${n1}×${n2})/(${d1}×${d2}) = ${rnum}/${rden}${g>1?' = '+correct:''}.`};
+  },
+  function(){
+    const n=rnd(1,4), d=rnd(n+1,8), whole=rnd(1,5);
+    const rnum=whole*d, rden=n, g=gcd(rnum,rden);
+    const correct=rden===1?`${rnum}`:`${rnum/g}/${rden/g}`;
+    return {tag:'➗ Число ÷ дробь', type:'choice',
+      text:`${whole} ÷ ${n}/${d} = ?`,
+      options:shuffle([correct,`${whole*n}/${d}`,`${whole}/${n}`,`${rnum+d}/${rden}`]),
+      answer:correct,
+      hint:`Делить на дробь = умножать на перевёрнутую: ${whole} × ${d}/${n}.`,
+      explain:`${whole} × ${d}/${n} = ${rnum}/${rden}${rden>1&&g>1?' = '+correct:''}.`};
+  },
+  function(){
+    const n=rnd(1,4), d=rnd(n+1,7), part=rnd(1,5)*n, whole=(part/n)*d;
+    const wrong=[whole+d,part,whole-n].filter(x=>x>0&&x!==whole);
+    return {tag:'🔍 Целое по части', type:'choice',
+      text:`${n}/${d} от числа равны ${part}. Найди всё число.`,
+      options:shuffle([`${whole}`,...wrong.slice(0,3).map(String)]), answer:`${whole}`,
+      hint:`Если ${n}/${d} = ${part}, то 1/${d} = ${part}÷${n}=${part/n}. Всё число = ${part/n}×${d}.`,
+      explain:`${part}÷${n}×${d} = ${part/n}×${d} = ${whole}.`};
+  },
+  /* ЗАДАЧА: совместная работа (по учебнику 5.429) */
+  function(){
+    const data=[[6,8,'7/24'],[4,6,'5/12'],[3,6,'1/2'],[4,12,'1/3'],[6,12,'1/4'],[5,10,'3/10']];
+    const [t1,t2,ans]=pick(data);
+    const wrong=[`1/${t1}`,`1/${t2}`,`2/${t1+t2}`].filter(x=>x!==ans);
+    return {tag:'🌿 Задача на работу', type:'choice',
+      text:`Один мастер выполняет работу за ${t1} дней, другой — за ${t2} дней. Какую часть работы они сделают вместе за 1 день?`,
+      options:shuffle([ans,...wrong.slice(0,3)]), answer:ans,
+      hint:`За 1 день первый делает 1/${t1}, второй — 1/${t2}. Сложи дроби с разными знаменателями.`,
+      explain:`1/${t1} + 1/${t2} = ${ans} работы за 1 день.`};
+  },
+  /* ЗАДАЧА: скорость как доля */
+  function(){
+    const speeds=[35,40,45,60,50], fracs=[[3,5],[4,5],[2,3],[3,4]];
+    const yacht=pick(speeds), [n,d]=pick(fracs.filter(([a,b])=>yacht%b===0||yacht*n%d===0));
+    const boat=Math.round((yacht/d)*n);
+    const wrong=[yacht-boat, yacht+n, boat+d].filter(x=>x>0&&x!==boat);
+    return {tag:'🌿 Задача на скорость', type:'choice',
+      text:`Яхта идёт со скоростью ${yacht} км/ч. Скорость катера составляет ${n}/${d} скорости яхты. Какова скорость катера?`,
+      options:shuffle([`${boat} км/ч`,...wrong.slice(0,3).map(x=>`${x} км/ч`)]), answer:`${boat} км/ч`,
+      hint:`${yacht} ÷ ${d} = ${yacht/d}, затем × ${n} = ${boat}.`,
+      explain:`${n}/${d} от ${yacht}: ${yacht}÷${d}×${n}=${boat} км/ч.`};
+  },
+  /* уравнение: a/b · x = c (§37) */
+  function(){
+    const data=[{a:2,b:3,c:4,x:6},{a:3,b:4,c:9,x:12},{a:2,b:5,c:6,x:15},{a:3,b:5,c:12,x:20},{a:4,b:7,c:8,x:14}];
+    const q=pick(data);
+    const wrong=[q.x+1,q.x-2,q.x*2].filter(v=>v!==q.x);
+    return {tag:'🔡 Уравнение (§37)', type:'choice',
+      text:`Реши уравнение: ${q.a}/${q.b} · x = ${q.c}`,
+      options:shuffle([String(q.x),...wrong.slice(0,3).map(String)]), answer:String(q.x),
+      hint:`x = ${q.c} ÷ (${q.a}/${q.b}) = ${q.c} · ${q.b}/${q.a} = ${q.x}.`,
+      explain:`Делим обе стороны на ${q.a}/${q.b}: x = ${q.c} × ${q.b}/${q.a} = ${q.x}.`};
+  },
+  /* уравнение: x ÷ (a/b) = c (§39) */
+  function(){
+    const data=[{a:2,b:3,c:6,x:4},{a:3,b:4,c:8,x:6},{a:2,b:5,c:10,x:4},{a:3,b:5,c:20,x:12},{a:4,b:7,c:14,x:8}];
+    const q=pick(data);
+    const wrong=[q.x+2,q.x-1,q.x*3].filter(v=>v>0&&v!==q.x);
+    return {tag:'🔡 Уравнение (§39)', type:'choice',
+      text:`Реши уравнение: x ÷ (${q.a}/${q.b}) = ${q.c}`,
+      options:shuffle([String(q.x),...wrong.slice(0,3).map(String)]), answer:String(q.x),
+      hint:`x = ${q.c} · ${q.a}/${q.b} = ${q.x}.`,
+      explain:`Умножаем обе стороны на ${q.a}/${q.b}: x = ${q.c} × ${q.a}/${q.b} = ${q.x}.`};
+  }
+];
+
+/* ---- GENERATORS for location 6 (Христос-Искупитель: десятичные дроби) ---- */
+const GEN_CHRIST = [
+  function(){
+    const pairs=[['1/2','0,5'],['1/4','0,25'],['3/4','0,75'],['1/5','0,2'],['2/5','0,4'],['3/5','0,6'],['4/5','0,8'],['1/10','0,1'],['3/10','0,3'],['7/10','0,7'],['1/100','0,01'],['1/20','0,05']];
+    const [frac,dec]=pick(pairs);
+    const wrong=pairs.filter(p=>p[1]!==dec).slice(0,3).map(p=>p[1]);
+    return {tag:'💱 Дробь → десятичная', type:'choice',
+      text:`Запиши дробь ${frac} как десятичную.`,
+      options:shuffle([dec,...wrong]), answer:dec,
+      hint:`Переведи знаменатель к степени 10 или раздели: ${frac.split('/')[0]}÷${frac.split('/')[1]}.`,
+      explain:`${frac} = ${dec}.`};
+  },
+  function(){
+    const a=rnd(1,9), b=rnd(1,9), t=rnd(10,99);
+    const ans=a>b?'>':a<b?'<':'=';
+    return {tag:'⚖️ Сравни десятичные', type:'choice',
+      text:`Сравни: ${a},${t} … ${b},${t}`,
+      options:['>','<','=','нельзя'], answer:ans,
+      hint:'Сначала сравниваем целые части.',
+      explain:`Целые части: ${a} ${ans} ${b}, значит ${a},${t} ${ans} ${b},${t}.`};
+  },
+  function(){
+    const whole=rnd(1,9), tenths=rnd(1,9), hundredths=rnd(1,9);
+    const num=`${whole},${tenths}${hundredths}`;
+    const correct=`${tenths}`;
+    return {tag:'🔢 Разряд десятых', type:'choice',
+      text:`В числе ${num} что стоит в разряде десятых?`,
+      options:shuffle([correct,`${whole}`,`${hundredths}`,`${tenths+1}`].filter((v,i,a)=>a.indexOf(v)===i).slice(0,4)),
+      answer:correct,
+      hint:'Десятые — первая цифра ПОСЛЕ запятой.',
+      explain:`В числе ${num} первая цифра после запятой — ${tenths} (разряд десятых).`};
+  },
+  function(){
+    const a=rnd(1,5), b=rnd(6,9), ta=rnd(1,9), tb=rnd(1,9);
+    return {tag:'📊 Наименьшее', type:'choice',
+      text:`Какое из чисел наименьшее: ${a},${ta} или ${b},${tb}?`,
+      options:shuffle([`${a},${ta}`,`${b},${tb}`,'Равны','Нельзя сказать']),
+      answer:`${a},${ta}`,
+      hint:`Сравни целые части: ${a} < ${b}.`,
+      explain:`Целая часть ${a} < ${b}, значит ${a},${ta} — наименьшее.`};
+  },
+  function(){
+    const decimals=[['0,5','1/2'],['0,25','1/4'],['0,75','3/4'],['0,2','1/5'],['0,4','2/5'],['0,1','1/10'],['0,3','3/10']];
+    const [dec,frac]=pick(decimals);
+    const wrong=decimals.filter(p=>p[1]!==frac).slice(0,3).map(p=>p[1]);
+    return {tag:'💱 Десятичная → дробь', type:'choice',
+      text:`Запиши ${dec} в виде обыкновенной дроби.`,
+      options:shuffle([frac,...wrong]), answer:frac,
+      hint:'Десятых — знаменатель 10, сотых — 100. Потом сократи.',
+      explain:`${dec} = ${frac}.`};
+  },
+  /* ЗАДАЧА: велосипедист (по учебнику 6.203) */
+  function(){
+    const data=[
+      {t1:30,v1:'0,3',t2:20,v2:'0,2',ans:'13'},
+      {t1:25,v1:'0,4',t2:15,v2:'0,2',ans:'13'},
+      {t1:40,v1:'0,2',t2:20,v2:'0,3',ans:'14'},
+      {t1:35,v1:'0,2',t2:10,v2:'0,3',ans:'10'},
+    ];
+    const q=pick(data);
+    const d1=parseFloat(q.v1.replace(',','.'))*q.t1/10, d2=parseFloat(q.v2.replace(',','.'))*q.t2/10;
+    const tot=Math.round((d1+d2)*10)/10;
+    const wrong=[tot+1, tot-1, tot+0.5].map(x=>String(x).replace('.',',')).filter(x=>x!==String(tot).replace('.',','));
+    return {tag:'🌿 Задача на движение', type:'choice',
+      text:`Велосипедист ехал ${q.t1} мин по шоссе со скоростью ${q.v1} км/мин и ${q.t2} мин по лесной дороге со скоростью ${q.v2} км/мин. Сколько км проехал?`,
+      options:shuffle([`${q.ans} км`,...wrong.slice(0,3).map(x=>`${x} км`)]), answer:`${q.ans} км`,
+      hint:`Шоссе: ${q.v1}×${q.t1}. Лес: ${q.v2}×${q.t2}. Сложи результаты.`,
+      explain:`${q.v1}×${q.t1} + ${q.v2}×${q.t2} = ${q.ans} км.`};
+  },
+  /* УРАВНЕНИЕ с десятичными */
+  function(){
+    const x=[1,2,3,4,5][rnd(0,4)];
+    const a=[0.5,1.5,2.5,0.3,1.2][rnd(0,4)];
+    const b=x+a;
+    const bs=String(b).replace('.',','), as_=String(a).replace('.',','), xs=String(x);
+    const wrong=[x+1,x-1,Math.round(b)].filter(v=>String(v)!==xs);
+    return {tag:'🔡 Уравнение', type:'choice',
+      text:`Реши уравнение: x + ${as_} = ${bs}`,
+      options:shuffle([xs,...wrong.slice(0,3).map(String)]), answer:xs,
+      hint:`x = ${bs} − ${as_} = ${xs}.`,
+      explain:`x = ${b} − ${a} = ${x}.`};
+  },
+  /* задача: десятичные в контексте (§43) */
+  function(){
+    const data=[
+      {scene:'Статуя стоит на холме высотой 709,8 м над уровнем моря, высота самой статуи — 38,05 м. Какова высота вершины над уровнем моря?',ans:'747,85',wrong:['747,8','748','671,75']},
+      {scene:'Турист прошёл 3,75 км до смотровой площадки, а потом ещё 1,4 км вниз. Сколько км он прошёл всего?',ans:'5,15',wrong:['5,1','4,15','5,05']},
+      {scene:'Билет на подъём стоит 83,5 реала. Турист заплатил 100 реалов. Какую сдачу он получил?',ans:'16,5',wrong:['16','17','16,55']},
+      {scene:'Длина одной руки статуи — 28,3 м, другой — 28,3 м. Какова суммарная длина двух рук?',ans:'56,6',wrong:['56','57','56,3']},
+    ];
+    const q=pick(data);
+    return {tag:'🌿 Задача: десятичные', type:'choice',
+      text:q.scene,
+      options:shuffle([q.ans,...q.wrong.slice(0,3)]), answer:q.ans,
+      hint:`Выполни действие с десятичными числами, выровняй знаки запятых.`,
+      explain:`Ответ: ${q.ans}.`};
+  },
+  /* уравнение: x − a,b = c,d (§43) */
+  function(){
+    const data=[
+      {a:'4,5',c:'3,2',x:'7,7',wrong:['1,3','4,5','8,7']},
+      {a:'2,3',c:'5,6',x:'7,9',wrong:['3,3','2,3','8,9']},
+      {a:'1,7',c:'4,8',x:'6,5',wrong:['3,1','1,7','7,5']},
+      {a:'3,4',c:'2,6',x:'6,0',wrong:['1,2','3,4','7,0']},
+      {a:'0,8',c:'6,3',x:'7,1',wrong:['5,5','0,8','8,1']},
+    ];
+    const d=pick(data);
+    return {tag:'🔡 Уравнение (вычитание)', type:'choice',
+      text:`Реши уравнение: x − ${d.a} = ${d.c}`,
+      options:shuffle([d.x,...d.wrong.slice(0,3)]), answer:d.x,
+      hint:`x = ${d.c} + ${d.a} = ${d.x}.`,
+      explain:`Переносим: x = ${d.c} + ${d.a} = ${d.x}.`};
+  }
+];
+
+/* ---- GENERATORS for location 7 (Парфенон: сложение/вычитание десятичных, округление) ---- */
+const GEN_PARTHENON = [
+  function(){
+    const a=rnd(1,15), b=rnd(1,15), ta=rnd(1,9), tb=rnd(1,9);
+    const ts=ta+tb, carry=ts>=10?1:0, whole=a+b+carry, frac=ts%10;
+    const correct=frac>0?`${whole},${frac}`:`${whole}`;
+    return {tag:'➕ Десятичные', type:'input',
+      text:`${a},${ta} + ${b},${tb} = ?`,
+      answer:[correct,correct.replace(',','.')],
+      hint:`Целые: ${a}+${b}=${a+b}. Десятые: ${ta}+${tb}=${ts}${carry?' (переносим 1)':''}.`,
+      explain:`Итого: ${correct}.`};
+  },
+  function(){
+    const a=rnd(5,20), ta=rnd(1,9), b=rnd(1,a-1), tb=rnd(0,ta);
+    let whole=a-b, frac=ta-tb; if(frac<0){whole--;frac+=10;}
+    const correct=frac>0?`${whole},${frac}`:`${whole}`;
+    return {tag:'➖ Десятичные', type:'input',
+      text:`${a},${ta} − ${b},${tb} = ?`,
+      answer:[correct,correct.replace(',','.')],
+      hint:`Вычитаем поразрядно${frac<0?' (занимаем 1 у целых)':''}.`,
+      explain:`Ответ: ${correct}.`};
+  },
+  function(){
+    const whole=rnd(1,20), tenths=rnd(0,9);
+    const rounded=tenths>=5?whole+1:whole;
+    const correct=`${rounded}`;
+    return {tag:'🔘 Округление до целых', type:'choice',
+      text:`Округли ${whole},${tenths} до целых.`,
+      options:shuffle([correct,`${whole}`,`${whole+1}`,`${whole-1}`].filter((v,i,a)=>a.indexOf(v)===i).slice(0,4)),
+      answer:correct,
+      hint:`Смотри на десятые: ${tenths}. Если ≥5 — вверх, если <5 — вниз.`,
+      explain:`Десятые: ${tenths} ${tenths>=5?'≥':'<'} 5 → ${rounded}.`};
+  },
+  function(){
+    const whole=rnd(1,15), tenths=rnd(0,9), hundredths=rnd(0,9);
+    let rt=tenths+(hundredths>=5?1:0), carry=rt>=10?1:0;
+    if(carry){rt=0;}
+    const correct=carry?`${whole+1},0`:`${whole},${rt}`;
+    return {tag:'🔘 Округление до десятых', type:'choice',
+      text:`Округли ${whole},${tenths}${hundredths} до десятых.`,
+      options:shuffle([correct,`${whole},${tenths}`,`${whole},${tenths+1}`,`${whole+1},${tenths}`].filter((v,i,a)=>a.indexOf(v)===i).slice(0,4)),
+      answer:correct,
+      hint:`Смотри на сотые: ${hundredths}. Если ≥5 — увеличь десятые на 1.`,
+      explain:`Сотые: ${hundredths} ${hundredths>=5?'≥':'<'} 5 → ${correct}.`};
+  },
+  function(){
+    const a=rnd(10,50), ta=rnd(1,9), b=rnd(10,50), tb=rnd(1,9);
+    const ra=ta>=5?a+1:a, rb=tb>=5?b+1:b, estimate=ra+rb;
+    return {tag:'🎯 Прикидка', type:'choice',
+      text:`Прикинь сумму: ${a},${ta} + ${b},${tb} ≈ ?`,
+      options:shuffle([`≈ ${estimate}`,`≈ ${estimate+10}`,`≈ ${estimate-10}`,`≈ ${a+b}`]),
+      answer:`≈ ${estimate}`,
+      hint:`Округли до целых: ${a},${ta}≈${ra}, ${b},${tb}≈${rb}. Сложи.`,
+      explain:`${ra}+${rb}=${estimate}, значит ≈ ${estimate}.`};
+  },
+  /* ЗАДАЧА: путь поезда (сложение десятичных) */
+  function(){
+    const d1=[8,12,9,15,11,7][rnd(0,5)], t1=[3,5,4,5,6,8][rnd(0,5)];
+    const d2=[5,6,7,4,8,3][rnd(0,5)], t2=[2,3,5,7,4,9][rnd(0,5)];
+    const a=d1+','+t1, b=d2+','+t2;
+    const total=d1+d2, ft=t1+t2, carry=ft>=10?1:0;
+    const tw=total+carry, tf=ft%10;
+    const ans=tf>0?`${tw},${tf}`:`${tw}`;
+    return {tag:'🌿 Задача на движение', type:'input',
+      text:`Поезд проехал ${a} км, затем ещё ${b} км. Сколько км всего?`,
+      answer:[ans, ans.replace(',','.')],
+      hint:`Складываем поразрядно: целые ${d1}+${d2}=${total}${carry?'+1':''}=${tw}, десятые ${t1}+${t2}=${ft}${carry?' (перенос!)':''}.`,
+      explain:`${a} + ${b} = ${ans} км.`};
+  },
+  /* УРАВНЕНИЕ с десятичными: x + a = b */
+  function(){
+    const pairs=[[1.5,4.2,2.7],[2.3,6.1,3.8],[0.8,5.5,4.7],[1.7,9.4,7.7],[3.6,8.2,4.6]];
+    const [a,b,x]=pick(pairs);
+    const as_=String(a).replace('.',','), bs=String(b).replace('.',','), xs=String(x).replace('.',',');
+    const wrong=[String(a+b).replace('.',','), String(x+1).replace('.',','), String(Math.round(x)).toString()].filter(v=>v!==xs);
+    return {tag:'🔡 Уравнение', type:'choice',
+      text:`Реши уравнение: x + ${as_} = ${bs}`,
+      options:shuffle([xs,...wrong.slice(0,3)]), answer:xs,
+      hint:`x = ${bs} − ${as_} = ${xs}.`,
+      explain:`x = ${b} − ${a} = ${x}.`};
+  },
+  /* задача: округление десятичных (§44) */
+  function(){
+    const data=[
+      {raw:'12,47',place:'десятых',answer:'12,5',wrong:['12,4','12','13']},
+      {raw:'8,354',place:'десятых',answer:'8,4',wrong:['8,3','8','9']},
+      {raw:'5,762',place:'десятых',answer:'5,8',wrong:['5,7','6','5,76']},
+      {raw:'3,148',place:'сотых',answer:'3,15',wrong:['3,14','3,1','3,2']},
+      {raw:'9,275',place:'сотых',answer:'9,28',wrong:['9,27','9,3','9,2']},
+    ];
+    const q=pick(data);
+    return {tag:'🔢 Округление', type:'choice',
+      text:`Округли ${q.raw} до ${q.place}.`,
+      options:shuffle([q.answer,...q.wrong.slice(0,3)]), answer:q.answer,
+      hint:`Смотрим на следующую цифру после ${q.place}. Если ≥5 — увеличиваем, иначе оставляем.`,
+      explain:`${q.raw} ≈ ${q.answer} (до ${q.place}).`};
+  },
+  /* уравнение: x − a,b = c,d (§43) */
+  function(){
+    const data=[
+      {a:'1,35',c:'2,70',x:'4,05',wrong:['3,35','1,35','2,70']},
+      {a:'2,4',c:'3,6',x:'6,0',wrong:['7,0','1,2','3,6']},
+      {a:'1,8',c:'5,2',x:'7,0',wrong:['3,4','1,8','6,0']},
+      {a:'0,75',c:'4,25',x:'5,0',wrong:['3,5','0,75','4,0']},
+      {a:'3,5',c:'2,5',x:'6,0',wrong:['7,5','1,0','2,5']},
+    ];
+    const d=pick(data);
+    return {tag:'🔡 Уравнение (вычитание)', type:'choice',
+      text:`Реши уравнение: x − ${d.a} = ${d.c}`,
+      options:shuffle([d.x,...d.wrong.slice(0,3)]), answer:d.x,
+      hint:`x = ${d.c} + ${d.a} = ${d.x}.`,
+      explain:`Переносим: x = ${d.c} + ${d.a} = ${d.x}.`};
+  }
+];
+
+/* ---- GENERATORS for location 8 (Пирамиды: умножение/деление десятичных) ---- */
+const GEN_PYRAMIDS = [
+  function(){
+    const a=rnd(1,9), t=rnd(1,9), n=rnd(2,9);
+    const raw=(a*10+t)*n, whole=Math.floor(raw/10), frac=raw%10;
+    const correct=frac>0?`${whole},${frac}`:`${whole}`;
+    return {tag:'✖️ Дес × натуральное', type:'input',
+      text:`${a},${t} × ${n} = ?`,
+      answer:[correct,correct.replace(',','.')],
+      hint:`Считай как ${a*10+t} × ${n} = ${raw}, потом раздели на 10.`,
+      explain:`${a*10+t} × ${n} = ${raw} → ${correct}.`};
+  },
+  function(){
+    const n=rnd(2,5), wa=rnd(1,9), wt=pick([0,2,4,5,6,8]);
+    const dividend_raw=wa*10+wt, dd=dividend_raw*n;
+    const dw=Math.floor(dd/10), df=dd%10;
+    const dividend=df>0?`${dw},${df}`:`${dw}`;
+    const correct=wt>0?`${wa},${wt}`:`${wa}`;
+    return {tag:'➗ Дес ÷ натуральное', type:'choice',
+      text:`${dividend} ÷ ${n} = ?`,
+      options:shuffle([correct,`${wa+1}`,`${wa},${wt+1}`,`${Math.floor(wa/n)||1}`].filter((v,i,a)=>a.indexOf(v)===i).slice(0,4)),
+      answer:correct,
+      hint:'Делим как целые, запятая в частном — под запятой делимого.',
+      explain:`${dividend} ÷ ${n} = ${correct}.`};
+  },
+  function(){
+    const a=rnd(1,9), t=rnd(1,9), power=pick([10,100]);
+    const raw=a*10+t, result=power===10?`${raw}`:`${raw*10}`;
+    return {tag:'✖️ На 10 и 100', type:'choice',
+      text:`${a},${t} × ${power} = ?`,
+      options:shuffle([result,`${a},${t}0`,`0,${a}${t}`,`${raw/10}`].filter((v,i,a2)=>a2.indexOf(v)===i).slice(0,4)),
+      answer:result,
+      hint:`При умножении на ${power} запятая сдвигается вправо на ${power===10?1:2} знак${power===10?'а':'а'}.`,
+      explain:`${a},${t} × ${power} = ${result}.`};
+  },
+  function(){
+    const whole=rnd(10,99), power=pick([10,100]);
+    const result=power===10?`${Math.floor(whole/10)},${whole%10}`:`0,${String(whole).padStart(2,'0')}`;
+    return {tag:'➗ На 10 и 100', type:'choice',
+      text:`${whole} ÷ ${power} = ?`,
+      options:shuffle([result,`${whole},0`,`${whole*10}`,`${Math.floor(whole/10)}`].filter((v,i,a)=>a.indexOf(v)===i).slice(0,4)),
+      answer:result,
+      hint:`При делении на ${power} запятая сдвигается влево на ${power===10?1:2} знак${power===10?'а':'а'}.`,
+      explain:`${whole} ÷ ${power} = ${result}.`};
+  },
+  function(){
+    const pairs=[[0.2,0.5,'0,1'],[0.4,0.5,'0,2'],[0.3,0.3,'0,09'],[0.5,0.5,'0,25'],[0.2,0.3,'0,06'],[1.2,0.5,'0,6'],[2.4,0.5,'1,2'],[0.6,0.5,'0,3']];
+    const [a,b,correct]=pick(pairs);
+    const sa=String(a).replace('.',','), sb=String(b).replace('.',',');
+    const wrong=pairs.filter(p=>p[2]!==correct).slice(0,3).map(p=>p[2]);
+    return {tag:'✖️ Дес × Дес', type:'choice',
+      text:`${sa} × ${sb} = ?`,
+      options:shuffle([correct,...wrong]), answer:correct,
+      hint:'Умножь как целые, потом отсчитай знаки после запятой у обоих множителей.',
+      explain:`${sa} × ${sb} = ${correct}.`};
+  },
+  /* ЗАДАЧА: скорость и расстояние с десятичными */
+  function(){
+    const data=[
+      {v:'2,5',t:4,ans:'10'},
+      {v:'1,5',t:6,ans:'9'},
+      {v:'3,5',t:2,ans:'7'},
+      {v:'4,5',t:2,ans:'9'},
+      {v:'1,2',t:5,ans:'6'},
+    ];
+    const q=pick(data);
+    const wrong=[parseInt(q.ans)+1, parseInt(q.ans)-1, parseInt(q.ans)+2].map(String);
+    return {tag:'🌿 Задача на движение', type:'choice',
+      text:`Строитель укладывает ${q.v} м дорожки в час. Сколько метров он уложит за ${q.t} часа?`,
+      options:shuffle([`${q.ans} м`,...wrong.slice(0,3).map(x=>`${x} м`)]), answer:`${q.ans} м`,
+      hint:`${q.v} × ${q.t}: умножь как целые 2${q.v.slice(1)} × ${q.t}, потом раздели на 10.`,
+      explain:`${q.v} × ${q.t} = ${q.ans} м.`};
+  },
+  /* ЗАДАЧА: два навстречу (по учебнику 6.336) */
+  function(){
+    const data=[
+      {dist:'14,4',t:'0,5 ч',ans1:'16',ans2:'12,8',ratio:'в 1,25 раза'},
+      {dist:'9,6',t:'0,4 ч',ans1:'14',ans2:'10',ratio:'в 1,4 раза'},
+    ];
+    const q=pick(data);
+    return {tag:'🌿 Задача на движение', type:'choice',
+      text:`Из двух городов навстречу друг другу выехали велосипедисты. Расстояние между городами ${q.dist} км. Они встретились через ${q.t}. Вместе они проезжают за 1 ч… сколько км?`,
+      options:shuffle([`${q.dist.replace(',','.')/0.5|0} км`,`${q.dist} км`,`${parseFloat(q.dist.replace(',','.'))*2} км`,`${parseFloat(q.dist.replace(',','.'))/2} км`].map(String)),
+      answer:`${Math.round(parseFloat(q.dist.replace(',','.'))/0.5)} км`,
+      hint:`Расстояние ÷ время = суммарная скорость. ${q.dist} ÷ 0,5 = ?`,
+      explain:`${q.dist} ÷ 0,5 = ${Math.round(parseFloat(q.dist.replace(',','.'))/0.5)} км/ч — вместе.`};
+  },
+  /* деление на десятичную дробь (§48) */
+  function(){
+    const data=[
+      {a:'7,2',b:'0,4',q:'18'},{a:'6,3',b:'0,7',q:'9'},{a:'5,4',b:'0,6',q:'9'},
+      {a:'8,4',b:'0,4',q:'21'},{a:'9,6',b:'0,8',q:'12'},{a:'4,8',b:'0,6',q:'8'},
+      {a:'3,6',b:'0,4',q:'9'},{a:'7,5',b:'0,5',q:'15'}
+    ];
+    const d=pick(data);
+    const av=parseFloat(d.a.replace(',','.')), bv=parseFloat(d.b.replace(',','.'));
+    const m=bv<0.1?100:10;
+    const wrong=[parseInt(d.q)+1,parseInt(d.q)-2,parseInt(d.q)*2].map(String).filter(x=>x!==d.q);
+    return {tag:'➗ Дес ÷ Дес', type:'choice',
+      text:`${d.a} ÷ ${d.b} = ?`,
+      options:shuffle([d.q,...wrong.slice(0,3)]), answer:d.q,
+      hint:`Умножь оба числа на ${m}: ${av*m} ÷ ${bv*m} = ${d.q}.`,
+      explain:`${d.a} ÷ ${d.b} = ${av*m} ÷ ${bv*m} = ${d.q}.`};
+  },
+  /* ЗАДАЧА: деление на десятичную дробь в контексте (§48) */
+  function(){
+    const data=[
+      {L:'5,4',p:'0,6',n:'9',item:'проволоки',unit:'м'},
+      {L:'7,2',p:'0,4',n:'18',item:'ленты',unit:'м'},
+      {L:'6,0',p:'0,5',n:'12',item:'верёвки',unit:'м'},
+      {L:'9,6',p:'0,8',n:'12',item:'шланга',unit:'м'},
+      {L:'4,8',p:'0,4',n:'12',item:'кабеля',unit:'м'},
+    ];
+    const q=pick(data);
+    const av=parseFloat(q.L.replace(',','.')), bv=parseFloat(q.p.replace(',','.'));
+    const wrong=[parseInt(q.n)+2,parseInt(q.n)-3,parseInt(q.n)*2].map(String).filter(x=>x!==q.n);
+    return {tag:'🌿 Задача на деление', type:'choice',
+      text:`${q.L} ${q.unit} ${q.item} нарезали кусками по ${q.p} ${q.unit}. Сколько кусков получилось?`,
+      options:shuffle([q.n,...wrong.slice(0,3)]), answer:q.n,
+      hint:`${q.L} ÷ ${q.p}: умножь оба на 10 → ${av*10} ÷ ${bv*10} = ${q.n}.`,
+      explain:`${q.L} ÷ ${q.p} = ${av*10} ÷ ${bv*10} = ${q.n} кусков.`};
+  },
+  /* уравнение: десятичное × x = целое (§45-46) */
+  function(){
+    const data=[{a:'3,6',b:'18',x:'5'},{a:'2,4',b:'12',x:'5'},{a:'4,5',b:'27',x:'6'},{a:'1,6',b:'24',x:'15'},{a:'3,5',b:'28',x:'8'},{a:'0,8',b:'32',x:'40'}];
+    const d=pick(data);
+    const wrong=[parseInt(d.x)+1,parseInt(d.x)-2,parseInt(d.x)*2].filter(v=>v>0&&String(v)!==d.x);
+    return {tag:'🔡 Уравнение', type:'choice',
+      text:`Реши уравнение: ${d.a} · x = ${d.b}`,
+      options:shuffle([d.x,...wrong.slice(0,3).map(String)]), answer:d.x,
+      hint:`x = ${d.b} ÷ ${d.a}. Умножь оба числа на 10: ${parseInt(d.b)*10} ÷ ${parseFloat(d.a.replace(',','.'))*10} = ${d.x}.`,
+      explain:`x = ${d.b} ÷ ${d.a} = ${d.x}.`};
+  }
+];
+
+/* ---- GENERATORS for location 9 (Петра: виды углов, транспортир) ---- */
+const GEN_PETRA = [
+  function(){
+    const types=[['острый',rnd(10,89)],['прямой',90],['тупой',rnd(91,170)],['развёрнутый',180]];
+    const [name,deg]=pick(types);
+    return {tag:'📐 Вид угла', type:'choice',
+      text:`Угол равен ${deg}°. Как он называется?`,
+      visual:angleSVG(deg),
+      options:shuffle(['острый','прямой','тупой','развёрнутый']),
+      answer:name,
+      hint:'Острый < 90°, прямой = 90°, тупой > 90° и < 180°, развёрнутый = 180°.',
+      explain:`${deg}° — ${name} угол.`};
+  },
+  function(){
+    const a=rnd(15,170), b=rnd(15,170);
+    if(a===b) return {tag:'📐 Углы', type:'choice', text:`Угол A = ${a}°, угол B = ${b}°. Сравни.`, options:['=','>','<','нельзя'], answer:'=', hint:'Они одинаковые!', explain:'Равны.'};
+    const correct=a>b?'>':'<';
+    return {tag:'📐 Сравни углы', type:'choice',
+      text:`Угол A = ${a}°, угол B = ${b}°. A … B`,
+      options:['>','<','=','нельзя сравнить'], answer:correct,
+      hint:'Больший угол — тот, у которого больше градусов.',
+      explain:`${a}° ${correct} ${b}°.`};
+  },
+  function(){
+    const a=rnd(20,160), b=180-a;
+    return {tag:'📐 Смежные углы', type:'input',
+      text:`Два смежных угла в сумме дают 180°. Один угол = ${a}°. Найди второй.`,
+      answer:[`${b}`], hint:`180° − ${a}° = ${b}°.`,
+      explain:`180° − ${a}° = ${b}°.`};
+  },
+  function(){
+    const a=rnd(10,80), b=90-a;
+    return {tag:'📐 Прямой угол', type:'input',
+      text:`Прямой угол разбит на два. Один = ${a}°. Чему равен второй?`,
+      answer:[`${b}`], hint:`90° − ${a}° = ${b}°.`,
+      explain:`Прямой угол = 90°. 90° − ${a}° = ${b}°.`};
+  },
+  function(){
+    const angTypes=[['острый',45],['тупой',120],['прямой',90],['острый',30],['тупой',150]];
+    const [name,deg]=pick(angTypes);
+    const wrong=['острый','прямой','тупой','развёрнутый'].filter(x=>x!==name);
+    return {tag:'📐 Определи угол', type:'choice',
+      text:`Транспортир показывает ${deg}°. Это угол:`,
+      visual:angleSVG(deg),
+      options:shuffle([name,...wrong.slice(0,3)]), answer:name,
+      hint:`${deg}° ${deg<90?'< 90°':deg===90?'= 90°':'> 90°'}.`,
+      explain:`${deg}° — ${name} угол.`};
+  },
+  /* ЗАДАЧА: третий угол треугольника */
+  function(){
+    const a=rnd(30,80), b=rnd(20,80-a+20); const c=180-a-b;
+    if(c<=0||c>=180) return {tag:'📐 Углы треугольника', type:'input',
+      text:`Два угла треугольника: 40° и 60°. Найди третий угол.`,
+      answer:['80'], hint:'180° − 40° − 60° = 80°.', explain:'Сумма углов треугольника = 180°. 180 − 40 − 60 = 80°.'};
+    return {tag:'📐 Задача: углы треугольника', type:'input',
+      text:`Два угла треугольника равны ${a}° и ${b}°. Найди третий угол. (Сумма углов = 180°)`,
+      answer:[`${c}`],
+      hint:`180° − ${a}° − ${b}° = ${c}°.`,
+      explain:`Сумма углов треугольника = 180°. ${180} − ${a} − ${b} = ${c}°.`};
+  },
+  /* ЗАДАЧА: смежные углы */
+  function(){
+    const a=rnd(25,155), b=180-a;
+    return {tag:'📐 Задача: смежные углы', type:'input',
+      text:`Два смежных угла образуют развёрнутый угол (180°). Один угол равен ${a}°. Найди второй.`,
+      answer:[`${b}`],
+      hint:`180° − ${a}° = ${b}°.`,
+      explain:`180° − ${a}° = ${b}°.`};
+  },
+  /* УРАВНЕНИЕ с углами */
+  function(){
+    const x=rnd(20,70), a=rnd(10,90-x);
+    const b=x+a;
+    return {tag:'🔡 Уравнение с углами', type:'input',
+      text:`Реши уравнение: x + ${a}° = ${b}°`,
+      answer:[`${x}`],
+      hint:`x = ${b}° − ${a}° = ${x}°.`,
+      explain:`x = ${b} − ${a} = ${x}°.`};
+  }
+];
+
+/* ---- SIGNATURE TASKS (real facts, shown one per round, no repeats) ---- */
+const SIGNATURE = {
+  0: [ /* Эйфелева башня */
+    {
+      tag:'🗼 Факт о башне', type:'input',
+      text:'Эйфелеву башню строили 2 года. Если разделить стройку на 4 равные части (по полгода), какую дробь составляет один такой кусок?',
+      answer:['1/4'], placeholder:'напр. 1/4',
+      hint:'Один кусок из четырёх равных.',
+      explain:'Целое (стройку) разделили на 4 части, берём одну: 1/4. Кстати, башню построили всего за 2 года и 2 месяца!'
+    },
+    {
+      tag:'🗼 Факт о башне', type:'choice',
+      text:'На вершину башни ведут около 1800 ступеней. Турист поднялся ровно на половину. Сколько ступеней он прошёл?',
+      options:['900','1800','450','600'], answer:'900',
+      hint:'Половина — делим на 2: 1800 ÷ 2 = 900.',
+      explain:'1800 ÷ 2 = 900 ступеней. Реальное число — 1792, выбрано в честь года Французской революции!'
+    },
+    {
+      tag:'🗼 Факт о башне', type:'choice',
+      text:'Башня состоит из 3 смотровых этажей. Блогер снял видео на 2 из них. Какую часть этажей он показал?',
+      visual: circleSVG(3,2), type:'choice',
+      options:['2/3','3/2','1/3','1/2'], answer:'2/3',
+      hint:'Снял 2 этажа из 3.',
+      explain:'2 этажа из 3 — это 2/3. А третий, самый верхний, на высоте около 276 метров!'
+    }
+  ],
+  1: [ /* Колизей */
+    {
+      tag:'🏟️ Факт о Колизее', type:'choice',
+      text:'В нижнем ярусе Колизея 80 арок. Реставраторы укрепили половину. Какую дробь они укрепили и сколько это арок?',
+      options:['1/2 — 40 арок','1/4 — 20 арок','1/2 — 60 арок','2/3 — 50 арок'], answer:'1/2 — 40 арок',
+      hint:'Половина от 80 — это 80 : 2.',
+      explain:'Половина (1/2) от 80 арок — это 40 арок. У настоящего Колизея в нижнем ярусе ровно 80 входных арок!'
+    },
+    {
+      tag:'🏟️ Факт о Колизее', type:'choice',
+      text:'Колизей имеет 3 яруса арок. Блогер снял 1 ярус. Какую часть ярусов он показал?',
+      visual: circleSVG(3,1), type:'choice',
+      options:['1/3','3/1','2/3','1/2'], answer:'1/3',
+      hint:'Снял 1 ярус из 3.',
+      explain:'1 ярус из 3 — это 1/3. Колизей действительно построен в три яруса арок, поставленных друг на друга.'
+    },
+    {
+      tag:'🏟️ Факт о Колизее', type:'input',
+      text:'Колизей вмещал примерно 50 000 зрителей. Если занята 1/2 трибун, сколько это зрителей?',
+      answer:['25000','25 000'], placeholder:'число зрителей',
+      hint:'50 ÷ 2 = 25, дописываем нули → 25 000.',
+      explain:'Половина (1/2) от 50 000 — это 25 000 зрителей. Колизей был одним из самых больших амфитеатров древнего мира!'
+    }
+  ]
+};
+
+/* ---- SIGNATURE for new locations ---- */
+Object.assign(SIGNATURE, {
+  2: [
+    {tag:'🗿 Факт о Мачу-Пикчу', type:'choice',
+     text:'Мачу-Пикчу стоит на высоте около 2400 м. Блогер снял 1/3 горы снизу. Сколько метров?',
+     options:['800 м','1200 м','600 м','400 м'], answer:'800 м',
+     hint:'2400 ÷ 3: думаем так — 3 × 800 = 2400, значит ответ 800.',
+     explain:'2400 ÷ 3 = 800 м. Настоящая высота Мачу-Пикчу — 2430 м над уровнем моря!'},
+    {tag:'🗿 Факт о Мачу-Пикчу', type:'input',
+     text:'В Мачу-Пикчу около 200 построек. Блогер снял 3/4 из них. Сколько строений в кадре?',
+     answer:['150'], hint:'3/4 от 200: 200÷4=50, потом ×3.',
+     explain:'200÷4=50, 50×3=150 построек.'},
+    {tag:'🗿 Факт о Мачу-Пикчу', type:'choice',
+     text:'Мачу-Пикчу открыли учёные в 1911 г. Прошло 89 лет до 2000 г. Заполни пропуск: 1911 + ? = 2000.',
+     options:['89','91','79','109'], answer:'89',
+     hint:'2000 − 1911 = ?',
+     explain:'2000 − 1911 = 89 лет.'}
+  ],
+  3: [
+    {tag:'🕌 Факт о Тадж-Махале', type:'input',
+     text:'Тадж-Махал строили 22 года. На стройке работали 20 000 человек. Найди 1/4 от 20 000.',
+     answer:['5000','5 000'], hint:'Считай по шагам: 20 ÷ 4 = 5, дописываем нули → 5 000.',
+     explain:'20 ÷ 4 = 5, значит 20 000 ÷ 4 = 5 000 человек — четверть всех рабочих.'},
+    {tag:'🕌 Факт о Тадж-Махале', type:'choice',
+     text:'Высота Тадж-Махала — 73 м. Переведи 73 в неправильную дробь с знаменателем 1.',
+     options:['73/1','1/73','7/3','730/10'], answer:'73/1',
+     hint:'Любое целое число n = n/1.',
+     explain:'73 = 73/1. Любое целое — дробь с единицей в знаменателе.'},
+    {tag:'🕌 Факт о Тадж-Махале', type:'choice',
+     text:'Тадж-Махал строили с 1632 по 1653 год. Блогер снял 1/2 + 1/4 всего сюжета. Какую часть снял?',
+     options:['3/4','1/2','2/4','1/4'], answer:'3/4',
+     hint:'1/2 + 1/4: приведи к общему знаменателю 4: 2/4 + 1/4 = ?',
+     explain:'1/2 + 1/4 = 2/4 + 1/4 = 3/4.'}
+  ],
+  4: [
+    {tag:'🏯 Факт о Великой стене', type:'input',
+     text:'Длина Великой стены ~21 000 км. Если разделить на 3 равные части, сколько км в каждой?',
+     answer:['7000','7 000'], hint:'21 000 ÷ 3: считай по частям — 21 ÷ 3 = 7, дописываем нули → 7000.',
+     explain:'21 000 ÷ 3 = 7 000 км. Одна треть стены — это как проехать через всю Россию!'},
+    {tag:'🏯 Факт о Великой стене', type:'choice',
+     text:'На строительстве использовали кирпичи длиной 3/8 м и шириной 1/8 м. Сумма длины и ширины?',
+     options:['4/8','2/8','3/8','1/2'], answer:'4/8',
+     hint:'3/8 + 1/8 = ?/8',
+     explain:'3/8 + 1/8 = 4/8 (= 1/2 метра).'},
+    {tag:'🏯 Факт о Великой стене', type:'choice',
+     text:'Блогер сократил дробь 6/9, описывающую часть стены на видео. Что получилось?',
+     options:['2/3','3/4','1/3','6/9'], answer:'2/3',
+     hint:'НОД(6,9)=3. Делим: 6÷3=2, 9÷3=3.',
+     explain:'6/9 = 2/3. НОД(6,9)=3.'}
+  ],
+  5: [
+    {tag:'🗽 Факт о Статуе Свободы', type:'choice',
+     text:'Высота статуи от земли до факела — около 90 м. Найди 2/3 этой высоты.',
+     options:['60 м','30 м','45 м','180 м'], answer:'60 м',
+     hint:'Шаг 1: 90 ÷ 3 = 30 (это 1/3). Шаг 2: 30 × 2 = 60 (это 2/3).',
+     explain:'90 ÷ 3 = 30, 30 × 2 = 60 м. Настоящая высота — 93 м!'},
+    {tag:'🗽 Факт о Статуе Свободы', type:'input',
+     text:'Статуя весит около 200 тонн. Медные листы — 1/5 всего веса. Сколько тонн меди?',
+     answer:['40'], hint:'1/5 от 200: 200 ÷ 5 = ? Думай: 5 × 40 = 200.',
+     explain:'200 ÷ 5 = 40 тонн меди. Реальный вес статуи — 225 тонн!'},
+    {tag:'🗽 Факт о Статуе Свободы', type:'choice',
+     text:'Внутри статуи около 360 ступеней. Ты поднялся на 3/4 пути. Сколько ступеней прошёл?',
+     options:['270','180','90','360'], answer:'270',
+     hint:'Шаг 1: 360 ÷ 4 = 90 (это 1/4). Шаг 2: 90 × 3 = 270 (это 3/4).',
+     explain:'360 ÷ 4 = 90, 90 × 3 = 270 ступеней. Реальных ступеней — 354!'}
+  ],
+  6: [
+    {tag:'✝️ Факт о Христе-Искупителе', type:'choice',
+     text:'Высота статуи Христа-Искупителя — 38 м. Запиши как десятичную с нулями в десятых.',
+     options:['38,0','3,8','380','0,38'], answer:'38,0',
+     hint:'Целое число 38 = 38,0.',
+     explain:'38 = 38,0. Ноль десятых — дробная часть равна нулю.'},
+    {tag:'✝️ Факт о Христе-Искупителе', type:'input',
+     text:'Размах рук статуи — 28 м. Половина размаха — ?',
+     answer:['14','14,0'], hint:'28 ÷ 2 = ?',
+     explain:'28 ÷ 2 = 14 м.'},
+    {tag:'✝️ Факт о Христе-Искупителе', type:'choice',
+     text:'Статую строили 5 лет. Как записать 5 сотых в виде десятичной дроби?',
+     options:['0,05','0,5','0,005','5,0'], answer:'0,05',
+     hint:'5÷100: сдвигаем запятую на 2 влево.',
+     explain:'5/100 = 0,05.'}
+  ],
+  7: [
+    {tag:'🏛️ Факт о Парфеноне', type:'choice',
+     text:'У Парфенона 46 внешних колонн. Реставраторы восстановили 23,5 колонны. Округли до целых.',
+     options:['24','23','22','25'], answer:'24',
+     hint:'23,5: десятых 5, округляем вверх.',
+     explain:'23,5 → 24 (десятые ≥ 5).'},
+    {tag:'🏛️ Факт о Парфеноне', type:'input',
+     text:'Высота колонн 10,4 м. Вычти основание 0,4 м. Чему равна чистая высота колонны?',
+     answer:['10','10,0'], hint:'10,4 − 0,4 = ?',
+     explain:'10,4 − 0,4 = 10,0 = 10 м.'},
+    {tag:'🏛️ Факт о Парфеноне', type:'choice',
+     text:'Парфенон строили в 447–432 гг. до н.э. Сколько лет шло строительство?',
+     options:['15','12','22','10'], answer:'15',
+     hint:'447 − 432 = ?',
+     explain:'447 − 432 = 15 лет.'}
+  ],
+  8: [
+    {tag:'🔺 Факт о пирамидах', type:'choice',
+     text:'Блок пирамиды весит 2,5 тонны. Сколько весят 4 блока?',
+     options:['10','8','12','2,5'], answer:'10',
+     hint:'2,5 × 4: считай как 25×4=100, потом ÷10.',
+     explain:'2,5 × 4 = 10 тонн.'},
+    {tag:'🔺 Факт о пирамидах', type:'input',
+     text:'Высота пирамиды Хеопса — 138,5 м. Запиши целую часть этого числа.',
+     answer:['138'], hint:'В числе 138,5 целая часть — до запятой.',
+     explain:'Целая часть числа 138,5 — это 138.'},
+    {tag:'🔺 Факт о пирамидах', type:'choice',
+     text:'Пирамида весит 6,5 млн тонн. Сколько весят 2 таких пирамиды?',
+     options:['13,0 млн т','12,0 млн т','6,5 млн т','3,25 млн т'], answer:'13,0 млн т',
+     hint:'6,5 × 2 = ?',
+     explain:'6,5 × 2 = 13,0 млн тонн.'}
+  ],
+  9: [
+    {tag:'🌹 Факт о Петре', type:'choice',
+     text:'Вход в гробницу Петры — арка с углом 90°. Как называется такой угол?',
+     options:['прямой','острый','тупой','развёрнутый'], answer:'прямой',
+     hint:'90° — прямой угол.',
+     explain:'90° — прямой угол. Именно прямые углы придают Петре монументальность!'},
+    {tag:'🌹 Факт о Петре', type:'input',
+     text:'Два угла крыши = 60° и 60°. Третий угол? (сумма углов треугольника = 180°)',
+     answer:['60'], hint:'180° − 60° − 60° = ?',
+     explain:'180° − 60° − 60° = 60°. Равносторонний треугольник!'},
+    {tag:'🌹 Факт о Петре', type:'choice',
+     text:'Резчик камня работал под углом 45°. Это угол:',
+     options:['острый','прямой','тупой','нулевой'], answer:'острый',
+     hint:'45° < 90°.',
+     explain:'45° < 90° — острый угол.'}
+  ]
+});
+
+/* ---- Build 5 questions for a location for a given round ---- */
+const GENERATORS = { 0:GEN_EIFFEL, 1:GEN_COLOSSEUM, 2:GEN_MACHU, 3:GEN_TAJ, 4:GEN_WALL, 5:GEN_LIBERTY, 6:GEN_CHRIST, 7:GEN_PARTHENON, 8:GEN_PYRAMIDS, 9:GEN_PETRA };
+function buildLocationQuestions(locIndex, round){
+  const gens = GENERATORS[locIndex] || [];
+  const sig = SIGNATURE[locIndex] || [];
+  // 1 signature task, rotating by round (no repeat across consecutive rounds)
+  const out = [];
+  if(sig.length){ out.push(sig[round % sig.length]); }
+  // fill the rest (up to 5) with fresh generated tasks, varied types
+  const gshuffled = shuffle(gens);
+  let gi=0;
+  while(out.length<5){
+    const gen = gshuffled[gi % gshuffled.length];
+    out.push(gen());
+    gi++;
+  }
+  return shuffle(out);
+}
+/* current location's questions (rebuilt each play) */
+let QUESTIONS = [];
+
+/* ---- SVG helpers ---- */
+function circleSVG(parts, filled){
+  const r=70, cx=85, cy=85; let segs='';
+  for(let i=0;i<parts;i++){
+    const a0=(i/parts)*2*Math.PI - Math.PI/2;
+    const a1=((i+1)/parts)*2*Math.PI - Math.PI/2;
+    const x0=cx+r*Math.cos(a0), y0=cy+r*Math.sin(a0);
+    const x1=cx+r*Math.cos(a1), y1=cy+r*Math.sin(a1);
+    const fill = i<filled ? '#ff8a5c' : '#fff';
+    segs+=`<path d="M${cx},${cy} L${x0.toFixed(1)},${y0.toFixed(1)} A${r},${r} 0 0,1 ${x1.toFixed(1)},${y1.toFixed(1)} Z" fill="${fill}" stroke="#3a86ff" stroke-width="2.5"/>`;
+  }
+  return `<svg viewBox="0 0 170 170" width="180" height="180">${segs}</svg>`;
+}
+function numberlineSVG(parts, point){
+  const x0=18, x1=252, y=46, len=x1-x0; let ticks='';
+  for(let i=0;i<=parts;i++){
+    const x=x0+len*(i/parts); const tall=(i===0||i===parts);
+    ticks+=`<line x1="${x}" y1="${y-(tall?14:8)}" x2="${x}" y2="${y+(tall?14:8)}" stroke="#3a86ff" stroke-width="${tall?3:2}"/>`;
+  }
+  const px=x0+len*(point/parts);
+  return `<svg viewBox="0 0 270 80" width="270" height="80">
+    <line x1="${x0}" y1="${y}" x2="${x1}" y2="${y}" stroke="#3a86ff" stroke-width="3"/>
+    ${ticks}
+    <text x="${x0}" y="${y+34}" font-size="15" fill="#1a2238" text-anchor="middle" font-weight="700">0</text>
+    <text x="${x1}" y="${y+34}" font-size="15" fill="#1a2238" text-anchor="middle" font-weight="700">1</text>
+    <circle cx="${px}" cy="${y}" r="9" fill="#ff6b6b" stroke="#fff" stroke-width="3"/>
+    <text x="${px}" y="${y-22}" font-size="22" fill="#ff6b6b" text-anchor="middle" font-weight="800">?</text>
+  </svg>`;
+}
+function compareSVG(){
+  return `<svg viewBox="0 0 270 130" width="270" height="130">
+    ${pieAt(60,55,'1/3',3,1)}
+    ${pieAt(210,55,'1/6',6,1)}
+  </svg>`;
+}
+function compareBarsSVG(n1,d1,n2,d2){
+  function bar(y,n,d,label){
+    const x=20, w=180, h=26; let cells='';
+    for(let i=0;i<d;i++){
+      const cw=w/d, cx=x+i*cw;
+      cells+=`<rect x="${cx.toFixed(1)}" y="${y}" width="${cw.toFixed(1)}" height="${h}" fill="${i<n?'#ff8a5c':'#fff'}" stroke="#3a86ff" stroke-width="2"/>`;
+    }
+    return cells+`<text x="${x+w+12}" y="${y+18}" font-size="16" fill="#1a2238" font-weight="800">${label}</text>`;
+  }
+  return `<svg viewBox="0 0 270 90" width="270" height="90">
+    ${bar(8, n1,d1, n1+'/'+d1)}
+    ${bar(50, n2,d2, n2+'/'+d2)}
+  </svg>`;
+}
+function angleSVG(deg){
+  const r=65, cx=30, cy=105;
+  const rad=(180-Math.min(deg,179))*Math.PI/180;
+  const x2=cx+r*Math.cos(rad), y2=cy-r*Math.sin(rad);
+  const arcR=28;
+  const ax=cx+arcR*Math.cos(rad), ay=cy-arcR*Math.sin(rad);
+  const largeArc=deg>180?1:0;
+  const arcPath=deg>=175?'':`<path d="M${cx+arcR},${cy} A${arcR},${arcR} 0 ${largeArc},0 ${ax.toFixed(1)},${ay.toFixed(1)}" fill="none" stroke="#ff8a5c" stroke-width="2.5"/>`;
+  const sq=deg===90?`<rect x="${cx+8}" y="${cy-16}" width="12" height="12" fill="none" stroke="#ff8a5c" stroke-width="2.5"/>`:'';
+  return `<svg viewBox="0 0 220 120" width="220" height="120">
+    <line x1="${cx}" y1="${cy}" x2="${cx+r}" y2="${cy}" stroke="#3a86ff" stroke-width="3" stroke-linecap="round"/>
+    <line x1="${cx}" y1="${cy}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="#3a86ff" stroke-width="3" stroke-linecap="round"/>
+    ${sq}${arcPath}
+    <text x="${cx+55}" y="${cy-20}" font-size="20" fill="#ff6b6b" font-weight="800">${deg}°</text>
+  </svg>`;
+}
+function pieAt(cx,cy,label,parts,filled){
+  const r=42; let segs='';
+  for(let i=0;i<parts;i++){
+    const a0=(i/parts)*2*Math.PI-Math.PI/2, a1=((i+1)/parts)*2*Math.PI-Math.PI/2;
+    const x0=cx+r*Math.cos(a0), y0=cy+r*Math.sin(a0), x1=cx+r*Math.cos(a1), y1=cy+r*Math.sin(a1);
+    segs+=`<path d="M${cx},${cy} L${x0.toFixed(1)},${y0.toFixed(1)} A${r},${r} 0 0,1 ${x1.toFixed(1)},${y1.toFixed(1)} Z" fill="${i<filled?'#ff8a5c':'#fff'}" stroke="#3a86ff" stroke-width="2.5"/>`;
+  }
+  return segs+`<text x="${cx}" y="${cy+r+22}" font-size="16" fill="#1a2238" text-anchor="middle" font-weight="800">${label}</text>`;
+}
+
+/* ============ LOCATION INTRO ============ */
+function renderLoc(){
+  const loc=LOCATIONS[currentLoc];
+  const total=locLength(currentLoc);
+  const heroEl=document.getElementById('locEmoji');
+  if(LOC_SVG_HERO[currentLoc]){ heroEl.innerHTML=LOC_SVG_HERO[currentLoc]; }
+  else { heroEl.textContent=loc.emoji; }
+  document.getElementById('locName').textContent=loc.name;
+  document.getElementById('locFlag').textContent=`${loc.flag} ${loc.sub}`;
+  const prog=locProgress(currentLoc);
+  const done = locDone(currentLoc);
+  const dayP=document.querySelector('#loc .daycard p');
+  if(done){
+    dayP.innerHTML=`Локация пройдена! 🎉 Можно <b>пройти заново</b> — задания будут новые, не такие, как раньше.`;
+  } else {
+    dayP.innerHTML=`Сегодня снимаем <b>${total} заданий</b>. Реши их — и кадры разлетятся по сети!`;
+  }
+  const pills=document.getElementById('locPills'); pills.innerHTML='';
+  for(let i=0;i<total;i++){
+    const d=document.createElement('div'); d.className='pill';
+    if(i<prog) d.classList.add('filled');
+    else if(i===prog) d.classList.add('cur');
+    pills.appendChild(d);
+  }
+  const btn=document.getElementById('startDayBtn');
+  const nextBtn=document.getElementById('nextLocBtn');
+  if(done){
+    btn.textContent='Пройти заново (новые задания) 🔁';
+    if(currentLoc+1 < TOTAL_LOCATIONS){
+      nextBtn.style.display='flex';
+      nextBtn.textContent=`Дальше: ${LOCATIONS[currentLoc+1].name} →`;
+    } else { nextBtn.style.display='none'; }
+  } else if(prog>0){
+    btn.textContent='Продолжить съёмку 🎥'; nextBtn.style.display='none';
+  } else {
+    btn.textContent='Начать съёмку 🎥'; nextBtn.style.display='none';
+  }
+}
+
+/* ============ QUIZ FLOW ============ */
+let dayGain=0, curIndex=0, attempts=0, usedHint=false;
+const DAY_LIMIT=5;
+function limitReached(){ return state.limit!=='off' && state.dayCount>=DAY_LIMIT; }
+
+function startDay(){
+  refreshDay();
+  // hard/soft limit already reached today?
+  if(limitReached()){ showLimitGate(); return; }
+  if(locDone(currentLoc)){
+    // replay: advance round so new (different) questions are generated
+    state.rounds[currentLoc] = locRound(currentLoc) + 1;
+    state.progress[currentLoc] = 0;
+    save();
+    QUESTIONS = buildLocationQuestions(currentLoc, locRound(currentLoc));
+    locQCache[currentLoc] = QUESTIONS;
+  } else if(!QUESTIONS || QUESTIONS.length===0){
+    QUESTIONS = locQCache[currentLoc] || buildLocationQuestions(currentLoc, locRound(currentLoc));
+    locQCache[currentLoc] = QUESTIONS;
+  }
+  dayGain=0; _perfectCurrentLoc=true;
+  go('quiz');
+  loadQuestion(locProgress(currentLoc));
+}
+/* show a "come back tomorrow" gate when the daily limit blocks a new session */
+function showLimitGate(){
+  go('dayend');
+  document.getElementById('dayEndEmoji').textContent='😴';
+  document.getElementById('dayEndTitle').textContent='На сегодня всё!';
+  document.getElementById('dayEndMsg').textContent='Ты уже снял 5 заданий за сегодня. Возвращайся завтра за новыми кадрами!';
+  document.getElementById('dayEndGain').textContent='✓';
+  document.querySelector('#dayend .summary .cap').textContent='съёмочный день завершён';
+  const btn=document.getElementById('dayEndBtn');
+  btn.textContent='На карту 🗺️'; btn.style.display='flex'; btn.onclick=()=>go('map');
+  document.getElementById('dayEndMapBtn').style.display='none';
+}
+function goNextLoc(){
+  if(currentLoc+1 < TOTAL_LOCATIONS && locUnlocked(currentLoc+1)){
+    openLocation(currentLoc+1);
+  }
+}
+function fmtFrac(t){
+  if(!t && t!==0) return '';
+  let r=String(t);
+  // mixed numbers first: "4 2/3"
+  r=r.replace(/(\d+)\s+(\d+)\/(\d+)/g,(_,w,n,d)=>
+    `<span class="mw">${w}<span class="fi"><span class="fn">${n}</span><span class="fb"></span><span class="fd">${d}</span></span></span>`);
+  // standalone fractions: "2/3"
+  r=r.replace(/(\d+)\/(\d+)/g,(_,n,d)=>
+    `<span class="fi"><span class="fn">${n}</span><span class="fb"></span><span class="fd">${d}</span></span>`);
+  return r;
+}
+function loadQuestion(idx){
+  curIndex=idx; attempts=0; usedHint=false;
+  const q=QUESTIONS[idx];
+  document.getElementById('qTag').textContent=q.tag;
+  document.getElementById('qText').innerHTML=fmtFrac(q.text);
+  document.getElementById('qVisual').innerHTML=q.visual||'';
+  document.getElementById('hintBubble').classList.remove('show');
+  document.getElementById('feedback').classList.remove('up');
+  // progress
+  document.getElementById('qCount').textContent=`${idx+1} / ${QUESTIONS.length}`;
+  document.getElementById('qBar').style.width=`${(idx/QUESTIONS.length)*100}%`;
+  // interaction
+  const box=document.getElementById('qInteract'); box.innerHTML='';
+  if(q.type==='choice'){
+    const grid=document.createElement('div'); grid.className='options';
+    q.options.forEach(opt=>{
+      const b=document.createElement('div'); b.className='opt'; b.innerHTML=fmtFrac(opt); b.dataset.opt=opt;
+      b.onclick=()=>chooseOpt(b,opt,q); grid.appendChild(b);
+    });
+    box.appendChild(grid);
+    box.insertAdjacentHTML('beforeend', hintBtnHTML());
+  }else{
+    // decide input style: fraction (numerator/denominator) or single number
+    const answers=(Array.isArray(q.answer)?q.answer:[q.answer]);
+    const isFraction = answers.some(a=>String(a).includes('/'));
+    if(isFraction){
+      box.innerHTML=`
+        <div class="frac-input">
+          <input class="frac-cell" id="ansNum" inputmode="none" readonly maxlength="2" autocomplete="off" placeholder="?" onclick="kpFocus(this)">
+          <div class="frac-bar"></div>
+          <input class="frac-cell" id="ansDen" inputmode="none" readonly maxlength="2" autocomplete="off" placeholder="?" onclick="kpFocus(this)">
+        </div>
+        <div class="hint-row">
+          <button class="btn ghost" onclick="askHint()">💡 Подсказка</button>
+        </div>`;
+      // auto-activate numerator
+      setTimeout(()=>{ const n=document.getElementById('ansNum'); if(n) kpFocus(n); },80);
+    } else {
+      box.innerHTML=`
+        <div class="answer-area">
+          <input class="answer-input" id="ansInput" inputmode="none" readonly autocomplete="off" placeholder="${q.placeholder||'введи число'}" onclick="kpFocus(this)">
+        </div>
+        <div class="hint-row">
+          <button class="btn ghost" onclick="askHint()">💡 Подсказка</button>
+        </div>`;
+      setTimeout(()=>{ const i=document.getElementById('ansInput'); if(i) kpFocus(i); },80);
+    }
+  }
+}
+function hintBtnHTML(){
+  return `<div class="hint-row"><button class="btn ghost" onclick="askHint()">💡 Подсказка</button></div>`;
+}
+function askHint(){
+  usedHint=true;
+  const q=QUESTIONS[curIndex];
+  const hb=document.getElementById('hintBubble');
+  hb.innerHTML='💡 '+fmtFrac(q.hint); hb.classList.add('show');
+}
+function normalize(s){ return (s||'').trim().toLowerCase().replace(/\s+/g,'').replace(/\\/g,'/').replace(',','.'); }
+
+function chooseOpt(el,opt,q){
+  const correct = normalize(opt)===normalize(q.answer);
+  if(correct){
+    el.classList.add('correct');
+    document.querySelectorAll('.opt').forEach(o=>o.classList.add('disabled'));
+    resolve(true);
+  }else{
+    el.classList.add('wrong','disabled'); attempts++;
+    if(attempts>=2){
+      // reveal correct & move on
+      document.querySelectorAll('.opt').forEach(o=>{
+        if(normalize(o.dataset.opt||o.textContent)===normalize(q.answer)) o.classList.add('correct');
+        o.classList.add('disabled');
+      });
+      resolve(false);
+    }
+  }
+}
+function checkInput(){
+  const q=QUESTIONS[curIndex];
+  const answers=(Array.isArray(q.answer)?q.answer:[q.answer]).map(normalize);
+  const num=document.getElementById('ansNum');
+  const den=document.getElementById('ansDen');
+  const single=document.getElementById('ansInput');
+  let val, cells;
+  if(num && den){
+    if(num.value.trim()==='' || den.value.trim()===''){ return; }
+    val=normalize(num.value+'/'+den.value);
+    cells=[num,den];
+  } else {
+    if(single.value.trim()===''){ return; }
+    val=normalize(single.value);
+    cells=[single];
+  }
+  if(answers.includes(val)){
+    cells.forEach(c=>{ c.classList.add('correct'); c.disabled=true; });
+    resolve(true);
+  }else{
+    cells.forEach(c=>c.classList.add('wrong')); attempts++;
+    if(attempts>=2){ cells.forEach(c=>c.disabled=true); resolve(false); }
+    else{ setTimeout(()=>cells.forEach(c=>c.classList.remove('wrong')),600); }
+  }
+}
+
+function resolve(success){
+  hideKeypad();
+  const q=QUESTIONS[curIndex];
+  let gain=0;
+  if(success){
+    gain = usedHint ? 25 : (attempts===0 ? 100 : 50);
+    if(attempts===0 && !usedHint) unlockAchievement('clean_shot');
+  } else {
+    _perfectCurrentLoc=false;
+  }
+  // award
+  state.followers += gain; dayGain += gain;
+  state.dayCount = (state.dayCount||0) + 1;
+  state.progress[currentLoc] = Math.max(locProgress(currentLoc), curIndex+1);
+  save(); syncFollowers(); checkAchievements();
+  // feedback
+  const fb=document.getElementById('feedback');
+  document.getElementById('fbEmoji').textContent = success ? (attempts===0&&!usedHint?'🎉':'👍') : '🙂';
+  document.getElementById('fbTitle').textContent = success ? (attempts===0&&!usedHint?'Отличный кадр!':'Получилось!') : 'Бывает! Запомним';
+  document.getElementById('fbGain').textContent = gain>0 ? `+${gain} подписчиков` : 'Идём дальше';
+  document.getElementById('fbGain').style.display = gain>0?'block':'none';
+  document.getElementById('fbExplain').innerHTML = fmtFrac(q.explain);
+  if(success && gain>0) spawnGain(gain);
+  setTimeout(()=>fb.classList.add('up'), 420);
+}
+
+function spawnGain(g){
+  const app=document.getElementById('app');
+  const f=document.createElement('div'); f.className='floatgain'; f.textContent=`+${g} 👤`;
+  f.style.left='60px'; f.style.top='70px'; app.appendChild(f);
+  setTimeout(()=>f.remove(),1100);
+}
+
+function nextQuestion(){
+  const finishedLocation = locProgress(currentLoc)>=locLength(currentLoc);
+  const hitLimit = limitReached();
+
+  if(finishedLocation){
+    // award location completion, then decide about the daily limit
+    endDay(true);
+    return;
+  }
+  if(hitLimit){ endDay(false); return; }
+  loadQuestion(locProgress(currentLoc));
+}
+
+/* ============ ON-SCREEN KEYPAD ============ */
+let _kpTarget = null;
+function kpFocus(el){
+  _kpTarget = el;
+  document.querySelectorAll('.frac-cell,.answer-input').forEach(i=>i.classList.remove('kp-on'));
+  el.classList.add('kp-on');
+  document.getElementById('keypad').classList.add('show');
+  const qb=document.querySelector('.q-body'); if(qb) qb.classList.add('kp-open');
+}
+function hideKeypad(){
+  document.getElementById('keypad').classList.remove('show');
+  document.querySelectorAll('.frac-cell,.answer-input').forEach(i=>i.classList.remove('kp-on'));
+  const qb=document.querySelector('.q-body'); if(qb) qb.classList.remove('kp-open');
+  _kpTarget = null;
+}
+function kpPress(val){
+  if(val==='ok'){ checkInput(); return; }
+  if(!_kpTarget) return;
+  if(val==='del'){
+    _kpTarget.value = _kpTarget.value.slice(0,-1);
+  } else {
+    const max = parseInt(_kpTarget.getAttribute('maxlength')||'6');
+    if(_kpTarget.value.length >= max) return;
+    if(val===',' && _kpTarget.value.includes(',')) return; // только одна запятая
+    _kpTarget.value += val;
+    // auto-jump: after typing numerator, switch to denominator
+    const num=document.getElementById('ansNum'), den=document.getElementById('ansDen');
+    if(_kpTarget===num && num && den && num.value.length>=1 && num.value.length>=max-1){
+      setTimeout(()=>kpFocus(den), 120);
+    }
+  }
+  _kpTarget.classList.remove('wrong','correct');
+}
+
+/* ============ DAY END ============ */
+function endDay(locationDone){
+  go('dayend');
+  const gainEl=document.getElementById('dayEndGain');
+  document.querySelector('#dayend .summary .cap').textContent='подписчиков за сегодня';
+  gainEl.textContent='+'+dayGain.toLocaleString('ru-RU');
+  const hitLimit = limitReached();
+  const mapBtn=document.getElementById('dayEndMapBtn');
+  mapBtn.style.display='flex'; // default visible
+
+  if(locationDone){
+    state.followers += 500; save();
+    checkHype(); checkAchievements();
+    const loc=LOCATIONS[currentLoc];
+    const allDone = Object.keys(state.progress).every(k=>locDone(Number(k)));
+    document.getElementById('dayEndEmoji').textContent='🏆';
+    document.getElementById('dayEndTitle').textContent='Локация пройдена!';
+    document.getElementById('dayEndMsg').innerHTML=`${loc.name} в кадре! ${loc.flag} Ты получаешь флаг страны и бонус <b>+500</b> за вирусное видео!`;
+    gainEl.textContent='+'+(dayGain+500).toLocaleString('ru-RU');
+    const hasNext = currentLoc+1 < TOTAL_LOCATIONS;
+    const btn=document.getElementById('dayEndBtn');
+    if(allDone){
+      // show final screen after a short delay so the dayend screen flashes first
+      btn.textContent='Финал 🎉'; btn.style.display='flex'; btn.onclick=()=>go('final');
+      mapBtn.style.display='none';
+    } else if(hasNext && hitLimit && state.limit==='hard'){
+      document.getElementById('dayEndMsg').innerHTML += '<br><br>На сегодня съёмка окончена — возвращайся завтра, чтобы открыть следующую локацию!';
+      btn.textContent='На карту 🗺️'; btn.style.display='flex'; btn.onclick=()=>go('map');
+      mapBtn.style.display='none';
+    } else if(hasNext){
+      btn.textContent = (hitLimit && state.limit==='soft') ? 'Снять ещё (следующая локация) →' : 'Следующая локация →';
+      btn.style.display='flex'; btn.onclick=afterDay;
+    } else {
+      btn.textContent='Забрать награду 🎁'; btn.style.display='flex'; btn.onclick=afterDay;
+    }
+    confetti();
+  }else{
+    document.getElementById('dayEndEmoji').textContent='🎬';
+    document.getElementById('dayEndTitle').textContent='Съёмка завершена!';
+    const btn=document.getElementById('dayEndBtn');
+    if(state.limit==='soft'){
+      document.getElementById('dayEndMsg').textContent='На сегодня хватит — отличная работа! Можно сделать паузу до завтра или снять ещё немного.';
+      btn.textContent='Снять ещё 🎥'; btn.style.display='flex'; btn.onclick=afterDay;
+    } else {
+      document.getElementById('dayEndMsg').textContent='На сегодня съёмка закончена. Возвращайся завтра за новыми кадрами!';
+      btn.textContent='На карту 🗺️'; btn.style.display='flex'; btn.onclick=()=>go('map');
+      mapBtn.style.display='none';
+    }
+  }
+}
+function afterDay(){
+  refreshDay();
+  if(locDone(currentLoc)){
+    if(currentLoc+1 < TOTAL_LOCATIONS && locUnlocked(currentLoc+1)){
+      openLocation(currentLoc+1);
+    } else {
+      go('map');
+    }
+    return;
+  }
+  // soft limit: continue another session in the same location
+  dayGain=0;
+  go('quiz'); loadQuestion(locProgress(currentLoc));
+}
+
+function confetti(){
+  const app=document.getElementById('app');
+  const colors=['#ffc94d','#ff6b6b','#27c498','#3a86ff','#ff8a5c'];
+  for(let i=0;i<40;i++){
+    const c=document.createElement('div'); c.className='confetti';
+    c.style.left=Math.random()*100+'%';
+    c.style.background=colors[i%colors.length];
+    c.style.animation=`fall ${1.5+Math.random()*1.5}s linear ${Math.random()*0.5}s forwards`;
+    app.appendChild(c); setTimeout(()=>c.remove(),3500);
+  }
+}
+
+/* ============ SETTINGS ============ */
+function openSheet(){ refreshDay(); document.getElementById('dayCountLabel').textContent=state.dayCount||0; document.getElementById('sheetBg').classList.add('show'); document.getElementById('sheet').classList.add('show'); syncLimitSeg(); }
+function resetDay(){
+  state.dayCount=0; state.dayStamp=todayStr(); save();
+  document.getElementById('dayCountLabel').textContent=0;
+}
+function closeSheet(){ document.getElementById('sheetBg').classList.remove('show'); document.getElementById('sheet').classList.remove('show'); }
+function syncLimitSeg(){
+  document.querySelectorAll('#limitSeg button').forEach(b=>b.classList.toggle('on', b.dataset.lim===state.limit));
+}
+document.querySelectorAll('#limitSeg button').forEach(b=>{
+  b.onclick=()=>{ state.limit=b.dataset.lim; save(); syncLimitSeg(); };
+});
+function resetProgress(){
+  if(confirm('Сбросить весь прогресс и начать заново?')){
+    state={followers:0, progress:EMPTY_PROGRESS(), rounds:EMPTY_PROGRESS(), limit:state.limit, dayStamp:todayStr(), dayCount:0, achievements:[], gearLevel:0};
+    currentLoc=0; QUESTIONS=[];
+    save(); syncFollowers(); syncAvatar(); closeSheet(); renderMap();
+    go('welcome'); showSlide(0);
+  }
+}
+
+/* init */
+syncFollowers();
+syncAvatar();
+</script>
+</body>
+</html>
