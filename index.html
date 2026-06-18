@@ -38,6 +38,18 @@
       border:1px solid rgba(255,255,255,.6);
     }
   }
+  /* ---- DESKTOP: comfortable wider layout ---- */
+  @media (min-width:660px){
+    #app{
+      max-width:620px;
+      height:min(780px, 100dvh);
+    }
+    .opt{ font-size:17px; padding:13px 10px }
+    .answer-input{ font-size:20px; padding:13px }
+    .q-text{ font-size:18px; line-height:1.5 }
+    .q-body{ padding:14px 20px 20px }
+    .q-body.kp-open{ padding-bottom:205px }
+  }
   .screen{
     position:absolute; inset:0; display:flex; flex-direction:column;
     opacity:0; pointer-events:none; transform:translateX(24px);
@@ -166,7 +178,7 @@
   .q-bar i{display:block; height:100%; background:linear-gradient(90deg,var(--gold),var(--sunset)); border-radius:6px; transition:width .4s ease; width:0}
   .q-count{font-size:13px; font-weight:700; color:var(--muted); font-variant-numeric:tabular-nums}
   .q-body{flex:1; display:flex; flex-direction:column; padding:18px 22px 28px; overflow-y:auto; -webkit-overflow-scrolling:touch}
-  .q-body.kp-open{padding-bottom:260px}
+  .q-body.kp-open{padding-bottom:210px}
   .q-tag{display:inline-flex; align-self:flex-start; gap:6px; align-items:center; background:var(--soft); color:var(--sky-deep);
     font-size:12px; font-weight:700; padding:6px 12px; border-radius:30px; margin-bottom:14px}
   .q-text{font-size:21px; line-height:1.6; font-weight:600}
@@ -194,6 +206,56 @@
   .opt.correct{border-color:var(--mint); background:#e8fbf4; color:#11936b}
   .opt.wrong{border-color:var(--coral); background:#ffeceb; color:#d8443b}
   .opt.disabled{pointer-events:none; opacity:.55}
+
+  /* equation step-by-step scaffold */
+  .eq-step-box{
+    background:linear-gradient(135deg,rgba(58,134,255,.09),rgba(111,92,255,.07));
+    border:1.5px solid rgba(58,134,255,.22); border-radius:14px;
+    padding:11px 14px; margin-bottom:12px;
+  }
+  .eq-step-lbl{font-size:11px; font-weight:800; color:var(--sky-deep);
+    letter-spacing:.6px; text-transform:uppercase; margin-bottom:4px}
+  .eq-step-expr{font-size:18px; font-weight:700; color:var(--ink); line-height:1.45}
+  .sign-blank{
+    display:inline-block; min-width:30px; padding:1px 8px;
+    background:rgba(255,180,0,.18); border:2px dashed #e09000;
+    border-radius:9px; text-align:center; font-size:22px; font-weight:900;
+    color:#b06000; vertical-align:middle; cursor:default;
+  }
+  .sign-correct{
+    background:rgba(0,190,80,.15)!important; border:2px solid #00b050!important;
+    color:#007038!important;
+  }
+  .sign-btns{display:flex; gap:10px; margin-top:10px;}
+  .sign-btn{
+    flex:1; height:50px; border-radius:14px;
+    border:2px solid rgba(58,134,255,.28);
+    background:rgba(255,255,255,.85);
+    font-size:26px; font-weight:900; cursor:pointer; color:var(--ink);
+    transition:background .15s, transform .1s;
+  }
+  .sign-btn:active{background:rgba(58,134,255,.15); transform:scale(.95);}
+  .sign-fb{font-size:12.5px; font-weight:700; margin-top:7px; min-height:0; line-height:1.4;}
+  .sign-fb-ok{color:#007038;}
+  .sign-fb-err{color:#c02828;}
+  .me-opt-btn{
+    width:100%; padding:14px 16px; border-radius:16px;
+    border:2px solid rgba(58,134,255,.25); background:rgba(255,255,255,.88);
+    font-size:15px; font-weight:600; cursor:pointer; color:var(--ink);
+    text-align:left; transition:background .15s;
+  }
+  .me-opt-btn:hover:not(:disabled){background:rgba(58,134,255,.1);}
+  .me-opt-btn:disabled{opacity:.6;cursor:default;}
+  .me-input{
+    width:100%; padding:14px 16px; border-radius:16px;
+    border:2px solid rgba(58,134,255,.3); background:rgba(255,255,255,.9);
+    font-size:16px; font-weight:600; color:var(--ink); outline:none; box-sizing:border-box;
+  }
+  .me-check-btn{
+    width:100%; padding:14px; border-radius:16px; border:none;
+    background:var(--accent); color:#fff; font-size:16px; font-weight:700;
+    cursor:pointer; margin-top:8px;
+  }
 
   .answer-area{margin-top:18px}
   .answer-input{
@@ -282,22 +344,22 @@
   .keypad{
     position:absolute; left:0; right:0; bottom:0; z-index:32;
     background:#dde5f7; border-top:1.5px solid #c4cfe8;
-    padding:8px 10px calc(10px + env(safe-area-inset-bottom));
+    padding:6px 8px calc(6px + env(safe-area-inset-bottom));
     display:none;
   }
   .keypad.show{display:block}
-  .kp-row{display:flex; gap:7px; margin-bottom:7px}
+  .kp-row{display:flex; gap:5px; margin-bottom:5px}
   .kp-row:last-child{margin-bottom:0}
   .kp-btn{
-    flex:1; height:54px; border:none; border-radius:14px;
-    background:#fff; font-size:24px; font-weight:800; color:var(--ink);
+    flex:1; height:44px; border:none; border-radius:12px;
+    background:#fff; font-size:20px; font-weight:800; color:var(--ink);
     cursor:pointer; box-shadow:0 2px 6px rgba(26,34,56,.10);
     transition:transform .1s, background .1s;
   }
   .kp-btn:active{transform:scale(.91); background:#eef2fc}
-  .kp-del{background:#c8d0e8; font-size:20px; color:var(--ink)}
-  .kp-comma{background:#e8eaf6; font-size:22px; font-weight:700; color:var(--ink)}
-  .kp-ok{background:linear-gradient(135deg,var(--mint),#1fa982); color:#fff; font-size:17px; font-weight:700}
+  .kp-del{background:#c8d0e8; font-size:17px; color:var(--ink)}
+  .kp-comma{background:#e8eaf6; font-size:19px; font-weight:700; color:var(--ink)}
+  .kp-ok{background:linear-gradient(135deg,var(--mint),#1fa982); color:#fff; font-size:15px; font-weight:700}
   .kp-ok:active{background:var(--mint)}
   /* active input highlight */
   .frac-cell.kp-on, .answer-input.kp-on{
@@ -344,6 +406,9 @@
   #final .stars-row{display:flex; gap:5px; justify-content:center; margin:10px 0}
   #final .star{font-size:28px; animation:starPop .4s ease both}
   @keyframes starPop{from{transform:scale(0) rotate(-30deg)}to{transform:scale(1) rotate(0)}}
+
+  /* ---- exam result screen ---- */
+  #examResult{background:linear-gradient(150deg,#1a3a6e,#2563eb,#7c3aed); color:#fff}
 
   /* ---- gear screen ---- */
   #gear{background:var(--paper)}
@@ -431,6 +496,9 @@
     <div class="grow">
       <div class="route" id="route"></div>
       <p class="lock-note">Проходи локации одну за другой — каждая открывает следующую. Все 10 чудес света ждут тебя!</p>
+      <div style="padding:0 22px 24px">
+        <button id="mapExamBtn" class="btn warm" style="display:none;margin-top:4px" onclick="startExam()">📝 Итоговая контрольная за 5 класс</button>
+      </div>
     </div>
   </section>
 
@@ -515,9 +583,53 @@
     <div class="ach-list" id="finalAchList"></div>
     <div class="spacer"></div>
     <div style="font-size:20px;font-weight:800;color:rgba(255,255,255,.9)" id="finalFollowers"></div>
-    <button class="btn" style="margin-top:16px" onclick="go('map')">Смотреть карту 🗺️</button>
-    <button class="btn ghost" onclick="resetProgress()">Начать заново</button>
+    <button class="btn" style="margin-top:16px;background:#fff;color:#6f2dbd" onclick="startExam()">📝 Итоговая контрольная</button>
+    <button class="btn ghost" style="margin-top:8px" onclick="go('map')">Смотреть карту 🗺️</button>
+    <button class="btn ghost" style="margin-top:8px" onclick="resetProgress()">Начать заново</button>
     <div style="height:8px"></div>
+  </section>
+
+  <!-- МИНИ-КОНТРОЛЬНАЯ -->
+  <section class="screen" id="miniExam" style="display:none">
+    <div style="max-width:480px;margin:0 auto;padding:20px 12px">
+      <div style="text-align:center;margin-bottom:18px">
+        <div style="font-size:32px">📋</div>
+        <div style="font-size:20px;font-weight:800;color:var(--ink)">Мини-контрольная</div>
+        <div style="display:flex;justify-content:space-between;margin-top:10px;font-size:13px;font-weight:700;color:#666">
+          <span id="meProgress">Вопрос 1 из 5</span>
+          <span id="meScore">✅ 0</span>
+        </div>
+      </div>
+      <div id="meQuestion" style="font-size:17px;font-weight:700;color:var(--ink);background:rgba(255,255,255,0.85);border-radius:18px;padding:18px 16px;margin-bottom:16px;text-align:center;box-shadow:0 2px 12px rgba(0,0,0,.07)"></div>
+      <div id="meAnswerArea" style="display:flex;flex-direction:column;gap:10px"></div>
+      <div id="meFeedback" style="text-align:center;margin-top:14px;font-size:14px;min-height:22px"></div>
+    </div>
+  </section>
+
+  <!-- РЕЗУЛЬТАТ МИНИ-КОНТРОЛЬНОЙ -->
+  <section class="screen" id="miniExamResult" style="display:none">
+    <div style="max-width:420px;margin:0 auto;padding:40px 20px;text-align:center">
+      <div id="merEmoji" style="font-size:64px;margin-bottom:12px">🏆</div>
+      <div id="merGrade" style="font-size:26px;font-weight:900;color:var(--ink);margin-bottom:8px">Отлично!</div>
+      <div id="merScoreText" style="font-size:48px;font-weight:900;color:var(--accent);margin:12px 0">5 / 5</div>
+      <div id="merMsg" style="font-size:15px;color:#555;margin-bottom:30px;line-height:1.5"></div>
+      <button id="merMapBtn" class="btn" style="width:100%;margin-bottom:12px">На карту 🗺️</button>
+      <button id="merRetryBtn" class="btn" style="width:100%;background:rgba(58,134,255,.12);color:var(--accent)">Повторить контрольную 🔄</button>
+    </div>
+  </section>
+
+  <!-- ====== EXAM RESULT SCREEN ====== -->
+  <section class="screen pad center" id="examResult">
+    <div class="spacer"></div>
+    <div id="examGradeEmoji" style="font-size:80px;animation:float 3s ease-in-out infinite">🏅</div>
+    <h1 style="margin-top:16px" id="examGradeTitle">Отлично!</h1>
+    <div id="examGradeBadge" style="font-size:52px;font-weight:900;margin:10px 0">5</div>
+    <p class="lead" id="examGradeMsg" style="max-width:300px"></p>
+    <div style="background:rgba(255,255,255,.18);border-radius:18px;padding:14px 24px;margin:14px 0;font-size:17px;font-weight:700" id="examScoreBox"></div>
+    <div class="spacer"></div>
+    <button class="btn" style="background:#fff;color:#2b0e6e" onclick="go('map')">На карту 🗺️</button>
+    <button class="btn ghost" style="margin-top:8px;border-color:rgba(255,255,255,.5);color:#fff" onclick="startExam()">Пересдать 🔁</button>
+    <div style="height:10px"></div>
   </section>
 
   <!-- ====== GEAR SCREEN ====== -->
@@ -914,6 +1026,11 @@ function renderMap(){
     r.appendChild(div);
   });
 
+  // exam button when all done
+  const allDone=Object.keys(state.progress).every(k=>locDone(Number(k)));
+  const examBtn=document.getElementById('mapExamBtn');
+  if(examBtn) examBtn.style.display=allDone?'flex':'none';
+
   // fly plane to newly opened location after DOM settles
   if(shouldFly){
     _prevUnlocked = nowUnlocked;
@@ -1037,17 +1154,6 @@ const GEN_EIFFEL = [
       hint:`Шаг 1: ${total} ÷ ${d} = ${total/d}. Шаг 2: ${total/d} × ${n} = ${used}.`,
       explain:`${n}/${d} от ${total}: ${total}÷${d}=${total/d}, затем ×${n}=${used} л.`};
   },
-  /* ЗАДАЧА: длина окружности C = 2πr (§25) */
-  function(){
-    const data=[[5,31.4],[3,18.84],[4,25.12],[7,43.96],[10,62.8]];
-    const [r,C]=pick(data);
-    const wrong=[r*2, Math.round(C+5), r*4].filter(x=>x!==C);
-    return {tag:'⭕ Длина окружности', type:'choice',
-      text:`Круглая клумба у основания башни имеет радиус ${r} м. Найди длину ограждения (длину окружности). Используй π ≈ 3,14.`,
-      options:shuffle([`${C} м`,...wrong.slice(0,3).map(x=>`${x} м`)]), answer:`${C} м`,
-      hint:`Длина окружности: C = 2 · π · r = 2 × 3,14 × ${r} = ${C} м.`,
-      explain:`C = 2 · 3,14 · ${r} = ${C} м.`};
-  },
   /* задача: нахождение числа по его дроби (§38) */
   function(){
     const data=[
@@ -1075,6 +1181,99 @@ const GEN_EIFFEL = [
       options:shuffle([String(x),...wrong.slice(0,3).map(String)]), answer:String(x),
       hint:`x = ${n} × ${d} = ${x}.`,
       explain:`x = ${n} × ${d} = ${x}.`};
+  },
+  /* §26: назови числитель */
+  function(){
+    const d=rnd(3,9), n=rnd(1,d-1);
+    const askNum=rnd(0,1)===1;
+    return {tag:'🔢 Числитель и знаменатель', type:'input',
+      text:askNum?`У дроби ${n}/${d} — чему равен числитель?`:`У дроби ${n}/${d} — чему равен знаменатель?`,
+      answer:[askNum?`${n}`:`${d}`], placeholder:'введи число',
+      hint:askNum?'Числитель — верхнее число дроби.':'Знаменатель — нижнее число дроби.',
+      explain:askNum?`Числитель дроби ${n}/${d} равен ${n}.`:`Знаменатель дроби ${n}/${d} равен ${d}.`};
+  },
+  /* §27: расставь дроби в порядке возрастания */
+  function(){
+    const d=rnd(5,9);
+    const nums=shuffle([1,2,3,4,5].filter(x=>x<d)).slice(0,3).sort((a,b)=>a-b);
+    const [a,b,c]=nums;
+    const correct=`${a}/${d}, ${b}/${d}, ${c}/${d}`;
+    const wrong=[`${c}/${d}, ${b}/${d}, ${a}/${d}`,`${b}/${d}, ${a}/${d}, ${c}/${d}`,`${a}/${d}, ${c}/${d}, ${b}/${d}`];
+    return {tag:'⬆️ Порядок дробей', type:'choice',
+      text:`Расставь в порядке возрастания: ${c}/${d}, ${a}/${d}, ${b}/${d}.`,
+      options:shuffle([correct,...wrong]), answer:correct,
+      hint:'Знаменатели одинаковые — смотрим только на числители.',
+      explain:`Числители: ${a}<${b}<${c}, поэтому: ${correct}.`};
+  },
+  /* §27: задача — у кого больше */
+  function(){
+    const d=rnd(4,9), n1=rnd(1,d-1), n2=rnd(1,d-1);
+    while(n1===n2){ return GEN_EIFFEL[GEN_EIFFEL.length-1](); }
+    const ans=n1>n2?`У Алисы (${n1}/${d})`:`У Бориса (${n2}/${d})`;
+    return {tag:'🌿 Задача', type:'choice',
+      text:`У Алисы ${n1}/${d} пиццы, у Бориса ${n2}/${d}. У кого пиццы больше?`,
+      options:shuffle([`У Алисы (${n1}/${d})`,`У Бориса (${n2}/${d})`,`Поровну`,`Нельзя сравнить`]),
+      answer:ans,
+      hint:`Знаменатели одинаковые — сравниваем числители: ${n1} и ${n2}.`,
+      explain:`${Math.max(n1,n2)}/${d} > ${Math.min(n1,n2)}/${d}.`};
+  },
+  /* §26: какая дробь — по описанию */
+  function(){
+    const d=rnd(3,8), n=rnd(1,d-1);
+    const wrong=[`${n+1}/${d}`,`${d}/${n}`,`${n}/${d+1}`].filter(x=>x!==`${n}/${d}`);
+    return {tag:'🍕 Запиши дробь', type:'choice',
+      text:`Пирог разрезали на ${d} равных кусков, съели ${n} кусков. Какую часть пирога съели?`,
+      options:shuffle([`${n}/${d}`,...wrong.slice(0,3)]), answer:`${n}/${d}`,
+      hint:`Числитель = съеденные куски (${n}), знаменатель = всего кусков (${d}).`,
+      explain:`${n} кусков из ${d} — дробь ${n}/${d}.`};
+  },
+  /* §27: сравни с 1/2 */
+  function(){
+    const d=rnd(4,10), n=rnd(1,d-1);
+    const n2=n*2;
+    const ans=n2>d?'больше 1/2':n2<d?'меньше 1/2':'равно 1/2';
+    return {tag:'⚖️ Сравни с половиной', type:'choice',
+      text:`Сравни дробь ${n}/${d} с числом 1/2.`,
+      options:['больше 1/2','меньше 1/2','равно 1/2','нельзя сравнить'], answer:ans,
+      hint:`Умножь числитель на 2: ${n}×2=${n2}. Сравни с знаменателем ${d}.`,
+      explain:`${n}×2=${n2} ${n2>d?'>':n2<d?'<':'='} ${d}, значит ${n}/${d} ${ans}.`};
+  },
+  /* §26: часть числа */
+  function(){
+    const d=rnd(3,6), n=rnd(1,d-1), total=d*rnd(2,5);
+    const part=(total/d)*n;
+    const wrong=[part+d,part-1,total-part].filter(v=>v>0&&v!==part);
+    return {tag:'🔢 Часть числа', type:'choice',
+      text:`В классе ${total} учеников. ${n}/${d} из них ходят в кружок. Сколько учеников в кружке?`,
+      options:shuffle([`${part}`,...wrong.slice(0,3).map(String)]), answer:`${part}`,
+      hint:`${total} ÷ ${d} = ${total/d}. Затем × ${n} = ${part}.`,
+      explain:`${n}/${d} от ${total}: ${total}÷${d}×${n}=${part} учеников.`};
+  },
+  /* §28 задача — книга */
+  function(){
+    const data=[
+      {total:96,frac:'5/8',fn:5,fd:8},
+      {total:120,frac:'3/4',fn:3,fd:4},
+      {total:80,frac:'3/5',fn:3,fd:5},
+      {total:60,frac:'2/3',fn:2,fd:3},
+    ];
+    const d=pick(data);
+    const read=Math.round(d.total*d.fn/d.fd);
+    const left=d.total-read;
+    return {tag:'📖 Задача',type:'input',q:`Наташа прочитала ${d.frac} книги из ${d.total} страниц. Сколько страниц осталось прочитать?`,
+      text:`Наташа прочитала ${d.frac} книги из ${d.total} страниц. Сколько страниц осталось прочитать?`,
+      answer:`${left}`,hint:`${d.total}÷${d.fd}×${d.fn}=${read}, осталось ${d.total}−${read}=${left}.`,
+      explain:`Прочитала: ${d.total}÷${d.fd}×${d.fn}=${read} стр. Осталось: ${d.total}−${read}=${left} стр.`};
+  },
+  /* §28 задача — олимпиада */
+  function(){
+    const total=pick([80,90,60,100]);
+    const boys=pick([43,47,33,61]);
+    const safe=boys<total?boys:total-10;
+    return {tag:'🏆 Задача',type:'input',
+      text:`В олимпиаде участвуют ${total} пятиклассников, из них ${safe} — мальчики. Сколько девочек?`,
+      answer:`${total-safe}`,hint:`${total}−${safe}=${total-safe}.`,
+      explain:`Девочек: ${total}−${safe}=${total-safe}.`};
   }
 ];
 
@@ -1152,16 +1351,17 @@ const GEN_COLOSSEUM = [
                            `${n}/${d}: числитель больше знаменателя, значит > 1.`
     };
   },
-  /* ЗАДАЧА: нахождение дроби от числа (в контексте Колизея) */
+  /* §28: перевод неправильной дроби в смешанное число */
   function(){
-    const data=[[80,[1,2],40],[120,[3,4],90],[200,[2,5],80],[150,[2,3],100],[240,[5,6],200]];
-    const [total,[n,d],res]=pick(data);
-    const wrong=[total-res, res+d, Math.round(total/d)].filter(x=>x>0&&x!==res);
-    return {tag:'🌿 Задача', type:'choice',
-      text:`В Колизее ${total} мест на трибунах. На представлении заняли ${n}/${d} всех мест. Сколько мест занято?`,
-      options:shuffle([`${res}`,...wrong.slice(0,3).map(String)]), answer:`${res}`,
-      hint:`Шаг 1: ${total} ÷ ${d} = ${total/d}. Шаг 2: ${total/d} × ${n} = ${res}.`,
-      explain:`${n}/${d} от ${total}: ${total}÷${d}=${total/d}, затем ×${n}=${res} мест.`};
+    const data=[[7,3,2,1,3],[11,4,2,3,4],[9,2,4,1,2],[13,5,2,3,5],[11,3,3,2,3],[17,4,4,1,4],[8,3,2,2,3],[14,5,2,4,5]];
+    const [num,den,w,rn,rd]=pick(data);
+    const correct=`${w} ${rn}/${rd}`;
+    const wrong=[`${w+1} ${rn}/${rd}`,`${w} ${rn+1}/${rd}`,`${num}/${den}`].filter(x=>x!==correct);
+    return {tag:'🔢 Смешанное число', type:'choice',
+      text:`Преврати неправильную дробь ${num}/${den} в смешанное число.`,
+      options:shuffle([correct,...wrong.slice(0,3)]), answer:correct,
+      hint:`${num} ÷ ${den} = ${w} (остаток ${rn}). Значит ${num}/${den} = ${w} ${rn}/${den}.`,
+      explain:`${num} ÷ ${den} = ${w} ост. ${rn}. Ответ: ${w} ${rn}/${den}.`};
   },
   /* УРАВНЕНИЕ с дробями */
   function(){
@@ -1169,6 +1369,7 @@ const GEN_COLOSSEUM = [
     const a=b-x;
     return {tag:'🔡 Уравнение', type:'input',
       text:`Реши уравнение: x + ${a}/${d} = ${b}/${d}`,
+      step1_show:`x = ${b}/${d} − ${a}/${d}`,
       answer:[`${x}/${d}`], placeholder:`напр. 1/${d}`,
       hint:`x = ${b}/${d} − ${a}/${d}. Знаменатели одинаковые, вычитаем числители.`,
       explain:`x = ${b}/${d} − ${a}/${d} = ${b-a}/${d}${b-a===x?'':' = '+x+'/'+d}.`};
@@ -1201,6 +1402,97 @@ const GEN_COLOSSEUM = [
       options:shuffle([q.xs,...wrong.slice(0,3)]), answer:q.xs,
       hint:`x = ${q.m} ÷ ${q.n} = ${q.xs}.`,
       explain:`x = ${q.m}/${q.n} (результат деления натурального числа — это дробь).`};
+  },
+  /* §28: смешанное → числитель неправильной дроби */
+  function(){
+    const d=rnd(2,7), w=rnd(1,4), n=rnd(1,d-1), num=w*d+n;
+    return {tag:'🔄 В неправильную', type:'input',
+      text:`Запиши ${w} ${n}/${d} как неправильную дробь. Чему равен числитель?`,
+      answer:[`${num}`], placeholder:'числитель',
+      hint:`Числитель = ${w}×${d}+${n} = ${num}. Знаменатель остаётся ${d}.`,
+      explain:`${w}×${d}+${n}=${num}, знаменатель ${d}: неправильная дробь ${num}/${d}.`};
+  },
+  /* §28: как называется число */
+  function(){
+    const items=[
+      {val:'3/5',type:'правильная дробь'},
+      {val:'7/3',type:'неправильная дробь'},
+      {val:'2 1/4',type:'смешанное число'},
+      {val:'9/9',type:'неправильная дробь'},
+      {val:'1 2/7',type:'смешанное число'},
+      {val:'1/8',type:'правильная дробь'},
+    ];
+    const q=pick(items);
+    return {tag:'🏷️ Как называется?', type:'choice',
+      text:`Как называется число ${q.val}?`,
+      options:shuffle(['правильная дробь','неправильная дробь','смешанное число','натуральное число']),
+      answer:q.type,
+      hint:'Правильная: числитель < знаменатель. Неправильная: числитель ≥ знаменатель. Смешанное: целая часть + дробь.',
+      explain:`${q.val} — это ${q.type}.`};
+  },
+  /* §28: дробная часть смешанного */
+  function(){
+    const d=rnd(2,7), w=rnd(1,4), n=rnd(1,d-1);
+    return {tag:'🔢 Дробная часть', type:'input',
+      text:`Запиши дробную часть числа ${w} ${n}/${d}.`,
+      answer:[`${n}/${d}`], placeholder:`напр. ${n}/${d}`,
+      hint:`В числе ${w} ${n}/${d}: целая часть — ${w}, дробная часть — ${n}/${d}.`,
+      explain:`Дробная часть числа ${w} ${n}/${d} равна ${n}/${d}.`};
+  },
+  /* §28: сколько целых в неправильной дроби */
+  function(){
+    const d=rnd(2,6), w=rnd(2,5), n=rnd(1,d-1), num=w*d+n;
+    return {tag:'🔢 Сколько целых?', type:'choice',
+      text:`Сколько целых чисел содержится в неправильной дроби ${num}/${d}?`,
+      options:shuffle([`${w}`,`${w+1}`,`${d}`,`${num}`]), answer:`${w}`,
+      hint:`${num} ÷ ${d} = ${w} (ост. ${n}). Целых чисел — ${w}.`,
+      explain:`${num}÷${d}=${w} ост. ${n}. В дроби ${num}/${d} ровно ${w} целых.`};
+  },
+  /* §28: расставь числа по возрастанию: правильная, смешанное, неправильная */
+  function(){
+    const data=[
+      {items:['3/5','8/5','1 2/5'],sorted:'3/5, 1 2/5, 8/5',hint:'3/5 < 1 = 5/5 < 8/5'},
+      {items:['1/4','5/4','2 1/4'],sorted:'1/4, 5/4, 2 1/4',hint:'1/4 < 5/4 = 1 1/4 < 2 1/4'},
+      {items:['2/3','4/3','1 2/3'],sorted:'2/3, 4/3, 1 2/3',hint:'2/3 < 4/3 = 1 1/3 < 1 2/3'},
+    ];
+    const q=pick(data);
+    const shuffled=shuffle([...q.items]).join(', ');
+    const [a,b,c]=q.sorted.split(', ');
+    const wrong=[`${c}, ${b}, ${a}`,`${b}, ${a}, ${c}`];
+    return {tag:'⬆️ По возрастанию', type:'choice',
+      text:`Расставь в порядке возрастания: ${q.items.join(', ')}.`,
+      options:shuffle([q.sorted,...wrong.slice(0,2),'нельзя сравнить']), answer:q.sorted,
+      hint:q.hint,
+      explain:`Правильный порядок: ${q.sorted}.`};
+  },
+  /* §28: задача — смешанные числа в жизни */
+  function(){
+    const data=[
+      {w:2,n:1,d:2,total:5,item:'кг яблок',sold:3,left:'1 1/2',wrong:['2 1/2','2 1/3','1 1/3']},
+      {w:3,n:1,d:3,total:7,item:'м ткани',sold:4,left:'2 2/3',wrong:['3 1/3','2 1/3','3 2/3']},
+      {w:1,n:3,d:4,total:4,item:'л молока',sold:2,left:'1 3/4',wrong:['2 1/4','2 3/4','1 1/4']},
+    ];
+    const q=pick(data);
+    return {tag:'🌿 Задача', type:'choice',
+      text:`На рынке продали ${q.sold} ${q.item} из ${q.total}. Осталось ${q.w} ${q.n}/${q.d} ${q.item}. Сколько продали? Проверь: ${q.sold} + ${q.w} ${q.n}/${q.d} = ${q.total}?`,
+      options:shuffle(['Да, верно','Нет, ошибка','Нельзя проверить','Данных недостаточно']),
+      answer:'Да, верно',
+      hint:`${q.sold} + ${q.w} ${q.n}/${q.d} = ${q.total}. Проверь сложение.`,
+      explain:`${q.sold} + ${q.w} ${q.n}/${q.d} = ${q.total} ${q.item}. Верно!`};
+  },
+  /* §28 задача — велопробег */
+  function(){
+    const total=pick([144,180,120,200]);
+    const n1=pick([3,5,7]);
+    const d=pick([8,9,10]);
+    const day1=Math.round(total*n1/d);
+    const n2=d-n1-1;
+    const day2=n2>0?Math.round(total*n2/d):Math.round(total/d);
+    return {tag:'🚴 Задача',type:'input',
+      text:`В первый день велопробега участники проехали ${total} км, что составляет ${n1}/${d} пути. Сколько км проехали во второй день, если это ${n2>0?n2:1}/${d} пути?`,
+      answer:`${n2>0?day2:Math.round(total/d)}`,
+      hint:`${total}÷${d}×${n2>0?n2:1}=${n2>0?day2:Math.round(total/d)}.`,
+      explain:`${total}÷${d}×${n2>0?n2:1}=${n2>0?day2:Math.round(total/d)} км.`};
   }
 ];
 
@@ -1255,17 +1547,24 @@ const GEN_MACHU = [
       hint:`Весь маршрут = ${d}/${d}. Осталось: ${d}/${d} − ${n}/${d}.`,
       explain:`${d}/${d} − ${n}/${d} = ${rest}/${d}.`};
   },
-  /* ЗАДАЧА: дачный участок (по учебнику 5.495) */
+  /* §29: сложение дробей с одинаковым знаменателем — задача на остаток */
   function(){
-    const data=[[15,[2,5],[3,10],9],[20,[1,4],[2,5],13],[24,[1,3],[1,4],14],[18,[1,2],[1,6],12]];
-    const [area,[n1,d1],[n2,d2],total]=pick(data);
-    const p1=(area/d1)*n1, p2=(area/d2)*n2;
-    const wrong=[p1,p2,area-p1].filter(x=>x!==total);
-    return {tag:'🌿 Задача', type:'choice',
-      text:`Участок площадью ${area} соток. Огород занимает ${n1}/${d1}, а сад — ${n2}/${d2} всего участка. Какова общая площадь огорода и сада (в сотках)?`,
-      options:shuffle([`${total}`,...wrong.slice(0,3).map(String)]), answer:`${total}`,
-      hint:`Огород: ${area}÷${d1}×${n1}=${p1} соток. Сад: ${area}÷${d2}×${n2}=${p2} соток. Вместе: ${p1}+${p2}=${total}.`,
-      explain:`${p1} + ${p2} = ${total} соток.`};
+    const data=[
+      {d:8,n1:3,n2:2,ctx:'Туристы прошли',item:'маршрута'},
+      {d:10,n1:3,n2:4,ctx:'Велосипедист проехал',item:'пути'},
+      {d:12,n1:5,n2:3,ctx:'Ученик решил',item:'заданий'},
+      {d:9,n1:2,n2:4,ctx:'Бригада выполнила',item:'работы'},
+      {d:7,n1:2,n2:3,ctx:'Турист прошёл',item:'дороги'},
+    ];
+    const q=pick(data);
+    const sum=q.n1+q.n2, rest=q.d-sum;
+    const correct=`${rest}/${q.d}`;
+    const wrong=[`${rest-1}/${q.d}`,`${sum}/${q.d}`,`${rest+1}/${q.d}`].filter(x=>x!==correct);
+    return {tag:'🌿 Задача (§29)', type:'choice',
+      text:`${q.ctx} ${q.n1}/${q.d} ${q.item} до обеда и ${q.n2}/${q.d} после. Какая часть ${q.item} осталась?`,
+      options:shuffle([correct,...wrong.slice(0,3)]), answer:correct,
+      hint:`Выполнено: ${q.n1}/${q.d} + ${q.n2}/${q.d} = ${sum}/${q.d}. Осталось: ${q.d}/${q.d} − ${sum}/${q.d} = ${rest}/${q.d}.`,
+      explain:`Всего выполнено: ${q.n1}+${q.n2}=${sum}. Осталось: ${q.d}−${sum}=${rest}. Ответ: ${rest}/${q.d}.`};
   },
   /* УРАВНЕНИЕ: x + a/d = b/d */
   function(){
@@ -1273,6 +1572,7 @@ const GEN_MACHU = [
     const x=sum-a;
     return {tag:'🔡 Уравнение', type:'input',
       text:`Реши уравнение: x + ${a}/${d} = ${sum}/${d}`,
+      step1_show:`x = ${sum}/${d} − ${a}/${d}`,
       answer:[`${x}/${d}`], placeholder:`напр. 2/${d}`,
       hint:`x = ${sum}/${d} − ${a}/${d} = ${x}/${d}.`,
       explain:`Вычитаем числители: ${sum} − ${a} = ${x}. Ответ: ${x}/${d}.`};
@@ -1302,9 +1602,101 @@ const GEN_MACHU = [
     const a=b+x;
     return {tag:'🔡 Уравнение (вычитание)', type:'input',
       text:`Реши уравнение: ${a}/${d} − x = ${b}/${d}`,
+      step1_show:`x = ${a}/${d} − ${b}/${d}`,
       answer:[`${x}/${d}`], placeholder:`напр. 2/${d}`,
       hint:`x = ${a}/${d} − ${b}/${d} = ${x}/${d}.`,
       explain:`Переносим: x = ${a}/${d} − ${b}/${d} = ${x}/${d}.`};
+  },
+  /* §29: вычисли 1 − n/d */
+  function(){
+    const d=rnd(3,9), n=rnd(1,d-1), rest=d-n;
+    return {tag:'➖ Вычти из 1', type:'input',
+      text:`Вычисли: 1 − ${n}/${d}`,
+      answer:[`${rest}/${d}`], placeholder:`напр. ${rest}/${d}`,
+      hint:`1 = ${d}/${d}. Тогда ${d}/${d} − ${n}/${d} = ${rest}/${d}.`,
+      explain:`1 = ${d}/${d}, затем ${d}/${d} − ${n}/${d} = ${rest}/${d}.`};
+  },
+  /* §29: три слагаемых в сумме = 1 */
+  function(){
+    const d=rnd(6,12); const a=rnd(1,d-3), b=rnd(1,d-a-2), c=d-a-b;
+    return {tag:'➕ Три дроби', type:'choice',
+      text:`${a}/${d} + ${b}/${d} + ${c}/${d} = ?`,
+      options:shuffle(['1',`${a+b}/${d}`,`${d+1}/${d}`,`${a+b+c+1}/${d}`]), answer:'1',
+      hint:`Складываем числители: ${a}+${b}+${c}=${a+b+c}=${d}. Получаем ${d}/${d}=1.`,
+      explain:`${a}+${b}+${c}=${d}, значит ${d}/${d}=1.`};
+  },
+  /* §29: найди x: n/d + x/d = 1 */
+  function(){
+    const d=rnd(4,9), n=rnd(1,d-1), x=d-n;
+    return {tag:'🔡 Дополни до 1', type:'input',
+      text:`Найди x: ${n}/${d} + x/${d} = 1`,
+      step1_show:`x/${d} = 1 − ${n}/${d}`,
+      answer:[`${x}/${d}`,`${x}`], placeholder:`числитель`,
+      hint:`1 = ${d}/${d}. x/${d} = ${d}/${d} − ${n}/${d} = ${x}/${d}.`,
+      explain:`x/${d} = ${d}/${d} − ${n}/${d} = ${x}/${d}. Ответ: числитель = ${x}.`};
+  },
+  /* §29: сравни два выражения */
+  function(){
+    const d=rnd(4,9);
+    const a1=rnd(1,d-2), b1=rnd(1,d-1);
+    const a2=rnd(1,d-2), b2=rnd(1,d-1);
+    const s1=a1+b1, s2=a2+b2;
+    const left=`${a1}/${d}+${b1}/${d}`, right=`${a2}/${d}+${b2}/${d}`;
+    const ans=s1>s2?`(${left}) > (${right})`:s1<s2?`(${left}) < (${right})`:`(${left}) = (${right})`;
+    return {tag:'⚖️ Сравни суммы', type:'choice',
+      text:`Сравни: (${a1}/${d}+${b1}/${d}) и (${a2}/${d}+${b2}/${d})`,
+      options:shuffle([`(${left}) > (${right})`,`(${left}) < (${right})`,`(${left}) = (${right})`,`нельзя`].filter((v,i,a)=>a.indexOf(v)===i).slice(0,4)),
+      answer:ans,
+      hint:`Сумма 1: ${a1}+${b1}=${s1}. Сумма 2: ${a2}+${b2}=${s2}. Сравниваем.`,
+      explain:`${s1}/${d} ${s1>s2?'>':s1<s2?'<':'='} ${s2}/${d}: ${ans}.`};
+  },
+  /* §29: задача с тремя событиями */
+  function(){
+    const d=rnd(7,12); const n1=rnd(1,d-3), n2=rnd(1,d-n1-2), n3=rnd(1,d-n1-n2-1);
+    const used=n1+n2+n3, left=d-used;
+    return {tag:'🌿 Задача: три события', type:'choice',
+      text:`Маршрут делится на ${d} участков. Прошли ${n1}/${d}, ${n2}/${d} и ещё ${n3}/${d} пути. Какая часть осталась?`,
+      options:shuffle([`${left}/${d}`,`${used}/${d}`,`${left+1}/${d}`,`${left-1}/${d}`]),
+      answer:`${left}/${d}`,
+      hint:`Пройдено: ${n1}+${n2}+${n3}=${used}. Осталось: ${d}−${used}=${left}.`,
+      explain:`${used}/${d} пройдено. Осталось: ${d}/${d}−${used}/${d}=${left}/${d}.`};
+  },
+  /* §29: вычисли разность — выбор */
+  function(){
+    const d=rnd(4,10), n1=rnd(3,d-1), n2=rnd(1,n1-1);
+    const diff=n1-n2, g=gcd(diff,d);
+    const correct=g>1?`${diff/g}/${d/g}`:`${diff}/${d}`;
+    return {tag:'➖ Вычисли', type:'choice',
+      text:`${n1}/${d} − ${n2}/${d} = ?`,
+      options:shuffle([correct,`${n1+n2}/${d}`,`${n1}/${d}`,`${diff+1}/${d}`].filter((v,i,a)=>a.indexOf(v)===i).slice(0,4)),
+      answer:correct,
+      hint:'Знаменатель не меняется, вычитаем числители.',
+      explain:`${n1}−${n2}=${diff}, знаменатель ${d}: ${diff}/${d}${g>1?' = '+correct:''}.`};
+  },
+  /* §29 задача — апельсины */
+  function(){
+    const n1=pick([4,3,5,2]); const d=5;
+    const sold=pick([7,6,9,8]); const d2=10;
+    const remain=n1*2-sold;
+    const remainStr=remain>0?`${remain}/${d2}`:'0';
+    return {tag:'🍊 Задача',type:'choice',
+      text:`В магазин завезли ${n1}/${d} т апельсинов, а продали ${sold}/${d2} т. Сколько тонн осталось? (в виде дроби)`,
+      opts:[remainStr,`${n1+sold}/${d2}`,`${n1*2+sold}/${d2}`,`${Math.abs(sold-n1*2)+1}/${d2}`],
+      options:shuffle([remainStr,`${n1+sold}/${d2}`,`${n1*2+sold}/${d2}`,`${Math.abs(sold-n1*2)+1}/${d2}`]),
+      answer:remainStr,
+      hint:`${n1}/${d}=${n1*2}/${d2}. Осталось: ${n1*2}/${d2}−${sold}/${d2}=${remain}/${d2}.`,
+      explain:`${n1}/${d}=${n1*2}/${d2}. ${n1*2}/${d2}−${sold}/${d2}=${remainStr} т.`};
+  },
+  /* §29 задача — учим слова */
+  function(){
+    const total=pick([35,42,28,56]); const n1=4; const d=7;
+    const learned=Math.round(total*n1/d);
+    const left=total-learned;
+    return {tag:'📝 Задача',type:'input',
+      text:`Маша выучила ${n1}/${d} всех заданных слов, а осталось выучить ${left} слов. Сколько слов было задано всего?`,
+      answer:`${total}`,
+      hint:`${left} слов = ${d-n1}/${d} всего. ${left}÷${d-n1}×${d}=${total}.`,
+      explain:`${left} слов — это ${d-n1}/${d}. Всего: ${left}÷${d-n1}×${d}=${total}.`};
   }
 ];
 
@@ -1378,7 +1770,8 @@ const GEN_TAJ = [
     const xStr=xn===0?`${xw}`:`${xw} ${xn}/${d}`;
     return {tag:'🔡 Уравнение', type:'input',
       text:`Реши уравнение: x + ${w} ${n}/${d} = ${bw} ${bn}/${d}. Напиши целую часть ответа.`,
-      answer:[`${xw}`],
+      step1_show:`x = ${bw} ${bn}/${d} − ${w} ${n}/${d}`,
+      answer:[`${xw}`], placeholder:`целая часть`,
       hint:`x = ${bw} ${bn}/${d} − ${w} ${n}/${d}. Целые: ${bw}−${w}=${xw}. Дроби: ${bn}−${n}=${xn}.`,
       explain:`Целые: ${bw}−${w}=${xw}. Дроби: ${bn}/${d}−${n}/${d}=${xn}/${d}. Ответ: ${xStr}.`};
   },
@@ -1411,9 +1804,86 @@ const GEN_TAJ = [
     const q=pick(data);
     return {tag:'🔡 Уравнение (§32)', type:'input',
       text:`Реши уравнение: x − ${q.sub} = ${q.rhs}`,
+      step1_show:`x = ${q.rhs} + ${q.sub}`,
       answer:[q.ans], placeholder:`целое число`,
       hint:`x = ${q.rhs} + ${q.sub}. Сложи целые и дроби отдельно.`,
       explain:`x = ${q.rhs} + ${q.sub} = ${q.ans}.`};
+  },
+  /* §31: сравни два смешанных числа */
+  function(){
+    const d=rnd(2,5), w1=rnd(1,4), n1=rnd(1,d-1), w2=rnd(1,4), n2=rnd(1,d-1);
+    if(w1===w2&&n1===n2){ return {tag:'⚖️',type:'choice',text:`${w1} ${n1}/${d} и ${w1} ${n1}/${d}`,options:['=','>','<','?'],answer:'=',hint:'Одинаковые.',explain:'Равны.'}; }
+    const isMore=w1>w2||(w1===w2&&n1>n2);
+    const ansStr=isMore?`${w1} ${n1}/${d} > ${w2} ${n2}/${d}`:`${w1} ${n1}/${d} < ${w2} ${n2}/${d}`;
+    return {tag:'⚖️ Сравни смешанные', type:'choice',
+      text:`Сравни: ${w1} ${n1}/${d} и ${w2} ${n2}/${d}`,
+      options:shuffle([`${w1} ${n1}/${d} > ${w2} ${n2}/${d}`,`${w1} ${n1}/${d} < ${w2} ${n2}/${d}`,`Равны`,`Нельзя`]),
+      answer:ansStr,
+      hint:`Сначала сравниваем целые части (${w1} и ${w2}). Если равны — сравниваем дроби.`,
+      explain:ansStr};
+  },
+  /* §32: задача — путь за два дня */
+  function(){
+    const d=rnd(3,6), w1=rnd(1,3), n1=rnd(1,d-1), w2=rnd(1,3), n2=rnd(1,d-1);
+    const ns=n1+n2, carry=ns>=d?1:0, remN=ns%d;
+    const ws=w1+w2+carry;
+    const ans=remN===0?`${ws} км`:`${ws} ${remN}/${d} км`;
+    const wrong1=`${ws+1} ${remN}/${d} км`, wrong2=`${w1+w2} ${ns}/${d} км`;
+    return {tag:'🌿 Задача: путь', type:'choice',
+      text:`Турист прошёл ${w1} ${n1}/${d} км до привала и ${w2} ${n2}/${d} км после. Сколько км всего?`,
+      options:shuffle([ans,wrong1,wrong2,`${ws-1} ${remN}/${d} км`].filter((v,i,a)=>a.indexOf(v)===i).slice(0,4)),
+      answer:ans,
+      hint:`Целые: ${w1}+${w2}=${w1+w2}. Дроби: ${n1}/${d}+${n2}/${d}=${ns}/${d}${carry?' = 1 '+remN+'/'+d:''}.`,
+      explain:`${w1} ${n1}/${d} + ${w2} ${n2}/${d} = ${ans}.`};
+  },
+  /* §32: перевод смешанного → неправильная (choice) */
+  function(){
+    const d=rnd(2,7), w=rnd(1,4), n=rnd(1,d-1), num=w*d+n;
+    const correct=`${num}/${d}`;
+    const wrong=[`${w*d}/${d}`,`${num+1}/${d}`,`${(w+1)*d+n}/${d}`].filter(x=>x!==correct);
+    return {tag:'🔄 Смешанное → дробь', type:'choice',
+      text:`Выбери неправильную дробь, равную ${w} ${n}/${d}:`,
+      options:shuffle([correct,...wrong.slice(0,3)]), answer:correct,
+      hint:`${w}×${d}+${n}=${num}. Ответ: ${num}/${d}.`,
+      explain:`${w}×${d}=${w*d}, +${n}=${num}. Ответ: ${num}/${d}.`};
+  },
+  /* §32: уравнение x − целое = смешанное */
+  function(){
+    const d=rnd(2,5), w=rnd(1,3), n=rnd(1,d-1), res=rnd(2,5);
+    const xw=res+w, xs=`${xw} ${n}/${d}`;
+    const wrong=[`${xw+1} ${n}/${d}`,`${res} ${n}/${d}`,`${xw} ${n+1}/${d}`].filter(x=>x!==xs);
+    return {tag:'🔡 Уравнение', type:'choice',
+      text:`Реши уравнение: x − ${w} ${n}/${d} = ${res}`,
+      options:shuffle([xs,...wrong.slice(0,3)]), answer:xs,
+      hint:`x = ${res} + ${w} ${n}/${d}. Целые: ${res}+${w}=${xw}. Дробная часть: ${n}/${d}.`,
+      explain:`x = ${res} + ${w} ${n}/${d} = ${xw} ${n}/${d}.`};
+  },
+  /* §32: расставь смешанные числа по возрастанию */
+  function(){
+    const data=[
+      {items:['1 1/3','2 1/3','1 2/3'],sorted:'1 1/3, 1 2/3, 2 1/3'},
+      {items:['1 3/4','2 1/4','1 1/4'],sorted:'1 1/4, 1 3/4, 2 1/4'},
+      {items:['2 4/5','1 2/5','2 1/5'],sorted:'1 2/5, 2 1/5, 2 4/5'},
+      {items:['3 2/3','2 1/3','3 1/3'],sorted:'2 1/3, 3 1/3, 3 2/3'},
+    ];
+    const q=pick(data);
+    const [a,b,c]=q.sorted.split(', ');
+    return {tag:'⬆️ По возрастанию', type:'choice',
+      text:`Расставь в порядке возрастания: ${q.items.join(', ')}.`,
+      options:shuffle([q.sorted,`${c}, ${b}, ${a}`,`${b}, ${a}, ${c}`,q.items.join(', ')].filter((v,i,a)=>a.indexOf(v)===i).slice(0,4)),
+      answer:q.sorted,
+      hint:'Сначала сравниваем целые части. Если равны — сравниваем дроби.',
+      explain:`Правильный порядок: ${q.sorted}.`};
+  },
+  /* §31-32 задача — гуляла */
+  function(){
+    const h1=pick([3,4,5]); const f1=5; const d1=6;
+    return {tag:'🌳 Задача',type:'choice',
+      text:`Оля после школы гуляла ${f1}/${d1} ч, а вечером с младшей сестрёнкой ещё 1 ${h1}/${d1} ч. Сколько часов гуляла Оля?`,
+      options:shuffle([`2 ${f1}/${d1} ч`,`2 ч`,`${f1+h1}/${d1} ч`,`1 ${f1+h1}/${d1} ч`]),
+      answer:`2 ${f1}/${d1} ч`,
+      hint:`${f1}/${d1}+1 ${h1}/${d1}: целые 0+1=1, дроби ${f1}/${d1}+${h1}/${d1}=${f1+h1}/${d1}=1 ${f1+h1-d1}/${d1}. Итого: 2 ${f1+h1-d1}/${d1}.`,
+      explain:`${f1}/${d1}+1 ${h1}/${d1}=2 ${f1}/${d1} ч (дроби дают перенос).`};
   }
 ];
 
@@ -1439,32 +1909,28 @@ const GEN_WALL = [
       hint:`НОД(${n},${d})=${g2}. Делим числитель и знаменатель на ${g2}.`,
       explain:`${n}÷${g2}=${rn}, ${d}÷${g2}=${rd}. Ответ: ${rn}/${rd}.`};
   },
+  /* §35: нахождение наименьшего общего знаменателя */
   function(){
-    const pairs=[[1,2,1,3],[1,2,1,4],[1,3,1,4],[1,3,2,5],[2,3,1,4],[1,4,1,5],[1,2,2,3]];
-    const [n1,d1,n2,d2]=pick(pairs);
-    const lcm=(a,b)=>a*b/gcd(a,b); const ld=lcm(d1,d2);
-    const num=n1*(ld/d1)+n2*(ld/d2), g=gcd(num,ld);
-    const rn=num/g, rd=ld/g;
-    const correct=rn>=rd?`${Math.floor(rn/rd)}${rn%rd>0?' '+rn%rd+'/'+rd:''}`.trim():`${rn}/${rd}`;
-    return {tag:'➕ Разные знаменатели', type:'choice',
-      text:`${n1}/${d1} + ${n2}/${d2} = ?`,
-      options:shuffle([correct,`${n1+n2}/${d1}`,`${n1}/${d1+d2}`,`${rn+1}/${rd}`].filter((v,i,a)=>a.indexOf(v)===i).slice(0,4)),
-      answer:correct,
-      hint:`Общий знаменатель = НОК(${d1},${d2})=${ld}. Приводим и складываем числители.`,
-      explain:`${n1*(ld/d1)}/${ld} + ${n2*(ld/d2)}/${ld} = ${num}/${ld} = ${correct}.`};
+    const lcmFn=(a,b)=>a*b/gcd(a,b);
+    const pairs=[[2,3,6],[3,4,12],[2,5,10],[4,6,12],[3,8,24],[2,9,18],[4,5,20],[6,8,24]];
+    const [d1,d2,lcmVal]=pick(pairs);
+    const wrong=[d1*d2,d1+d2,Math.max(d1,d2)].filter(x=>x!==lcmVal);
+    return {tag:'🔢 Общий знаменатель', type:'choice',
+      text:`Найди наименьший общий знаменатель для дробей с знаменателями ${d1} и ${d2}.`,
+      options:shuffle([`${lcmVal}`,...wrong.slice(0,3).map(String)]), answer:`${lcmVal}`,
+      hint:`НОК(${d1},${d2}) = ${lcmVal}. Это наименьшее число, которое делится и на ${d1}, и на ${d2}.`,
+      explain:`НОК(${d1},${d2}) = ${lcmVal}. Общий знаменатель равен ${lcmVal}.`};
   },
+  /* §35: приведение дроби к заданному знаменателю */
   function(){
-    const pairs=[[3,4,1,2],[2,3,1,2],[3,4,2,3],[5,6,1,3],[3,5,1,2],[4,5,1,3]];
-    const [n1,d1,n2,d2]=pick(pairs);
-    const lcm=(a,b)=>a*b/gcd(a,b); const ld=lcm(d1,d2);
-    const num=n1*(ld/d1)-n2*(ld/d2); const g=gcd(Math.max(num,1),ld);
-    const correct=num<=0?'0':`${num/g}/${ld/g}`;
-    return {tag:'➖ Разные знаменатели', type:'choice',
-      text:`${n1}/${d1} − ${n2}/${d2} = ?`,
-      options:shuffle([correct,`${n1-n2}/${d1}`,`${n1}/${d1-d2}`,`${n1+n2}/${d1+d2}`].filter((v,i,a)=>a.indexOf(v)===i).slice(0,4)),
-      answer:correct,
-      hint:`Общий знаменатель ${ld}: ${n1}/${d1}=${n1*(ld/d1)}/${ld}, ${n2}/${d2}=${n2*(ld/d2)}/${ld}.`,
-      explain:`${n1*(ld/d1)}/${ld} − ${n2*(ld/d2)}/${ld} = ${num}/${ld} = ${correct}.`};
+    const data=[[1,3,6,2,2],[1,4,12,3,3],[2,3,12,4,8],[3,4,12,3,9],[1,2,10,5,5],[2,5,10,2,4],[1,6,12,2,2],[3,5,15,3,9]];
+    const [n,d,nd,k,nn]=pick(data);
+    const wrong=[nn+1,nn-1,n*k+1].filter(x=>x!==nn&&x>0);
+    return {tag:'📐 Привести к знаменателю', type:'choice',
+      text:`Приведи дробь ${n}/${d} к знаменателю ${nd}. Чему равен новый числитель?`,
+      options:shuffle([`${nn}`,...wrong.slice(0,3).map(String)]), answer:`${nn}`,
+      hint:`${nd} ÷ ${d} = ${k}. Умножь числитель на ${k}: ${n} × ${k} = ${nn}.`,
+      explain:`${n}/${d} = ${nn}/${nd} (умножили числитель и знаменатель на ${k}).`};
   },
   function(){
     const irred=[[1,2],[2,3],[3,5],[4,7],[3,8],[5,9]];
@@ -1479,58 +1945,104 @@ const GEN_WALL = [
       hint:`НОД(${n},${d})=${gcd(n,d)}. Если НОД=1 — несократима.`,
       explain:isRed?`НОД(${n},${d})=${gcd(n,d)}>1 — можно: ${n/gcd(n,d)}/${d/gcd(n,d)}.`:`НОД(${n},${d})=1 — дробь несократима.`};
   },
-  /* ЗАДАЧА: сложение дробей с разными знаменателями (практическая) */
+  /* §35: сравнение дробей через общий знаменатель */
   function(){
-    const pairs=[[1,2,1,4,3,4],[1,3,1,6,1,2],[1,4,3,8,5,8],[2,3,1,6,5,6],[1,2,1,3,5,6]];
-    const [n1,d1,n2,d2,rn,rd]=pick(pairs);
-    const wrong=[`${n1+n2}/${d1}`,`${rn-1}/${rd}`,`${rn+1}/${rd}`].filter(x=>x!==`${rn}/${rd}`);
-    return {tag:'🌿 Задача', type:'choice',
-      text:`Блогер снял ${n1}/${d1} стены в первый день и ${n2}/${d2} во второй. Какую часть стены он снял за два дня?`,
-      options:shuffle([`${rn}/${rd}`,...wrong.slice(0,3)]), answer:`${rn}/${rd}`,
-      hint:`Привести к общему знаменателю и сложить числители.`,
-      explain:`${n1}/${d1} + ${n2}/${d2} = ${rn}/${rd}.`};
+    const lcmFn=(a,b)=>a*b/gcd(a,b);
+    const pairs=[[1,3,1,4],[2,5,1,3],[3,4,2,3],[1,2,3,7],[3,8,2,5],[4,7,3,5],[1,4,2,9],[3,7,2,5]];
+    const [n1,d1,n2,d2]=pick(pairs);
+    const ld=lcmFn(d1,d2);
+    const a=n1*(ld/d1), b=n2*(ld/d2);
+    const ans=a>b?`${n1}/${d1} > ${n2}/${d2}`:a<b?`${n1}/${d1} < ${n2}/${d2}`:`${n1}/${d1} = ${n2}/${d2}`;
+    const opts=[`${n1}/${d1} > ${n2}/${d2}`,`${n1}/${d1} < ${n2}/${d2}`,`${n1}/${d1} = ${n2}/${d2}`,'Нельзя сравнить'];
+    return {tag:'⚖️ Сравнение дробей', type:'choice',
+      text:`Сравни дроби: ${n1}/${d1} и ${n2}/${d2}.`,
+      options:shuffle(opts), answer:ans,
+      hint:`Общий знаменатель НОК(${d1},${d2})=${ld}. Приводим: ${n1}/${d1}=${a}/${ld}, ${n2}/${d2}=${b}/${ld}. Сравниваем числители.`,
+      explain:`${a}/${ld} ${a>b?'>':a<b?'<':'='} ${b}/${ld}, значит ${ans}.`};
   },
-  /* УРАВНЕНИЕ: x − a/d = b/d */
+  /* §33-35: уравнение x − a/d = b/d (одинаковые знаменатели) */
   function(){
     const d=rnd(3,8); const x=rnd(2,d-1); const a=rnd(1,x-1);
     const b=x-a;
     return {tag:'🔡 Уравнение', type:'input',
       text:`Реши уравнение: x − ${a}/${d} = ${b}/${d}`,
+      step1_show:`x = ${b}/${d} + ${a}/${d}`,
       answer:[`${x}/${d}`], placeholder:`напр. 3/${d}`,
       hint:`x = ${b}/${d} + ${a}/${d} = ${b+a}/${d}.`,
       explain:`Переносим: x = ${b}/${d} + ${a}/${d} = ${x}/${d}.`};
   },
-  /* задача: сложение разных знаменателей — питомник (§36) */
+  /* §33: основное свойство — найди знаменатель */
   function(){
-    const data=[
-      {total:60,t1:'яблонями',f1:'1/4',n1:1,d1:4,t2:'грушами',f2:'1/3',n2:1,d2:3,ans:35,wrong:[25,40,30]},
-      {total:48,t1:'берёзами',f1:'1/4',n1:1,d1:4,t2:'елями',f2:'1/6',n2:1,d2:6,ans:20,wrong:[12,24,16]},
-      {total:72,t1:'яблонями',f1:'1/4',n1:1,d1:4,t2:'вишнями',f2:'1/3',n2:1,d2:3,ans:42,wrong:[18,24,54]},
-      {total:90,t1:'соснами',f1:'2/5',n1:2,d1:5,t2:'дубами',f2:'1/3',n2:1,d2:3,ans:66,wrong:[36,54,72]},
-    ];
-    const q=pick(data);
-    return {tag:'🌿 Задача: питомник', type:'choice',
-      text:`В питомнике ${q.total} га. Под ${q.t1} занято ${q.f1} площади, под ${q.t2} — ${q.f2}. Сколько га занято в целом?`,
-      options:shuffle([`${q.ans} га`,...q.wrong.slice(0,3).map(x=>`${x} га`)]),
-      answer:`${q.ans} га`,
-      hint:`Сложи дроби ${q.f1} + ${q.f2}, приведя к общему знаменателю, затем умножь на ${q.total}.`,
-      explain:`(${q.f1} + ${q.f2}) × ${q.total} = ${q.ans} га.`};
+    const n=rnd(1,5), d=rnd(3,8), k=rnd(2,5), n2=n*k;
+    return {tag:'🔢 Основное свойство', type:'input',
+      text:`${n}/${d} = ${n2}/?. Чему равен знаменатель?`,
+      answer:[`${d*k}`], placeholder:'знаменатель',
+      hint:`Числитель увеличился в ${k} раз (${n}→${n2}). Знаменатель тоже умножь на ${k}: ${d}×${k}=${d*k}.`,
+      explain:`${n}/${d} = ${n2}/${d*k} (умножили на ${k}).`};
   },
-  /* уравнение: x + a/b = c/d, разные знаменатели (§36) */
+  /* §34: сократи дробь — задача */
   function(){
-    const data=[
-      {ab:'1/4',cd:'3/4',xs:'1/2',wrongs:['1/4','2/4','3/8']},
-      {ab:'1/3',cd:'5/6',xs:'1/2',wrongs:['2/6','1/6','1/3']},
-      {ab:'1/4',cd:'3/8',xs:'1/8',wrongs:['2/8','1/4','1/2']},
-      {ab:'1/6',cd:'7/12',xs:'5/12',wrongs:['2/12','1/4','6/12']},
-      {ab:'1/3',cd:'3/4',xs:'5/12',wrongs:['2/12','7/12','4/12']},
-    ];
-    const q=pick(data);
-    return {tag:'🔡 Уравнение (разные знаменатели)', type:'input',
-      text:`Реши уравнение: x + ${q.ab} = ${q.cd}`,
-      answer:[q.xs], placeholder:`напр. 1/4`,
-      hint:`x = ${q.cd} − ${q.ab}. Приведи к общему знаменателю.`,
-      explain:`x = ${q.cd} − ${q.ab} = ${q.xs}.`};
+    const data=[[4,6,'2/3'],[6,9,'2/3'],[4,8,'1/2'],[6,8,'3/4'],[9,12,'3/4'],[10,15,'2/3'],[8,12,'2/3'],[6,10,'3/5']];
+    const [n,d,correct]=pick(data);
+    const wrong=[`${n}/${d}`,`${n-1}/${d-2}`,`${n/2}/${d}`].filter(x=>x!==correct);
+    return {tag:'✂️ Сократи', type:'choice',
+      text:`Сократи дробь ${n}/${d} до несократимой.`,
+      options:shuffle([correct,...wrong.slice(0,3)]), answer:correct,
+      hint:`НОД(${n},${d})=${gcd(n,d)}. Делим числитель и знаменатель на ${gcd(n,d)}.`,
+      explain:`${n}÷${gcd(n,d)}=${n/gcd(n,d)}, ${d}÷${gcd(n,d)}=${d/gcd(n,d)}. Ответ: ${correct}.`};
+  },
+  /* §35: приведи к НОЗ — задача */
+  function(){
+    const lcmFn=(a,b)=>a*b/gcd(a,b);
+    const pairs=[[2,3],[3,4],[2,5],[4,6],[3,8],[2,9],[4,5],[6,8]];
+    const [d1,d2]=pick(pairs);
+    const lcmVal=lcmFn(d1,d2);
+    return {tag:'🔢 Найди НОЗ', type:'choice',
+      text:`Чему равен наименьший общий знаменатель дробей 1/${d1} и 1/${d2}?`,
+      options:shuffle([`${lcmVal}`,`${d1*d2}`,`${d1+d2}`,`${Math.max(d1,d2)}`].filter((v,i,a)=>a.indexOf(v)===i).slice(0,4)),
+      answer:`${lcmVal}`,
+      hint:`НОК(${d1},${d2}) = ${lcmVal}. Наименьшее число, которое делится и на ${d1}, и на ${d2}.`,
+      explain:`НОК(${d1},${d2}) = ${lcmVal}.`};
+  },
+  /* §35: сравни дроби через приведение */
+  function(){
+    const lcmFn=(a,b)=>a*b/gcd(a,b);
+    const data=[[1,3,1,4,'1/3 > 1/4'],[2,5,1,3,'2/5 < 1/3'],[3,4,2,3,'3/4 > 2/3'],[1,2,3,7,'1/2 > 3/7'],[4,7,3,5,'4/7 < 3/5']];
+    const [n1,d1,n2,d2,correct]=pick(data);
+    const ld=lcmFn(d1,d2), a=n1*(ld/d1), b=n2*(ld/d2);
+    const wrong1=correct.includes('>')? `${n1}/${d1} < ${n2}/${d2}`:`${n1}/${d1} > ${n2}/${d2}`;
+    return {tag:'⚖️ Сравни дроби', type:'choice',
+      text:`Сравни: ${n1}/${d1} и ${n2}/${d2}`,
+      options:shuffle([correct,wrong1,`${n1}/${d1} = ${n2}/${d2}`,'нельзя сравнить']),
+      answer:correct,
+      hint:`Общий знаменатель ${ld}: ${n1}/${d1}=${a}/${ld}, ${n2}/${d2}=${b}/${ld}. Сравниваем ${a} и ${b}.`,
+      explain:`${a}/${ld} ${a>b?'>':'<'} ${b}/${ld}: ${correct}.`};
+  },
+  /* §33: задача — верно ли равенство дробей */
+  function(){
+    const d1=rnd(2,5), n1=rnd(1,d1-1), k=rnd(2,4);
+    const d2=d1*k, n2=n1*k;
+    const mistake=rnd(0,1)===0;
+    const actualN2=mistake?n2+1:n2;
+    return {tag:'✅ Верно ли?', type:'choice',
+      text:`Верно ли: ${n1}/${d1} = ${actualN2}/${d2}?`,
+      options:shuffle(['Да, верно','Нет, неверно','Нельзя определить','Нужно ещё данные']),
+      answer:mistake?'Нет, неверно':'Да, верно',
+      hint:`Умножь ${n1}/${d1} на ${k}/${k}: получишь ${n2}/${d2}. Сравни с ${actualN2}/${d2}.`,
+      explain:mistake?`${n1}×${k}=${n2}≠${actualN2}. Неверно.`:`${n1}×${k}=${n2}=${actualN2}. Верно!`};
+  },
+  /* §33-35 задача — сравни суммы */
+  function(){
+    const a1=pick([1,2,3]), b1=pick([4,5,6,8]);
+    const a2=pick([3,5,7]), b2=b1;
+    const s1=a1/b1, s2=a2/b2;
+    const res=s1>s2?'первая больше':s1<s2?'вторая больше':'они равны';
+    return {tag:'⚖️ Задача',type:'choice',
+      text:`Сравни: ${a1}/${b1} и ${a2}/${b2}`,
+      options:shuffle(['первая больше','вторая больше','они равны','нельзя сравнить']),
+      answer:res,
+      hint:`Знаменатели одинаковые — сравниваем числители: ${a1} и ${a2}.`,
+      explain:`${a1}/${b1} ${s1>s2?'>':s1<s2?'<':'='} ${a2}/${b2} — ${res}.`};
   }
 ];
 
@@ -1633,6 +2145,144 @@ const GEN_LIBERTY = [
       options:shuffle([String(q.x),...wrong.slice(0,3).map(String)]), answer:String(q.x),
       hint:`x = ${q.c} · ${q.a}/${q.b} = ${q.x}.`,
       explain:`Умножаем обе стороны на ${q.a}/${q.b}: x = ${q.c} × ${q.a}/${q.b} = ${q.x}.`};
+  },
+  /* §36: сложение дробей с разными знаменателями */
+  function(){
+    const lcmFn=(a,b)=>a*b/gcd(a,b);
+    const pairs=[[1,2,1,3],[1,2,1,4],[1,3,1,4],[1,3,2,5],[2,3,1,4],[1,4,1,5],[1,2,2,3]];
+    const [n1,d1,n2,d2]=pick(pairs);
+    const ld=lcmFn(d1,d2);
+    const num=n1*(ld/d1)+n2*(ld/d2), g=gcd(num,ld);
+    const rn=num/g, rd=ld/g;
+    const correct=rn>=rd?`${Math.floor(rn/rd)}${rn%rd>0?' '+rn%rd+'/'+rd:''}`.trim():`${rn}/${rd}`;
+    return {tag:'➕ Разные знаменатели', type:'choice',
+      text:`${n1}/${d1} + ${n2}/${d2} = ?`,
+      options:shuffle([correct,`${n1+n2}/${d1}`,`${n1}/${d1+d2}`,`${rn+1}/${rd}`].filter((v,i,a)=>a.indexOf(v)===i).slice(0,4)),
+      answer:correct,
+      hint:`Общий знаменатель = НОК(${d1},${d2})=${ld}. Приводим и складываем числители.`,
+      explain:`${n1*(ld/d1)}/${ld} + ${n2*(ld/d2)}/${ld} = ${num}/${ld} = ${correct}.`};
+  },
+  /* §36: вычитание дробей с разными знаменателями */
+  function(){
+    const lcmFn=(a,b)=>a*b/gcd(a,b);
+    const pairs=[[3,4,1,2],[2,3,1,2],[3,4,2,3],[5,6,1,3],[3,5,1,2],[4,5,1,3]];
+    const [n1,d1,n2,d2]=pick(pairs);
+    const ld=lcmFn(d1,d2);
+    const num=n1*(ld/d1)-n2*(ld/d2); const g=gcd(Math.max(num,1),ld);
+    const correct=num<=0?'0':`${num/g}/${ld/g}`;
+    return {tag:'➖ Разные знаменатели', type:'choice',
+      text:`${n1}/${d1} − ${n2}/${d2} = ?`,
+      options:shuffle([correct,`${n1-n2}/${d1}`,`${n1}/${d1-d2}`,`${n1+n2}/${d1+d2}`].filter((v,i,a)=>a.indexOf(v)===i).slice(0,4)),
+      answer:correct,
+      hint:`Общий знаменатель ${ld}: ${n1}/${d1}=${n1*(ld/d1)}/${ld}, ${n2}/${d2}=${n2*(ld/d2)}/${ld}.`,
+      explain:`${n1*(ld/d1)}/${ld} − ${n2*(ld/d2)}/${ld} = ${num}/${ld} = ${correct}.`};
+  },
+  /* §36: задача — сложение дробей с разными знаменателями (питомник) */
+  function(){
+    const data=[
+      {total:60,t1:'яблонями',f1:'1/4',n1:1,d1:4,t2:'грушами',f2:'1/3',n2:1,d2:3,ans:35,wrong:[25,40,30]},
+      {total:48,t1:'берёзами',f1:'1/4',n1:1,d1:4,t2:'елями',f2:'1/6',n2:1,d2:6,ans:20,wrong:[12,24,16]},
+      {total:72,t1:'яблонями',f1:'1/4',n1:1,d1:4,t2:'вишнями',f2:'1/3',n2:1,d2:3,ans:42,wrong:[18,24,54]},
+      {total:90,t1:'соснами',f1:'2/5',n1:2,d1:5,t2:'дубами',f2:'1/3',n2:1,d2:3,ans:66,wrong:[36,54,72]},
+    ];
+    const q=pick(data);
+    return {tag:'🌿 Задача: питомник', type:'choice',
+      text:`В питомнике ${q.total} га. Под ${q.t1} занято ${q.f1} площади, под ${q.t2} — ${q.f2}. Сколько га занято в целом?`,
+      options:shuffle([`${q.ans} га`,...q.wrong.slice(0,3).map(x=>`${x} га`)]),
+      answer:`${q.ans} га`,
+      hint:`Сложи дроби ${q.f1} + ${q.f2}, приведя к общему знаменателю, затем умножь на ${q.total}.`,
+      explain:`(${q.f1} + ${q.f2}) × ${q.total} = ${q.ans} га.`};
+  },
+  /* §36: уравнение x + a/b = c/d (разные знаменатели) */
+  function(){
+    const data=[
+      {ab:'1/4',cd:'3/4',xs:'1/2',wrongs:['1/4','2/4','3/8']},
+      {ab:'1/3',cd:'5/6',xs:'1/2',wrongs:['2/6','1/6','1/3']},
+      {ab:'1/4',cd:'3/8',xs:'1/8',wrongs:['2/8','1/4','1/2']},
+      {ab:'1/6',cd:'7/12',xs:'5/12',wrongs:['2/12','1/4','6/12']},
+      {ab:'1/3',cd:'3/4',xs:'5/12',wrongs:['2/12','7/12','4/12']},
+    ];
+    const q=pick(data);
+    return {tag:'🔡 Уравнение (§36)', type:'input',
+      text:`Реши уравнение: x + ${q.ab} = ${q.cd}`,
+      step1_show:`x = ${q.cd} − ${q.ab}`,
+      answer:[q.xs], placeholder:`напр. 1/4`,
+      hint:`x = ${q.cd} − ${q.ab}. Приведи к общему знаменателю.`,
+      explain:`x = ${q.cd} − ${q.ab} = ${q.xs}.`};
+  },
+  /* §38: нахождение числа по его дроби */
+  function(){
+    const data=[
+      {frac:'3/4',part:12,total:16},{frac:'2/3',part:8,total:12},{frac:'3/5',part:9,total:15},
+      {frac:'5/8',part:10,total:16},{frac:'2/5',part:6,total:15},{frac:'7/10',part:14,total:20},
+    ];
+    const q=pick(data); const [n,d]=q.frac.split('/').map(Number);
+    const wrong=[q.total+4,q.total-3,Math.round(q.part*1.5)].filter(v=>v>0&&v!==q.total);
+    return {tag:'🔍 Найди целое', type:'choice',
+      text:`${q.frac} числа равны ${q.part}. Найди всё число.`,
+      options:shuffle([`${q.total}`,...wrong.slice(0,3).map(String)]), answer:`${q.total}`,
+      hint:`Если ${q.frac} = ${q.part}, то 1/${d} = ${q.part}÷${n}. Всё число = ${q.part/n}×${d}.`,
+      explain:`${q.part}÷${n}×${d}=${q.total}.`};
+  },
+  /* §36: задача — скорость как дробь от другой */
+  function(){
+    const data=[[40,[3,4],30],[60,[2,3],40],[80,[3,4],60],[45,[2,3],30],[50,[4,5],40]];
+    const [v1,[n,d],v2]=pick(data);
+    const wrong=[v2+5,v2-5,v1-v2].filter(x=>x>0&&x!==v2);
+    return {tag:'🌿 Задача: скорость', type:'choice',
+      text:`Велосипедист едет ${v1} км/ч. Пешеход идёт ${n}/${d} этой скорости. Какова скорость пешехода?`,
+      options:shuffle([`${v2} км/ч`,...wrong.slice(0,3).map(x=>`${x} км/ч`)]), answer:`${v2} км/ч`,
+      hint:`${v1} ÷ ${d} × ${n} = ${v2}.`,
+      explain:`${n}/${d} от ${v1}: ${v1}÷${d}×${n}=${v2} км/ч.`};
+  },
+  /* §37: уравнение a/b · x = c */
+  function(){
+    const data=[{a:2,b:3,c:4,x:6},{a:3,b:4,c:9,x:12},{a:2,b:5,c:8,x:20},{a:3,b:5,c:6,x:10},{a:4,b:7,c:8,x:14}];
+    const q=pick(data);
+    return {tag:'🔡 Уравнение (§37)', type:'choice',
+      text:`Реши уравнение: ${q.a}/${q.b} · x = ${q.c}`,
+      options:shuffle([String(q.x),`${q.x+1}`,`${q.x-2}`,`${q.x*2}`]), answer:String(q.x),
+      hint:`x = ${q.c} ÷ (${q.a}/${q.b}) = ${q.c} × ${q.b}/${q.a} = ${q.x}.`,
+      explain:`Делим обе стороны на ${q.a}/${q.b}: x=${q.c}×${q.b}/${q.a}=${q.x}.`};
+  },
+  /* §38: задача — часть от числа (разные контексты) */
+  function(){
+    const data=[
+      {n:1,d:3,total:120,res:40,ctx:'книг на полке'},
+      {n:2,d:5,total:200,res:80,ctx:'учеников в школе'},
+      {n:3,d:4,total:160,res:120,ctx:'баллов на экзамене'},
+      {n:1,d:4,total:240,res:60,ctx:'км маршрута'},
+    ];
+    const q=pick(data);
+    const wrong=[q.res+q.d,q.total-q.res,q.res-q.n].filter(v=>v>0&&v!==q.res);
+    return {tag:'🌿 Задача', type:'choice',
+      text:`Всего ${q.total} ${q.ctx}. Прочитали / прошли / выполнили ${q.n}/${q.d}. Сколько это?`,
+      options:shuffle([`${q.res}`,...wrong.slice(0,3).map(String)]), answer:`${q.res}`,
+      hint:`${q.total} ÷ ${q.d} × ${q.n} = ${q.res}.`,
+      explain:`${q.n}/${q.d} от ${q.total}: ${q.total}÷${q.d}×${q.n}=${q.res}.`};
+  },
+  /* §36-39 задача — велосипед */
+  function(){
+    function lgcd(a,b){return b?lgcd(b,a%b):a;}
+    const n1=pick([2,3,4]); const d1=pick([5,7,9]);
+    const n2=pick([1,2]); const d2=pick([3,4,6]);
+    const lcd=d1*d2/lgcd(d1,d2);
+    const sum=n1*lcd/d1+n2*lcd/d2;
+    const sumFrac=sum%lcd===0?`${sum/lcd}`:`${sum}/${lcd}`;
+    return {tag:'🚴 Задача',type:'input',
+      text:`Велосипедист проехал ${n1}/${d1} пути в первый день и ${n2}/${d2} пути во второй. Какую часть пути проехал велосипедист за два дня?`,
+      answer:sumFrac,
+      hint:`Привести к общему знаменателю ${lcd}: ${n1}/${d1}=${n1*lcd/d1}/${lcd}, ${n2}/${d2}=${n2*lcd/d2}/${lcd}.`,
+      explain:`${n1}/${d1}+${n2}/${d2}=${n1*lcd/d1}/${lcd}+${n2*lcd/d2}/${lcd}=${sumFrac}.`};
+  },
+  /* §36-39 задача — апельсины в магазинах */
+  function(){
+    const n1=4; const d1=5; const n2=7; const d2=5;
+    return {tag:'🍊 Задача',type:'input',
+      text:`В первый день в универсам завезли ${n1}/${d1} т апельсинов, а во второй — ${n2}/${d2} т. Сколько апельсинов осталось, если продали ${(n1+n2-1)}/${d2} т?`,
+      answer:`1/${d2}`,
+      hint:`Завезли всего: ${n1}+${n2}=${n1+n2}, это ${n1+n2}/${d2}. Продали ${n1+n2-1}/${d2}. Осталось: 1/${d2}.`,
+      explain:`Завезли: ${n1+n2}/${d2}. Продали: ${n1+n2-1}/${d2}. Осталось: 1/${d2} т.`};
   }
 ];
 
@@ -1748,6 +2398,99 @@ const GEN_CHRIST = [
       options:shuffle([d.x,...d.wrong.slice(0,3)]), answer:d.x,
       hint:`x = ${d.c} + ${d.a} = ${d.x}.`,
       explain:`Переносим: x = ${d.c} + ${d.a} = ${d.x}.`};
+  },
+  /* §41: перевод обыкновенной дроби в десятичную */
+  function(){
+    const data=[['1/2','0,5'],['1/4','0,25'],['3/4','0,75'],['1/5','0,2'],['3/5','0,6'],['1/10','0,1'],['7/10','0,7'],['3/10','0,3']];
+    const [frac,dec]=pick(data);
+    const wrong=data.filter(p=>p[1]!==dec).slice(0,3).map(p=>p[1]);
+    return {tag:'💱 Дробь → десятичная', type:'choice',
+      text:`Запиши дробь ${frac} как десятичную.`,
+      options:shuffle([dec,...wrong]), answer:dec,
+      hint:`Раздели числитель на знаменатель: ${frac.split('/')[0]}÷${frac.split('/')[1]}.`,
+      explain:`${frac} = ${dec}.`};
+  },
+  /* §41: сравни десятичные */
+  function(){
+    const pairs=[[1.2,1.5],[0.7,0.3],[2.4,2.8],[0.15,0.2],[1.05,1.5],[3.7,3.07]];
+    const [a,b]=pick(pairs);
+    const as=String(a).replace('.',','), bs=String(b).replace('.',',');
+    const ans=a>b?`${as} > ${bs}`:a<b?`${as} < ${bs}`:`${as} = ${bs}`;
+    return {tag:'⚖️ Сравни десятичные', type:'choice',
+      text:`Сравни: ${as} и ${bs}`,
+      options:shuffle([`${as} > ${bs}`,`${as} < ${bs}`,`${as} = ${bs}`,`нельзя сравнить`]),
+      answer:ans,
+      hint:`Сравнивай разряд за разрядом слева направо.`,
+      explain:ans};
+  },
+  /* §42: вычисли сумму десятичных */
+  function(){
+    const pairs=[[1.2,2.3,3.5],[0.7,1.4,2.1],[2.5,1.3,3.8],[3.1,0.9,4.0],[1.8,2.2,4.0],[0.35,0.4,0.75]];
+    const [a,b,c]=pick(pairs);
+    const as=String(a).replace('.',','), bs=String(b).replace('.',','), cs=String(c).replace('.',',');
+    const wrong=[String(c+0.1).replace('.',','),String(c-0.1).replace('.',','),String(a+b-0.1).replace('.',',')];
+    return {tag:'➕ Сложение десятичных', type:'choice',
+      text:`${as} + ${bs} = ?`,
+      options:shuffle([cs,...wrong.slice(0,3)]), answer:cs,
+      hint:`Складывай поразрядно, выравнивая запятую.`,
+      explain:`${as} + ${bs} = ${cs}.`};
+  },
+  /* §42: задача с десятичными */
+  function(){
+    const data=[
+      {a:2.5,b:1.3,op:'+',res:3.8,ctx:'сложи длины'},
+      {a:5.0,b:2.4,op:'−',res:2.6,ctx:'найди разность'},
+      {a:3.7,b:1.2,op:'+',res:4.9,ctx:'сложи'},
+      {a:4.5,b:1.8,op:'−',res:2.7,ctx:'вычти'},
+    ];
+    const q=pick(data);
+    const as=String(q.a).replace('.',','), bs=String(q.b).replace('.',','), rs=String(q.res).replace('.',',');
+    return {tag:'🌿 Задача', type:'choice',
+      text:`Блогер снял ${as} м одной части статуи и ${bs} м другой. Что больше — их сумма или разность?`,
+      options:shuffle([`Сумма: ${String(q.a+q.b).replace('.',',')} м`,`Разность: ${String(Math.abs(q.a-q.b)).replace('.',',')} м`,`Равны`,`Нельзя сравнить`]),
+      answer:`Сумма: ${String(q.a+q.b).replace('.',',')} м`,
+      hint:`Сумма ${as}+${bs}=${String(q.a+q.b).replace('.',',')}. Разность ${as}−${bs}=${String(Math.abs(q.a-q.b)).replace('.',',')}.`,
+      explain:`Сумма всегда больше разности (при положительных числах).`};
+  },
+  /* §42: задача — найди остаток (десятичные) */
+  function(){
+    const data=[
+      {total:10.0,used:3.5,left:6.5},{total:5.0,used:1.8,left:3.2},{total:8.0,used:2.4,left:5.6},
+      {total:7.5,used:3.0,left:4.5},{total:12.0,used:4.5,left:7.5},
+    ];
+    const q=pick(data);
+    const ts=String(q.total).replace('.',','), us=String(q.used).replace('.',','), ls=String(q.left).replace('.',',');
+    const wrong=[String(q.left+0.5).replace('.',','),String(q.left-0.5).replace('.',','),String(q.total).replace('.',',')];
+    return {tag:'🌿 Задача: остаток', type:'choice',
+      text:`На стройке ${ts} т материала. Израсходовали ${us} т. Сколько осталось?`,
+      options:shuffle([ls,...wrong.slice(0,3).map(x=>`${x}`)]), answer:ls,
+      hint:`${ts} − ${us} = ${ls}.`,
+      explain:`${ts} − ${us} = ${ls} т.`};
+  },
+  /* §41-43 задача — грибы */
+  function(){
+    const total=pick([28,35,42,56]);
+    const n=pick([2,3,5]); const d=pick([4,7,8]);
+    const part=Math.round(total*n/d);
+    return {tag:'🍄 Задача',type:'input',
+      text:`Андрей нашёл ${total} грибов, из которых ${n}/${d} — подосиновики. Сколько подосиновиков нашёл Андрей?`,
+      answer:`${part}`,
+      hint:`${total}÷${d}×${n}=${part}.`,
+      explain:`${n}/${d} от ${total}: ${total}÷${d}×${n}=${part} подосиновиков.`};
+  },
+  /* §41-43 задача — конфеты */
+  function(){
+    const mass=pick([120,160,200,240]);
+    const n1=1; const d1=pick([3,4,5]);
+    const part1=Math.round(mass*n1/d1);
+    const n2=3; const d2=pick([8,10,12]);
+    const part2=Math.round(mass*n2/d2);
+    return {tag:'🍬 Задача',type:'choice',
+      text:`В коробке конфет ${mass} г. Конфет с шоколадной начинкой — ${n1}/${d1}, с другой начинкой — ${n2}/${d2}. Сколько граммов конфет с шоколадной начинкой?`,
+      options:shuffle([`${part1} г`,`${part2} г`,`${part1+part2} г`,`${mass-part1} г`]),
+      answer:`${part1} г`,
+      hint:`${mass}÷${d1}×${n1}=${part1}.`,
+      explain:`${n1}/${d1} от ${mass}: ${mass}÷${d1}×${n1}=${part1} г.`};
   }
 ];
 
@@ -1863,6 +2606,99 @@ const GEN_PARTHENON = [
       options:shuffle([d.x,...d.wrong.slice(0,3)]), answer:d.x,
       hint:`x = ${d.c} + ${d.a} = ${d.x}.`,
       explain:`Переносим: x = ${d.c} + ${d.a} = ${d.x}.`};
+  },
+  /* §44: округли десятичную дробь до целых */
+  function(){
+    const vals=[[3.2,3],[3.7,4],[5.5,6],[7.1,7],[4.8,5],[2.3,2],[8.9,9],[6.4,6]];
+    const [v,r]=pick(vals);
+    const vs=String(v).replace('.',',');
+    return {tag:'🔢 Округли до целых', type:'choice',
+      text:`Округли число ${vs} до целых.`,
+      options:shuffle([String(r),String(r+1),String(r-1>0?r-1:r+2),`${vs}`]),
+      answer:String(r),
+      hint:`Смотрим на десятые: ${String(v).split('.')[1]}. Если ≥5 — округляем вверх, если <5 — вниз.`,
+      explain:`${vs} → ${r} (${String(v).split('.')[1]>=5?'≥':'<'}5, округляем ${String(v).split('.')[1]>=5?'вверх':'вниз'}).`};
+  },
+  /* §44: округли до десятых */
+  function(){
+    const vals=[[3.24,3.2],[5.87,5.9],[1.45,1.5],[7.32,7.3],[4.76,4.8],[2.13,2.1]];
+    const [v,r]=pick(vals);
+    const vs=String(v).replace('.',','), rs=String(r).replace('.',',');
+    return {tag:'🔢 Округли до десятых', type:'choice',
+      text:`Округли ${vs} до десятых.`,
+      options:shuffle([rs,String(r+0.1).replace('.',','),String((r-0.1).toFixed(1)).replace('.',','),String(v).replace('.',',')]),
+      answer:rs,
+      hint:`Смотрим на сотые (${String(v).split('.')[2]||0}). Если ≥5 — увеличиваем десятые.`,
+      explain:`${vs} ≈ ${rs} (до десятых).`};
+  },
+  /* §43: задача — периметр с десятичными */
+  function(){
+    const sides=[[3.5,2.0],[4.2,1.8],[5.5,2.5],[3.7,1.3]];
+    const [a,b]=pick(sides);
+    const p=2*(a+b);
+    const as=String(a).replace('.',','), bs=String(b).replace('.',','), ps=String(p).replace('.',',');
+    const wrong=[String(p+1).replace('.',','),String(a+b).replace('.',','),String(2*a).replace('.',',')];
+    return {tag:'📐 Периметр', type:'choice',
+      text:`Прямоугольник со сторонами ${as} м и ${bs} м. Найди периметр.`,
+      options:shuffle([ps,...wrong.slice(0,3)]), answer:ps,
+      hint:`P = 2×(${as}+${bs}) = 2×${String(a+b).replace('.',',')} = ${ps} м.`,
+      explain:`P = 2×(${as}+${bs}) = ${ps} м.`};
+  },
+  /* §43: сравни результаты вычислений */
+  function(){
+    const ops=[[2.5,1.5,4.0,3.0,1.0],[3.8,1.2,5.0,4.0,0.8],[1.7,2.3,4.0,3.5,0.5]];
+    const [a,b,s,c,d]=pick(ops);
+    const as=String(a).replace('.',','), bs=String(b).replace('.',',');
+    const ss=String(s).replace('.',','), cs=String(c).replace('.',','), ds=String(d).replace('.',',');
+    const ans=`${as}+${bs} > ${cs}−${ds}`;
+    return {tag:'⚖️ Сравни выражения', type:'choice',
+      text:`Сравни: (${as}+${bs}) и (${cs}−${ds})`,
+      options:shuffle([`${as}+${bs} > ${cs}−${ds}`,`${as}+${bs} < ${cs}−${ds}`,`${as}+${bs} = ${cs}−${ds}`,`нельзя`]),
+      answer:ans,
+      hint:`Сумма: ${as}+${bs}=${ss}. Разность: ${cs}−${ds}=${ds}. Сравниваем.`,
+      explain:`${ss} > ${d}: ${ans}.`};
+  },
+  /* §44: расставь в порядке возрастания */
+  function(){
+    const data=[
+      {nums:['1,2','1,5','1,09'],sorted:'1,09, 1,2, 1,5'},
+      {nums:['3,7','3,07','3,70'],sorted:'3,07, 3,7, 3,70'},
+      {nums:['0,8','0,08','0,80'],sorted:'0,08, 0,8, 0,80'},
+      {nums:['2,4','2,14','2,41'],sorted:'2,14, 2,4, 2,41'},
+    ];
+    const q=pick(data);
+    const [a,b,c]=q.sorted.split(', ');
+    return {tag:'⬆️ Порядок десятичных', type:'choice',
+      text:`Расставь в порядке возрастания: ${q.nums.join(', ')}.`,
+      options:shuffle([q.sorted,`${c}, ${b}, ${a}`,`${b}, ${a}, ${c}`,`${a}, ${c}, ${b}`].filter((v,i,a)=>a.indexOf(v)===i).slice(0,4)),
+      answer:q.sorted,
+      hint:'Выровняй знаки запятой и сравнивай поразрядно.',
+      explain:`Правильный порядок: ${q.sorted}.`};
+  },
+  /* §44-46 задача — периметр прямоугольника */
+  function(){
+    const len=pick([4.3,5.2,3.7,6.1]);
+    const wid=Math.round((len-pick([1.7,2.1,0.9,1.3]))*10)/10;
+    const P=Math.round((2*(len+wid))*10)/10;
+    const ls=String(len).replace('.',','), ws=String(wid).replace('.',','), Ps=String(P).replace('.',',');
+    return {tag:'📐 Задача',type:'input',
+      text:`Длина прямоугольника ${ls} см, а ширина на 1,7 см меньше (ширина = ${ws} см). Найди периметр прямоугольника.`,
+      answer:`${Ps} см`,
+      hint:`P=2×(${ls}+${ws})=2×${String(len+wid).replace('.',',')}=${Ps}.`,
+      explain:`P=2×(${ls}+${ws})=${Ps} см.`};
+  },
+  /* §44-46 задача — Оля гуляла */
+  function(){
+    const h1=0.5;
+    const h2=pick([1.5,2.5,1.25]);
+    const diff=Math.round((h2-h1)*100)/100;
+    const h1s=String(h1).replace('.',','), h2s=String(h2).replace('.',','), ds=String(diff).replace('.',',');
+    return {tag:'🌳 Задача',type:'choice',
+      text:`Оля после школы гуляла ${h1s} ч, а вечером — ${h2s} ч. На сколько больше она гуляла вечером?`,
+      options:shuffle([`${ds} ч`,`${String(h1+h2).replace('.',',')} ч`,`${h2s} ч`,`${String(Math.round(h2/h1*10)/10).replace('.',',')} ч`]),
+      answer:`${ds} ч`,
+      hint:`${h2s}−${h1s}=${ds}.`,
+      explain:`${h2s}−${h1s}=${ds} ч.`};
   }
 ];
 
@@ -1998,6 +2834,100 @@ const GEN_PYRAMIDS = [
       options:shuffle([d.x,...wrong.slice(0,3).map(String)]), answer:d.x,
       hint:`x = ${d.b} ÷ ${d.a}. Умножь оба числа на 10: ${parseInt(d.b)*10} ÷ ${parseFloat(d.a.replace(',','.'))*10} = ${d.x}.`,
       explain:`x = ${d.b} ÷ ${d.a} = ${d.x}.`};
+  },
+  /* §47: умножи десятичное на 10, 100 */
+  function(){
+    const base=[1.5,2.4,0.7,3.6,0.08,1.25,4.3,0.15];
+    const mult=pick([10,100]);
+    const a=pick(base);
+    const res=parseFloat((a*mult).toFixed(2));
+    const as=String(a).replace('.',','), rs=String(res).replace('.',',');
+    return {tag:'✖️ Умножь на '+mult, type:'choice',
+      text:`${as} × ${mult} = ?`,
+      options:shuffle([rs,String(res+mult/10).replace('.',','),String(res-1).replace('.',','),String(a*mult+1).replace('.',',')].filter((v,i,a)=>a.indexOf(v)===i).slice(0,4)),
+      answer:rs,
+      hint:`При умножении на ${mult} запятая сдвигается вправо на ${mult===10?1:2} знак${mult===10?'':'а'}.`,
+      explain:`${as} × ${mult} = ${rs}.`};
+  },
+  /* §48: раздели на 10, 100 */
+  function(){
+    const base=[15,24,370,46,820,305,1250];
+    const div=pick([10,100]);
+    const a=pick(base);
+    const res=a/div;
+    const as=String(a), rs=String(res).replace('.',',');
+    return {tag:'➗ Раздели на '+div, type:'choice',
+      text:`${as} ÷ ${div} = ?`,
+      options:shuffle([rs,String(res*10).replace('.',','),String(res+1).replace('.',','),String(res*2).replace('.',',')].filter((v,i,a)=>a.indexOf(v)===i).slice(0,4)),
+      answer:rs,
+      hint:`При делении на ${div} запятая сдвигается влево на ${div===10?1:2} знак${div===10?'':'а'}.`,
+      explain:`${as} ÷ ${div} = ${rs}.`};
+  },
+  /* §47: задача — умножение десятичного на натуральное */
+  function(){
+    const data=[
+      {a:1.5,n:4,res:6.0},{a:2.3,n:3,res:6.9},{a:0.8,n:5,res:4.0},
+      {a:1.2,n:6,res:7.2},{a:3.5,n:2,res:7.0},{a:0.6,n:8,res:4.8},
+    ];
+    const q=pick(data);
+    const as=String(q.a).replace('.',','), rs=String(q.res).replace('.',',');
+    const wrong=[String(q.res+1).replace('.',','),String(q.res-0.5).replace('.',','),String(q.a+q.n).replace('.',',')];
+    return {tag:'🌿 Задача', type:'choice',
+      text:`Блогер снял ${q.n} видео по ${as} ГБ каждое. Сколько места займут все видео?`,
+      options:shuffle([`${rs} ГБ`,...wrong.slice(0,3).map(x=>`${x} ГБ`)]), answer:`${rs} ГБ`,
+      hint:`${as} × ${q.n} = ${rs}.`,
+      explain:`${as} × ${q.n} = ${rs} ГБ.`};
+  },
+  /* §48: деление десятичного на натуральное */
+  function(){
+    const data=[
+      {a:'4,8',n:4,x:'1,2'},{a:'6,3',n:3,x:'2,1'},{a:'8,4',n:4,x:'2,1'},
+      {a:'5,5',n:5,x:'1,1'},{a:'9,6',n:4,x:'2,4'},{a:'7,2',n:6,x:'1,2'},
+    ];
+    const d=pick(data);
+    const wrong=[String(parseFloat(d.x.replace(',','.'))+0.1).replace('.',','),String(parseFloat(d.x.replace(',','.'))-0.1).replace('.',','),String(d.n).replace('.',',')];
+    return {tag:'➗ Раздели', type:'choice',
+      text:`${d.a} ÷ ${d.n} = ?`,
+      options:shuffle([d.x,...wrong.slice(0,3)]), answer:d.x,
+      hint:`Дели как обычные числа: ${d.a.replace(',','')} ÷ ${d.n}. Ставь запятую в частном под запятой в делимом.`,
+      explain:`${d.a} ÷ ${d.n} = ${d.x}.`};
+  },
+  /* §47-48: задача — скорость и расстояние */
+  function(){
+    const data=[
+      {v:'1,5',t:4,d:'6,0'},{v:'2,4',t:3,d:'7,2'},{v:'3,5',t:2,d:'7,0'},{v:'0,8',t:5,d:'4,0'},{v:'1,2',t:5,d:'6,0'},
+    ];
+    const q=pick(data);
+    const wrong=[String(parseFloat(q.d.replace(',','.'))+1).replace('.',','),String(parseFloat(q.d.replace(',','.'))-0.5).replace('.',','),q.v];
+    return {tag:'🌿 Задача: скорость', type:'choice',
+      text:`Черепаха ползёт со скоростью ${q.v} м/мин. Какое расстояние проползёт за ${q.t} мин?`,
+      options:shuffle([`${q.d} м`,...wrong.slice(0,3).map(x=>`${x} м`)]), answer:`${q.d} м`,
+      hint:`${q.v} × ${q.t} = ${q.d}.`,
+      explain:`${q.v} × ${q.t} = ${q.d} м.`};
+  },
+  /* §47-48 задача — ткань на пальто */
+  function(){
+    const coats=pick([12,15,8,10]);
+    const total=pick([35,42,24,30]);
+    const perCoat=Math.round((total/coats)*10)/10;
+    const pc=String(perCoat).replace('.',','), tc=String(total).replace('.',',');
+    return {tag:'🧥 Задача',type:'input',
+      text:`Из ${tc} м ткани сшили ${coats} пальто, расходуя поровну. Сколько метров ткани пошло на одно пальто?`,
+      answer:`${pc} м`,
+      hint:`${tc}÷${coats}=${pc}.`,
+      explain:`${tc}÷${coats}=${pc} м на одно пальто.`};
+  },
+  /* §47-48 задача — скорость пешехода */
+  function(){
+    const speed=pick([4,5,6,4.5]);
+    const time=pick([3,2.5,4]);
+    const dist=Math.round(speed*time*10)/10;
+    const ss=String(speed).replace('.',','), ts=String(time).replace('.',','), ds=String(dist).replace('.',',');
+    return {tag:'🚶 Задача',type:'input',
+      text:`Пешеход идёт со скоростью ${ss} км/ч. Какое расстояние он пройдёт за ${ts} ч?`,
+      answer:`${ds} км`,
+      hint:`${ss}×${ts}=${ds}.`,
+      explain:`${ss}×${ts}=${ds} км.`};
   }
 ];
 
@@ -2076,9 +3006,59 @@ const GEN_PETRA = [
     const b=x+a;
     return {tag:'🔡 Уравнение с углами', type:'input',
       text:`Реши уравнение: x + ${a}° = ${b}°`,
-      answer:[`${x}`],
+      step1_show:`x = ${b}° − ${a}°`,
+      answer:[`${x}`], placeholder:`градусы`,
       hint:`x = ${b}° − ${a}° = ${x}°.`,
       explain:`x = ${b} − ${a} = ${x}°.`};
+  },
+  /* §50-52 задача — лодка с течением */
+  function(){
+    const data=[
+      {vown:'10,5',vtec:'2,5',vd:'13',vu:'8'},
+      {vown:'12',vtec:'3',vd:'15',vu:'9'},
+      {vown:'8,5',vtec:'1,5',vd:'10',vu:'7'},
+      {vown:'15',vtec:'2',vd:'17',vu:'13'},
+      {vown:'6,1',vtec:'9,3',vd:'15,4',vu:'нельзя (плывёт против)'},
+    ];
+    const q=data[Math.floor(Math.random()*4)]; // берём только первые 4 (без невозможного)
+    return {tag:'🚤 Задача: лодка', type:'choice',
+      text:`Собственная скорость лодки ${q.vown} км/ч, скорость течения реки — ${q.vtec} км/ч. Найди скорость лодки по течению.`,
+      options:shuffle([`${q.vd} км/ч`,`${q.vu} км/ч`,`${q.vown} км/ч`,`${q.vtec} км/ч`]),
+      answer:`${q.vd} км/ч`,
+      hint:`По течению: скорость лодки + скорость реки = ${q.vown} + ${q.vtec} = ${q.vd}.`,
+      explain:`По течению скорость: ${q.vown} + ${q.vtec} = ${q.vd} км/ч.`};
+  },
+  /* §50-52 задача — мотоциклист */
+  function(){
+    const data=[
+      {v:'40,5',d:'121,5',t:'3'},
+      {v:'55',d:'220',t:'4'},
+      {v:'60',d:'150',t:'2,5'},
+      {v:'48',d:'144',t:'3'},
+      {v:'36',d:'90',t:'2,5'},
+    ];
+    const q=pick(data);
+    const vs=q.v, ds=q.d, ts=q.t;
+    return {tag:'🏍️ Задача: мотоциклист', type:'input',
+      text:`Мотоциклист движется со скоростью ${vs} км/ч. За сколько часов он проедет ${ds} км?`,
+      answer:`${ts} ч`,
+      hint:`Время = расстояние ÷ скорость: ${ds} ÷ ${vs} = ${ts}.`,
+      explain:`${ds} ÷ ${vs} = ${ts} ч.`};
+  },
+  /* §50-52 задача — встреча двух (из задания 206) */
+  function(){
+    const data=[
+      {v1:'4,6',v2:'3,8',d:'1,84',t:'0,22 ч (≈ 13 мин)'},
+      {v1:'11,7',v2:'12,8',d:'29,4',label:'11,7+12,8=24,5 км/ч, 29,4÷24,5≈1,2 ч'},
+      {v1:'10',v2:'8',d:'54',t:'3'},
+      {v1:'12',v2:'8',d:'60',t:'3'},
+    ];
+    const q=pick([{v1:'10',v2:'8',d:'54',t:'3'},{v1:'12',v2:'8',d:'60',t:'3'},{v1:'15',v2:'9',d:'72',t:'3'},{v1:'10',v2:'6',d:'64',t:'4'}]);
+    return {tag:'🚴 Задача: встреча', type:'input',
+      text:`Два велосипедиста выехали навстречу одновременно. Скорости: ${q.v1} км/ч и ${q.v2} км/ч. Расстояние между ними ${q.d} км. Через сколько часов они встретятся?`,
+      answer:`${q.t} ч`,
+      hint:`Скорость сближения = ${q.v1} + ${q.v2} = ${Number(q.v1)+Number(q.v2)} км/ч. Время = ${q.d} ÷ ${Number(q.v1)+Number(q.v2)}.`,
+      explain:`(${q.v1}+${q.v2})=${Number(q.v1)+Number(q.v2)} км/ч. ${q.d}÷${Number(q.v1)+Number(q.v2)}=${q.t} ч.`};
   }
 ];
 
@@ -2266,26 +3246,287 @@ Object.assign(SIGNATURE, {
   ]
 });
 
+/* ===== МИНИ-КОНТРОЛЬНЫЕ (5 вопросов без подсказок) ===== */
+const MINI_EXAM_Q=[
+  /* Loc 0 — Эйфелева башня — §26-27: доли, дроби, основные понятия */
+  [
+    {type:'choice',q:'Что такое дробь 3/5?',opts:['3 делить на 5','5 делить на 3','3 плюс 5','3 умножить на 5'],answer:'3 делить на 5'},
+    {type:'input',q:'Запиши дробь: три четвёртых',answer:'3/4'},
+    {type:'choice',q:'Числитель дроби 7/9 равен:',opts:['9','7','2','63'],answer:'7'},
+    {type:'choice',q:'1/2 часть числа 80 — это:',opts:['40','20','60','160'],answer:'40'},
+    {type:'input',q:'Реши: 1/3 от 99 = ?',answer:'33'},
+  ],
+  /* Loc 1 — Колизей — §28: неправильные дроби, смешанные числа */
+  [
+    {type:'choice',q:'Какая дробь является неправильной?',opts:['7/3','3/7','2/5','1/4'],answer:'7/3'},
+    {type:'input',q:'Переведи в смешанное число: 11/4',answer:'2 3/4'},
+    {type:'choice',q:'Смешанное число 3 2/5 в виде неправильной дроби:',opts:['17/5','32/5','15/2','7/5'],answer:'17/5'},
+    {type:'choice',q:'Какое из чисел больше: 2 1/3 или 7/3?',opts:['2 1/3','7/3','они равны','нельзя сравнить'],answer:'они равны'},
+    {type:'input',q:'Переведи в неправильную дробь: 4 1/6',answer:'25/6'},
+  ],
+  /* Loc 2 — Мачу-Пикчу — §29: сложение и вычитание дробей с одинаковым знаменателем */
+  [
+    {type:'input',q:'Вычисли: 3/8 + 4/8 = ?',answer:'7/8'},
+    {type:'input',q:'Вычисли: 5/9 − 2/9 = ?',answer:'3/9'},
+    {type:'choice',q:'Туристы прошли 3/7 маршрута утром и 2/7 маршрута вечером. Какую часть прошли всего?',opts:['5/7','1/7','6/7','5/14'],answer:'5/7'},
+    {type:'input',q:'Вычисли: 1 − 3/7 = ?',answer:'4/7'},
+    {type:'choice',q:'В вазе 4/9 красных и 3/9 белых роз. Какую часть составляют остальные?',opts:['2/9','7/9','1/9','5/9'],answer:'2/9'},
+  ],
+  /* Loc 3 — Тадж-Махал — §31-32: смешанные числа, сложение/вычитание */
+  [
+    {type:'input',q:'Вычисли: 2 3/7 + 1 2/7 = ?',answer:'3 5/7'},
+    {type:'input',q:'Вычисли: 5 6/8 − 2 3/8 = ?',answer:'3 3/8'},
+    {type:'choice',q:'Какое число больше: 3 4/9 или 3 7/9?',opts:['3 7/9','3 4/9','они равны','нельзя сравнить'],answer:'3 7/9'},
+    {type:'input',q:'Вычисли: 4 − 1 2/5 = ?',answer:'2 3/5'},
+    {type:'choice',q:'Путник прошёл 2 3/8 км утром и 1 5/8 км вечером. Сколько км всего?',opts:['4 км','3 км','3 8/8','4 1/8 км'],answer:'4 км'},
+  ],
+  /* Loc 4 — Великая стена — §33-35: НОК, НОД, сравнение дробей */
+  [
+    {type:'input',q:'НОК чисел 4 и 6 равен:',answer:'12'},
+    {type:'choice',q:'Сравни дроби: 2/3 и 3/5',opts:['2/3 > 3/5','2/3 < 3/5','2/3 = 3/5','нельзя сравнить'],answer:'2/3 > 3/5'},
+    {type:'input',q:'Приведи к знаменателю 15: дробь 2/3 = ?/15',answer:'10'},
+    {type:'choice',q:'НОД чисел 12 и 18:',opts:['6','3','36','9'],answer:'6'},
+    {type:'input',q:'Сократи дробь 8/12',answer:'2/3'},
+  ],
+  /* Loc 5 — Статуя Свободы — §36-39: сложение дробей с разными знаменателями */
+  [
+    {type:'input',q:'Вычисли: 1/2 + 1/3 = ?',answer:'5/6'},
+    {type:'input',q:'Вычисли: 3/4 − 1/6 = ?',answer:'7/12'},
+    {type:'choice',q:'Велосипедист проехал 2/5 пути в первый день и 1/3 пути во второй. Какую часть пути проехал?',opts:['11/15','3/8','3/15','13/15'],answer:'11/15'},
+    {type:'input',q:'Вычисли: 1/2 + 1/4 + 1/8 = ?',answer:'7/8'},
+    {type:'choice',q:'Что больше: 2/3 + 1/4 или 1?',opts:['меньше 1','равно 1','больше 1','нельзя сравнить'],answer:'больше 1'},
+  ],
+  /* Loc 6 — Христос Искупитель — §41-43: умножение дробей */
+  [
+    {type:'input',q:'Вычисли: 2/3 × 3/4 = ?',answer:'1/2'},
+    {type:'input',q:'Вычисли: 5 × 2/5 = ?',answer:'2'},
+    {type:'choice',q:'В классе 30 учеников, 2/5 из них занимаются спортом. Сколько это учеников?',opts:['12','15','10','6'],answer:'12'},
+    {type:'input',q:'Вычисли: 1/2 × 1/3 × 6 = ?',answer:'1'},
+    {type:'choice',q:'Маша съела 1/4 часть торта, а Петя — вдвое больше. Какую часть торта съел Петя?',opts:['1/2','1/8','3/4','1/4'],answer:'1/2'},
+  ],
+  /* Loc 7 — Парфенон — §44-46: десятичные дроби, запись, сравнение */
+  [
+    {type:'choice',q:'Как записать дробь 7/10 в виде десятичной?',opts:['0,7','7,0','0,07','70'],answer:'0,7'},
+    {type:'input',q:'Запиши в виде обыкновенной дроби: 0,3',answer:'3/10'},
+    {type:'choice',q:'Какое число больше: 0,5 или 0,45?',opts:['0,5','0,45','они равны','нельзя сравнить'],answer:'0,5'},
+    {type:'input',q:'Вычисли: 3,4 + 2,5 = ?',answer:'5,9'},
+    {type:'choice',q:'Расставь в порядке возрастания: 0,3; 0,03; 0,33',opts:['0,03; 0,3; 0,33','0,3; 0,03; 0,33','0,33; 0,3; 0,03','0,03; 0,33; 0,3'],answer:'0,03; 0,3; 0,33'},
+  ],
+  /* Loc 8 — Пирамиды Гизы — §47-48: умножение и деление десятичных дробей */
+  [
+    {type:'input',q:'Вычисли: 2,4 × 10 = ?',answer:'24'},
+    {type:'input',q:'Вычисли: 3,6 ÷ 100 = ?',answer:'0,036'},
+    {type:'choice',q:'Скорость велосипедиста 12,5 км/ч. Какое расстояние он проедет за 4 ч?',opts:['50 км','52 км','48 км','12,5 км'],answer:'50 км'},
+    {type:'input',q:'Вычисли: 0,8 × 0,5 = ?',answer:'0,4'},
+    {type:'choice',q:'Какое число получится, если 7,5 разделить на 1000?',opts:['0,0075','0,075','75','750'],answer:'0,0075'},
+  ],
+  /* Loc 9 — Петра — §50-52: деление десятичных дробей */
+  [
+    {type:'input',q:'Вычисли: 4,8 ÷ 0,6 = ?',answer:'8'},
+    {type:'input',q:'Вычисли: 1,5 ÷ 0,5 = ?',answer:'3'},
+    {type:'choice',q:'Поезд прошёл 136,8 км за 1,2 ч. Какова скорость поезда?',opts:['114 км/ч','124 км/ч','138 км/ч','136 км/ч'],answer:'114 км/ч'},
+    {type:'input',q:'Вычисли: 0,36 ÷ 0,09 = ?',answer:'4'},
+    {type:'choice',q:'Мотоциклист движется со скоростью 40,5 км/ч. За сколько часов он проедет 121,5 км?',opts:['3 ч','4 ч','2,5 ч','3,5 ч'],answer:'3 ч'},
+  ],
+];
+
 /* ---- Build 5 questions for a location for a given round ---- */
 const GENERATORS = { 0:GEN_EIFFEL, 1:GEN_COLOSSEUM, 2:GEN_MACHU, 3:GEN_TAJ, 4:GEN_WALL, 5:GEN_LIBERTY, 6:GEN_CHRIST, 7:GEN_PARTHENON, 8:GEN_PYRAMIDS, 9:GEN_PETRA };
 function buildLocationQuestions(locIndex, round){
   const gens = GENERATORS[locIndex] || [];
-  const sig = SIGNATURE[locIndex] || [];
-  // 1 signature task, rotating by round (no repeat across consecutive rounds)
-  const out = [];
-  if(sig.length){ out.push(sig[round % sig.length]); }
-  // fill the rest (up to 5) with fresh generated tasks, varied types
-  const gshuffled = shuffle(gens);
-  let gi=0;
-  while(out.length<5){
-    const gen = gshuffled[gi % gshuffled.length];
-    out.push(gen());
-    gi++;
+  const sig  = SIGNATURE[locIndex]  || [];
+
+  /* ---- очередь с памятью: каждый раз новые типы заданий ---- */
+  const storageKey = `locQueue_${locIndex}`;
+  let queue = [];
+  try { queue = JSON.parse(localStorage.getItem(storageKey) || '[]'); } catch(e){}
+
+  // сколько генераторов нужно (1 место займёт signature-задание)
+  const needed = sig.length > 0 ? 4 : 5;
+
+  // если в очереди меньше чем нужно — создать новую перетасованную очередь из ВСЕХ генераторов
+  if(queue.length < needed){
+    queue = shuffle(gens.map((_,i) => i));
   }
+
+  const out = [];
+  // 1 фиксированное задание (rotating по раундам)
+  if(sig.length){ out.push(sig[round % sig.length]); }
+
+  // берём следующие N из очереди (без повтора типов внутри одной сессии)
+  const taken = queue.splice(0, needed);
+  taken.forEach(idx => {
+    const gen = gens[idx];
+    if(gen) out.push(gen());
+  });
+
+  // сохраняем обновлённую очередь
+  try { localStorage.setItem(storageKey, JSON.stringify(queue)); } catch(e){}
+
+  // добираем если вдруг не хватило (страховка)
+  while(out.length < 5){
+    out.push(gens[Math.floor(Math.random()*gens.length)]());
+  }
+
   return shuffle(out);
 }
 /* current location's questions (rebuilt each play) */
 let QUESTIONS = [];
+/* ============ EXAM ============ */
+let examMode=false, examCorrect=0;
+let miniExamMode=false, miniExamLoc=0, miniExamScore=0, miniExamIdx=0;
+const EXAM_Q=[
+  {tag:'📐 Тема 1: Дроби',type:'choice',
+   text:'Сравни дроби: 3/7 и 5/7',
+   options:['3/7 < 5/7','3/7 > 5/7','3/7 = 5/7','нельзя сравнить'],
+   answer:'3/7 < 5/7',
+   hint:'Знаменатели одинаковые — сравниваем числители: 3 < 5.',
+   explain:'3/7 < 5/7, потому что 3 < 5 при одинаковых знаменателях.'},
+  {tag:'➕ Тема 2: Сложение дробей',type:'input',
+   text:'Вычисли: 4/9 + 2/9 =',
+   step1_show:'Знаменатели одинаковые → складываем числители: (4+2)/9',
+   answer:['6/9','2/3'],placeholder:'числитель/знаменатель',
+   hint:'4/9 + 2/9 = 6/9 = 2/3.',
+   explain:'4/9 + 2/9 = 6/9 = 2/3.'},
+  {tag:'🔢 Тема 3: Смешанные числа',type:'choice',
+   text:'3 2/5 + 1 1/5 = ?',
+   options:['4 3/5','4 2/5','5 3/5','4 1/5'],answer:'4 3/5',
+   hint:'Целые: 3+1=4, дроби: 2/5+1/5=3/5.',
+   explain:'3 2/5 + 1 1/5 = 4 3/5.'},
+  {tag:'✖️ Тема 4: Умножение дробей',type:'choice',
+   text:'2/3 × 3/4 = ?',
+   options:['1/2','2/3','3/8','5/7'],answer:'1/2',
+   hint:'2×3 = 6, 3×4 = 12. 6/12 = 1/2.',
+   explain:'2/3 × 3/4 = 6/12 = 1/2.'},
+  {tag:'➗ Тема 5: Деление дробей',type:'choice',
+   text:'3/4 ÷ 1/2 = ?',
+   options:['3/2','3/8','1','2/3'],answer:'3/2',
+   hint:'Делим = умножаем на обратную: 3/4 × 2/1 = 6/4 = 3/2.',
+   explain:'3/4 ÷ 1/2 = 3/4 × 2 = 3/2 = 1 1/2.'},
+  {tag:'💧 Тема 6: Десятичные',type:'choice',
+   text:'3,7 + 1,45 = ?',
+   options:['5,15','4,15','5,12','4,85'],answer:'5,15',
+   hint:'3,70 + 1,45 = 5,15.',
+   explain:'3,7 + 1,45: выравниваем запятые → 3,70 + 1,45 = 5,15.'},
+  {tag:'✖️ Тема 7: Умножение десятичных',type:'choice',
+   text:'0,4 × 0,5 = ?',
+   options:['0,2','0,02','2','0,45'],answer:'0,2',
+   hint:'4 × 5 = 20, два знака после запятой: 0,20 = 0,2.',
+   explain:'0,4 × 0,5 = 0,20 = 0,2.'},
+  {tag:'🔢 Тема 8: Округление',type:'choice',
+   text:'Округли 4,758 до десятых.',
+   options:['4,8','4,7','5,0','4,76'],answer:'4,8',
+   hint:'Смотрим на сотые: 5 ≥ 5, округляем вверх.',
+   explain:'4,758 → смотрим сотые (5) → округляем: 4,8.'},
+  {tag:'🔡 Тема 9: Уравнение',type:'input',
+   text:'Реши уравнение: x + 3/8 = 7/8',
+   step1_show:'x = 7/8 − 3/8',
+   answer:['4/8','1/2'],placeholder:'числитель/знаменатель',
+   hint:'x = 7/8 − 3/8 = 4/8 = 1/2.',
+   explain:'x = 7/8 − 3/8 = 4/8 = 1/2.'},
+  {tag:'📐 Тема 10: Углы',type:'choice',
+   text:'Два угла треугольника: 70° и 65°. Чему равен третий угол? (Сумма углов = 180°)',
+   options:['45°','55°','40°','50°'],answer:'45°',
+   hint:'180° − 70° − 65° = 45°.',
+   explain:'180° − 70° − 65° = 45°.'},
+  /* ---- Дополнительные вопросы по образцу итоговой контрольной K.1–K.25 ---- */
+  {tag:'📏 Тема 11: НОК и НОД',type:'choice',
+   text:'Найди НОК чисел 6 и 9.',
+   options:['18','54','3','9'],answer:'18',
+   hint:'Разложи: 6=2×3, 9=3². НОК=2×3²=18.',
+   explain:'НОК(6,9)=18 — наименьшее число, кратное и 6, и 9.'},
+  {tag:'🔢 Тема 11: Сравнение дробей',type:'choice',
+   text:'Сравни дроби: 2/3 и 3/5',
+   options:['2/3 > 3/5','2/3 < 3/5','2/3 = 3/5','нельзя сравнить'],answer:'2/3 > 3/5',
+   hint:'Приведём к знаменателю 15: 2/3=10/15, 3/5=9/15. 10>9.',
+   explain:'2/3=10/15, 3/5=9/15. Так как 10>9, то 2/3 > 3/5.'},
+  {tag:'✖️ Тема 12: Умножение дробей',type:'input',
+   text:'Вычисли: 4/9 × 18 = ?',
+   answer:['8'],placeholder:'число',
+   hint:'4×18 = 72, потом 72÷9 = 8.',
+   explain:'4/9 × 18 = (4×18)/9 = 72/9 = 8.'},
+  {tag:'✖️ Тема 12: Дробь на дробь',type:'input',
+   text:'Вычисли: 4/11 × 33/16 = ?',
+   answer:['3/4'],placeholder:'числитель/знаменатель',
+   hint:'Сокращай до умножения: 4 и 16 — на 4; 33 и 11 — на 11.',
+   explain:'4/11 × 33/16 = (4×33)/(11×16) = 132/176 = 3/4.'},
+  {tag:'➗ Тема 13: Деление дробей',type:'choice',
+   text:'20/11 ÷ 4/121 = ?',
+   options:['55','55/4','4/55','220/44'],answer:'55',
+   hint:'Делим = умножаем на обратную: 20/11 × 121/4.',
+   explain:'20/11 × 121/4 = (20×121)/(11×4) = 2420/44 = 55.'},
+  {tag:'➗ Тема 13: Деление',type:'choice',
+   text:'3/5 ÷ 5/18 = ?',
+   options:['54/25','1/6','15/18','25/54'],answer:'54/25',
+   hint:'3/5 × 18/5 = 54/25.',
+   explain:'3/5 ÷ 5/18 = 3/5 × 18/5 = 54/25.'},
+  {tag:'💧 Тема 14: Сложение смешанных',type:'input',
+   text:'Вычисли: 4 3/8 + 7/16 = ?',
+   answer:['4 13/16'],placeholder:'напр. 4 13/16',
+   hint:'3/8 = 6/16. Потом 6/16 + 7/16 = 13/16.',
+   explain:'4 3/8 + 7/16 = 4 6/16 + 7/16 = 4 13/16.'},
+  {tag:'💧 Тема 14: Вычитание смешанных',type:'choice',
+   text:'2 4/15 − 1 9/20 = ?',
+   options:['51/60','17/20','3/4','7/12'],answer:'51/60',
+   hint:'Приведи к знаменателю 60: 2 16/60 − 1 27/60. Займи 1: 1 76/60 − 1 27/60.',
+   explain:'2 4/15 = 2 16/60, 1 9/20 = 1 27/60. Занимаем: 1 76/60 − 1 27/60 = 51/60.'},
+  {tag:'📊 Тема 15: Задача на дроби',type:'choice',
+   text:'Верёвку длиной 13,2 м разрезали на куски по 60 см. Сколько кусков получилось?',
+   options:['22','20','13','132'],answer:'22',
+   hint:'13,2 м = 1320 см. 1320 ÷ 60 = 22.',
+   explain:'13,2 м = 1320 см. 1320 ÷ 60 = 22 куска.'},
+  {tag:'💧 Тема 16: Десятичные — сложение',type:'input',
+   text:'Вычисли: 3,7 + 5,45 = ?',
+   answer:['9,15','9.15'],placeholder:'число через запятую',
+   hint:'3,70 + 5,45 = ?',
+   explain:'3,70 + 5,45 = 9,15.'},
+  {tag:'✖️ Тема 17: Умножение десятичных',type:'choice',
+   text:'0,4 × 0,25 = ?',
+   options:['0,1','0,01','1','0,4'],answer:'0,1',
+   hint:'4×25=100, итого 3 знака после запятой: 0,100 = 0,1.',
+   explain:'0,4 × 0,25 = 100 / 1000 = 0,1.'},
+  {tag:'🔢 Тема 18: Округление',type:'choice',
+   text:'Округли 0,0607 до десятых.',
+   options:['0,1','0,06','0','0,0'],answer:'0,1',
+   hint:'Десятые — первый знак после запятой: 0. Смотрим сотые: 6 ≥ 5 → округляем до 0,1.',
+   explain:'Десятые = 0, но сотые = 6 ≥ 5, поэтому 0,0607 ≈ 0,1.'},
+  {tag:'🔢 Тема 18: Округление',type:'choice',
+   text:'Округли 21,7662 до тысячных.',
+   options:['21,766','21,767','21,76','21,8'],answer:'21,766',
+   hint:'Тысячные — третий знак: 6. Десятитысячные: 2 < 5 → не меняем.',
+   explain:'21,766|2 → десятитысячная цифра 2 < 5, оставляем: 21,766.'},
+  {tag:'🚤 Тема 19: Задача — лодка',type:'choice',
+   text:'Собственная скорость лодки 6,1 км/ч, скорость течения — 9,3 км/ч. Какое расстояние пройдёт лодка ПО течению за 1,5 ч?',
+   options:['23,1 км','9,15 км','13,95 км','14,1 км'],answer:'23,1 км',
+   hint:'Скорость по течению: 6,1 + 9,3 = 15,4 км/ч. Расстояние: 15,4 × 1,5.',
+   explain:'6,1 + 9,3 = 15,4 км/ч. 15,4 × 1,5 = 23,1 км.'},
+  {tag:'🏍️ Тема 20: Задача — мотоциклист',type:'choice',
+   text:'Мотоциклист движется со скоростью 40,5 км/ч. За сколько часов он проедет 60,75 км?',
+   options:['1,5 ч','2 ч','1 ч','3 ч'],answer:'1,5 ч',
+   hint:'Время = расстояние ÷ скорость: 60,75 ÷ 40,5.',
+   explain:'60,75 ÷ 40,5 = 1,5 ч.'},
+  {tag:'🔡 Тема 21: Уравнение с дробями',type:'input',
+   text:'Реши уравнение: x − 2/5 = 3/5',
+   step1_show:'x = 3/5 + 2/5',
+   answer:['5/5','1'],placeholder:'ответ',
+   hint:'x = 3/5 + 2/5 = 5/5 = 1.',
+   explain:'x = 3/5 + 2/5 = 5/5 = 1.'},
+  {tag:'🎯 Тема 22: Нахождение части',type:'input',
+   text:'Найди сумму: 2/9 числа 18 и 2/5 числа 40.',
+   answer:['20'],placeholder:'число',
+   hint:'2/9 от 18 = 4; 2/5 от 40 = 16. Сложи.',
+   explain:'2/9 × 18 = 4; 2/5 × 40 = 16; 4 + 16 = 20.'},
+  {tag:'📐 Тема 23: Площадь',type:'choice',
+   text:'Ребро куба равно 8 см. Найди площадь поверхности куба.',
+   options:['384 см²','64 см²','512 см³','192 см²'],answer:'384 см²',
+   hint:'Куб: 6 граней по 8×8=64 см². Итого: 6×64.',
+   explain:'6 граней × 64 = 384 см².'},
+  {tag:'📐 Тема 24: Объём',type:'choice',
+   text:'Ребро куба равно 8 см. Найди объём куба.',
+   options:['512 см³','384 см²','64 см³','256 см³'],answer:'512 см³',
+   hint:'V = a³ = 8×8×8.',
+   explain:'8³ = 8×8×8 = 512 см³.'},
+];
 
 /* ---- SVG helpers ---- */
 function circleSVG(parts, filled){
@@ -2478,8 +3719,33 @@ function loadQuestion(idx){
     // decide input style: fraction (numerator/denominator) or single number
     const answers=(Array.isArray(q.answer)?q.answer:[q.answer]);
     const isFraction = answers.some(a=>String(a).includes('/'));
+    // step scaffold for equations
+    // step scaffold — interactive sign picker
+    let stepHtml = '';
+    if(q.step1_show){
+      const raw = q.step1_show;
+      const signMatch = raw.match(/ (\+|−) /);
+      if(signMatch){
+        const sign = signMatch[1];
+        const idx = raw.indexOf(signMatch[0]);
+        const left = fmtFrac(raw.slice(0, idx));
+        const right = fmtFrac(raw.slice(idx + signMatch[0].length));
+        stepHtml = `<div class="eq-step-box" id="step1box" data-sign="${sign}">
+          <div class="eq-step-lbl">📌 Шаг 1 — какой знак поставить?</div>
+          <div class="eq-step-expr">${left} <span id="step1sign" class="sign-blank">?</span> ${right}</div>
+          <div id="step1btns" class="sign-btns">
+            <button class="sign-btn" onclick="checkStep1Sign('+')">+</button>
+            <button class="sign-btn" onclick="checkStep1Sign('−')">−</button>
+          </div>
+          <div id="step1fb" class="sign-fb"></div>
+        </div>`;
+      } else {
+        stepHtml = `<div class="eq-step-box"><div class="eq-step-lbl">📌 Шаг 1 — перенесём</div><div class="eq-step-expr">${fmtFrac(raw)}</div></div>`;
+      }
+    }
     if(isFraction){
-      box.innerHTML=`
+      box.innerHTML=`${stepHtml}
+        <div class="eq-step-lbl" style="margin-top:4px;margin-bottom:6px">✏️ Шаг 2 — введи ответ (числитель / знаменатель)</div>
         <div class="frac-input">
           <input class="frac-cell" id="ansNum" inputmode="none" readonly maxlength="2" autocomplete="off" placeholder="?" onclick="kpFocus(this)">
           <div class="frac-bar"></div>
@@ -2488,10 +3754,10 @@ function loadQuestion(idx){
         <div class="hint-row">
           <button class="btn ghost" onclick="askHint()">💡 Подсказка</button>
         </div>`;
-      // auto-activate numerator
       setTimeout(()=>{ const n=document.getElementById('ansNum'); if(n) kpFocus(n); },80);
     } else {
-      box.innerHTML=`
+      const step2lbl = q.step1_show ? `<div class="eq-step-lbl" style="margin-bottom:6px">✏️ Шаг 2 — посчитай и введи ответ</div>` : '';
+      box.innerHTML=`${stepHtml}${step2lbl}
         <div class="answer-area">
           <input class="answer-input" id="ansInput" inputmode="none" readonly autocomplete="off" placeholder="${q.placeholder||'введи число'}" onclick="kpFocus(this)">
         </div>
@@ -2505,6 +3771,117 @@ function loadQuestion(idx){
 function hintBtnHTML(){
   return `<div class="hint-row"><button class="btn ghost" onclick="askHint()">💡 Подсказка</button></div>`;
 }
+function checkStep1Sign(chosen){
+  const box=document.getElementById('step1box');
+  if(!box)return;
+  const correct=box.dataset.sign;
+  const signEl=document.getElementById('step1sign');
+  const btns=document.getElementById('step1btns');
+  const fb=document.getElementById('step1fb');
+  if(chosen===correct){
+    signEl.textContent=chosen;
+    signEl.classList.add('sign-correct');
+    btns.style.display='none';
+    fb.className='sign-fb sign-fb-ok';
+    fb.textContent='✅ Верно! При переносе через «=» знак меняется на противоположный.';
+  }else{
+    fb.className='sign-fb sign-fb-err';
+    fb.textContent='❌ Нет! Вспомни правило: при переносе слагаемого через «=» знак всегда меняется на противоположный. Попробуй ещё раз!';
+  }
+}
+
+/* ===== МИНИ-КОНТРОЛЬНАЯ ===== */
+function startMiniExam(locIndex){
+  miniExamMode=true;
+  miniExamLoc=locIndex;
+  miniExamScore=0;
+  miniExamIdx=0;
+  go('miniExam');
+  showMiniExamQuestion();
+}
+
+function showMiniExamQuestion(){
+  const q=MINI_EXAM_Q[miniExamLoc][miniExamIdx];
+  const total=MINI_EXAM_Q[miniExamLoc].length;
+  document.getElementById('meProgress').textContent=`Вопрос ${miniExamIdx+1} из ${total}`;
+  document.getElementById('meScore').textContent=`✅ ${miniExamScore}`;
+  document.getElementById('meQuestion').innerHTML=q.q;
+  const answerArea=document.getElementById('meAnswerArea');
+  answerArea.innerHTML='';
+  if(q.type==='choice'){
+    q.opts.forEach(opt=>{
+      const btn=document.createElement('button');
+      btn.className='me-opt-btn';
+      btn.textContent=opt;
+      btn.onclick=()=>checkMiniAnswer(opt, q.answer);
+      answerArea.appendChild(btn);
+    });
+  } else {
+    answerArea.innerHTML=`<input id="meInput" class="me-input" type="text" placeholder="Введи ответ..." autocomplete="off">
+      <button class="me-check-btn" onclick="submitMiniInput()">Проверить →</button>`;
+    setTimeout(()=>{const el=document.getElementById('meInput'); if(el)el.focus();},100);
+  }
+  document.getElementById('meFeedback').innerHTML='';
+}
+
+function submitMiniInput(){
+  const inp=document.getElementById('meInput');
+  if(!inp)return;
+  const val=inp.value.trim();
+  if(!val)return;
+  const q=MINI_EXAM_Q[miniExamLoc][miniExamIdx];
+  checkMiniAnswer(val, q.answer);
+}
+
+function checkMiniAnswer(given, correct){
+  const norm=s=>s.replace(/\s+/g,' ').trim().toLowerCase();
+  const fb=document.getElementById('meFeedback');
+  const answerArea=document.getElementById('meAnswerArea');
+  // disable all buttons/input
+  answerArea.querySelectorAll('button').forEach(b=>b.disabled=true);
+  const inp=document.getElementById('meInput');
+  if(inp)inp.disabled=true;
+
+  if(norm(given)===norm(correct)){
+    miniExamScore++;
+    fb.innerHTML=`<span style="color:#007038;font-weight:700">✅ Верно!</span>`;
+  } else {
+    fb.innerHTML=`<span style="color:#c02828;font-weight:700">❌ Неверно. Правильный ответ: <b>${correct}</b></span>`;
+  }
+  setTimeout(()=>nextMiniExamQuestion(), 1500);
+}
+
+function nextMiniExamQuestion(){
+  miniExamIdx++;
+  const total=MINI_EXAM_Q[miniExamLoc].length;
+  if(miniExamIdx>=total){
+    showMiniExamResult();
+  } else {
+    showMiniExamQuestion();
+  }
+}
+
+function showMiniExamResult(){
+  miniExamMode=false;
+  go('miniExamResult');
+  const score=miniExamScore;
+  const total=MINI_EXAM_Q[miniExamLoc].length;
+  let emoji='', grade='', msg='';
+  if(score===total){emoji='🏆';grade='Отлично!';msg='Ты знаешь тему на 5+ — локация полностью покорена!';}
+  else if(score>=total-1){emoji='🌟';grade='Хорошо!';msg='Почти всё верно — одна ошибка не помеха!';}
+  else if(score>=Math.ceil(total/2)){emoji='📚';grade='Неплохо!';msg='Тема понята, но стоит ещё раз повторить!';}
+  else{emoji='💪';grade='Попробуй снова!';msg='Повтори правила и пройди контрольную ещё раз!';}
+  document.getElementById('merEmoji').textContent=emoji;
+  document.getElementById('merGrade').textContent=grade;
+  document.getElementById('merMsg').textContent=msg;
+  document.getElementById('merScoreText').textContent=`${score} / ${total}`;
+  // show retry or map button
+  const retryBtn=document.getElementById('merRetryBtn');
+  const mapBtn=document.getElementById('merMapBtn');
+  retryBtn.onclick=()=>{ miniExamIdx=0; miniExamScore=0; miniExamMode=true; go('miniExam'); showMiniExamQuestion(); };
+  mapBtn.onclick=()=>endDay(true);
+}
+
 function askHint(){
   usedHint=true;
   const q=QUESTIONS[curIndex];
@@ -2560,6 +3937,16 @@ function checkInput(){
 function resolve(success){
   hideKeypad();
   const q=QUESTIONS[curIndex];
+  if(examMode){
+    if(success) examCorrect++;
+    const fb=document.getElementById('feedback');
+    document.getElementById('fbEmoji').textContent = success ? '✅' : '❌';
+    document.getElementById('fbTitle').textContent = success ? 'Верно!' : 'Неверно';
+    document.getElementById('fbGain').style.display='none';
+    document.getElementById('fbExplain').innerHTML = fmtFrac(q.explain);
+    setTimeout(()=>fb.classList.add('up'), 420);
+    return;
+  }
   let gain=0;
   if(success){
     gain = usedHint ? 25 : (attempts===0 ? 100 : 50);
@@ -2591,16 +3978,51 @@ function spawnGain(g){
 }
 
 function nextQuestion(){
-  const finishedLocation = locProgress(currentLoc)>=locLength(currentLoc);
-  const hitLimit = limitReached();
-
-  if(finishedLocation){
-    // award location completion, then decide about the daily limit
-    endDay(true);
+  if(examMode){
+    const next=curIndex+1;
+    if(next>=EXAM_Q.length){ showExamResult(); return; }
+    curIndex=next; attempts=0; usedHint=false;
+    document.getElementById('feedback').classList.remove('up');
+    document.getElementById('qCount').textContent=`${next+1} / ${EXAM_Q.length}`;
+    document.getElementById('qBar').style.width=`${(next/EXAM_Q.length)*100}%`;
+    loadQuestion(next);
     return;
   }
+  const finishedLocation = locProgress(currentLoc)>=locLength(currentLoc);
+  const hitLimit = limitReached();
+  if(finishedLocation){ startMiniExam(currentLoc); return; }
   if(hitLimit){ endDay(false); return; }
   loadQuestion(locProgress(currentLoc));
+}
+
+function startExam(){
+  examMode=true; examCorrect=0;
+  QUESTIONS=[...EXAM_Q];
+  curIndex=0; attempts=0; usedHint=false; dayGain=0;
+  go('quiz');
+  // exam header
+  document.getElementById('quizFollowers').textContent='📝 Контрольная';
+  document.querySelector('#quiz .followers .lbl').textContent='5 КЛАСС';
+  document.getElementById('qCount').textContent=`1 / ${EXAM_Q.length}`;
+  document.getElementById('qBar').style.width='0%';
+  document.getElementById('feedback').classList.remove('up');
+  loadQuestion(0);
+}
+
+function showExamResult(){
+  examMode=false;
+  const pct=Math.round(examCorrect/EXAM_Q.length*100);
+  let grade,emoji,title,msg;
+  if(pct>=90){grade='5';emoji='🏆';title='Отлично!';msg='Великолепно! Ты знаешь математику 5 класса на пять!';}
+  else if(pct>=70){grade='4';emoji='🌟';title='Хорошо!';msg='Молодец! Совсем немного до пятёрки — повтори пару тем.';}
+  else if(pct>=50){grade='3';emoji='📚';title='Неплохо';msg='Тройка! Есть что повторить. Попробуй ещё раз!';}
+  else{grade='2';emoji='💪';title='Нужно повторить';msg='Не сдавайся! Пройди локации ещё раз и попробуй снова.';}
+  document.getElementById('examGradeEmoji').textContent=emoji;
+  document.getElementById('examGradeTitle').textContent=title;
+  document.getElementById('examGradeBadge').textContent=grade;
+  document.getElementById('examGradeMsg').textContent=msg;
+  document.getElementById('examScoreBox').textContent=`✅ Правильно: ${examCorrect} из ${EXAM_Q.length} (${pct}%)`;
+  go('examResult');
 }
 
 /* ============ ON-SCREEN KEYPAD ============ */
