@@ -1821,13 +1821,15 @@ const GEN_TAJ = [
     const fsum=f1+h1;                      // 8, 9 или 10
     const carry=Math.floor(fsum/d1);       // 1 во всех случаях
     const rem=fsum-carry*d1;               // 2, 3 или 4
-    const ansStr=`${1+carry} ${rem}/${d1} ч`;
+    const g=gcd(rem,d1);
+    const simpStr=`${1+carry} ${rem/g}/${d1/g} ч`;  // сокращённая форма: 2 1/3, 2 1/2, 2 2/3
+    const unsimpStr=`${1+carry} ${rem}/${d1} ч`;     // несокращённая: 2 2/6, 2 3/6, 2 4/6
     return {tag:'🌳 Задача',type:'choice',
       text:`Оля после школы гуляла ${f1}/${d1} ч, а вечером с младшей сестрёнкой ещё 1 ${h1}/${d1} ч. Сколько часов гуляла Оля?`,
-      options:shuffle([ansStr,`${1+carry} ч`,`${fsum}/${d1} ч`,`1 ${fsum}/${d1} ч`]),
-      answer:ansStr,
-      hint:`Целые: 0+1=1. Дроби: ${f1}/${d1}+${h1}/${d1}=${fsum}/${d1}=1 ${rem}/${d1} (перенос!). Итого: 1+1=2, остаток ${rem}/${d1}. Ответ: ${ansStr}.`,
-      explain:`${f1}/${d1}+1 ${h1}/${d1}: дроби дают ${fsum}/${d1}=1 ${rem}/${d1}. Целые 1+1=2. Ответ: ${ansStr}.`};
+      options:shuffle([simpStr,`${1+carry} ч`,`${fsum}/${d1} ч`,unsimpStr]),
+      answer:simpStr,
+      hint:`Целые: 0+1=1. Дроби: ${f1}/${d1}+${h1}/${d1}=${fsum}/${d1}=1 ${rem}/${d1} (перенос!). Итого: 1+1=2, остаток ${rem}/${d1}. Сокращаем: ${rem}/${d1}=${rem/g}/${d1/g}. Ответ: ${simpStr}.`,
+      explain:`Дроби: ${fsum}/${d1}=1 ${rem}/${d1}. Целые 1+1=2. ${unsimpStr} = ${simpStr} (сокращаем на ${g}). Ответ: ${simpStr}.`};
   },
   /* §31-32 задача — картофель (из учебника) */
   function(){
