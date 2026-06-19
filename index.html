@@ -252,10 +252,12 @@
     font-size:16px; font-weight:600; color:var(--ink); outline:none; box-sizing:border-box;
   }
   .me-check-btn{
-    width:100%; padding:14px; border-radius:16px; border:none;
-    background:var(--accent); color:#fff; font-size:16px; font-weight:700;
-    cursor:pointer; margin-top:8px;
+    width:100%; padding:16px; border-radius:16px; border:none;
+    background:#3a86ff; color:#fff; font-size:17px; font-weight:800;
+    cursor:pointer; margin-top:10px; box-shadow:0 3px 12px rgba(58,134,255,.35);
+    letter-spacing:.3px;
   }
+  .me-check-btn:active{background:#2563cc; transform:scale(.97);}
 
   .answer-area{margin-top:18px}
   .answer-input{
@@ -3288,29 +3290,29 @@ const MINI_EXAM_Q=[
     {type:'choice',q:'НОД чисел 12 и 18:',opts:['6','3','36','9'],answer:'6'},
     {type:'input',q:'Сократи дробь 8/12',answer:'2/3'},
   ],
-  /* Loc 5 — Статуя Свободы — §36-39: сложение дробей с разными знаменателями */
+  /* Loc 5 — Статуя Свободы — §36-39: дроби с разными знаменателями + умножение дробей */
   [
     {type:'input',q:'Вычисли: 1/2 + 1/3 = ?',answer:'5/6'},
     {type:'input',q:'Вычисли: 3/4 − 1/6 = ?',answer:'7/12'},
-    {type:'choice',q:'Велосипедист проехал 2/5 пути в первый день и 1/3 пути во второй. Какую часть пути проехал?',opts:['11/15','3/8','3/15','13/15'],answer:'11/15'},
-    {type:'input',q:'Вычисли: 1/2 + 1/4 + 1/8 = ?',answer:'7/8'},
-    {type:'choice',q:'Что больше: 2/3 + 1/4 или 1?',opts:['меньше 1','равно 1','больше 1','нельзя сравнить'],answer:'больше 1'},
-  ],
-  /* Loc 6 — Христос Искупитель — §41-43: умножение дробей */
-  [
     {type:'input',q:'Вычисли: 2/3 × 3/4 = ?',answer:'1/2'},
-    {type:'input',q:'Вычисли: 5 × 2/5 = ?',answer:'2'},
+    {type:'choice',q:'Велосипедист проехал 2/5 пути в первый день и 1/3 пути во второй. Какую часть пути проехал?',opts:['11/15','3/8','3/15','13/15'],answer:'11/15'},
     {type:'choice',q:'В классе 30 учеников, 2/5 из них занимаются спортом. Сколько это учеников?',opts:['12','15','10','6'],answer:'12'},
-    {type:'input',q:'Вычисли: 1/2 × 1/3 × 6 = ?',answer:'1'},
-    {type:'choice',q:'Маша съела 1/4 часть торта, а Петя — вдвое больше. Какую часть торта съел Петя?',opts:['1/2','1/8','3/4','1/4'],answer:'1/2'},
   ],
-  /* Loc 7 — Парфенон — §44-46: десятичные дроби, запись, сравнение */
+  /* Loc 6 — Христос Искупитель — §41-43: десятичные дроби, запись и сравнение */
   [
     {type:'choice',q:'Как записать дробь 7/10 в виде десятичной?',opts:['0,7','7,0','0,07','70'],answer:'0,7'},
     {type:'input',q:'Запиши в виде обыкновенной дроби: 0,3',answer:'3/10'},
     {type:'choice',q:'Какое число больше: 0,5 или 0,45?',opts:['0,5','0,45','они равны','нельзя сравнить'],answer:'0,5'},
-    {type:'input',q:'Вычисли: 3,4 + 2,5 = ?',answer:'5,9'},
     {type:'choice',q:'Расставь в порядке возрастания: 0,3; 0,03; 0,33',opts:['0,03; 0,3; 0,33','0,3; 0,03; 0,33','0,33; 0,3; 0,03','0,03; 0,33; 0,3'],answer:'0,03; 0,3; 0,33'},
+    {type:'choice',q:'Что стоит в разряде десятых в числе 5,83?',opts:['8','5','3','0'],answer:'8'},
+  ],
+  /* Loc 7 — Парфенон — §44-46: сложение, вычитание, округление десятичных */
+  [
+    {type:'input',q:'Вычисли: 3,4 + 2,5 = ?',answer:'5,9'},
+    {type:'input',q:'Вычисли: 7,8 − 3,4 = ?',answer:'4,4'},
+    {type:'choice',q:'Округли 4,758 до десятых.',opts:['4,8','4,7','5,0','4,76'],answer:'4,8'},
+    {type:'choice',q:'Округли 2,349 до сотых.',opts:['2,35','2,34','2,3','2,4'],answer:'2,35'},
+    {type:'input',q:'Вычисли: 12,5 + 3,75 = ?',answer:'16,25'},
   ],
   /* Loc 8 — Пирамиды Гизы — §47-48: умножение и деление десятичных дробей */
   [
@@ -3368,7 +3370,11 @@ function buildLocationQuestions(locIndex, round){
     out.push(gens[Math.floor(Math.random()*gens.length)]());
   }
 
-  return shuffle(out);
+  // задачи — всегда в конец сессии (ребёнок сначала повторяет правила, потом решает задачи)
+  const isTask = q => (q.tag||'').match(/задача|задач|🌿|🚴|🏍️|🚤|🧥|🚶|🍄|🍬|🍊|🌳|📐 Задача/i);
+  const regular = out.filter(q => !isTask(q));
+  const tasks   = out.filter(q =>  isTask(q));
+  return [...shuffle(regular), ...shuffle(tasks)];
 }
 /* current location's questions (rebuilt each play) */
 let QUESTIONS = [];
@@ -3752,7 +3758,7 @@ function loadQuestion(idx){
           <input class="frac-cell" id="ansDen" inputmode="none" readonly maxlength="2" autocomplete="off" placeholder="?" onclick="kpFocus(this)">
         </div>
         <div class="hint-row">
-          <button class="btn ghost" onclick="askHint()">💡 Подсказка</button>
+          <button id="hintBtn" class="btn ghost" onclick="askHint()" style="opacity:0;pointer-events:none;transition:opacity .4s">💡 Подсказка</button>
         </div>`;
       setTimeout(()=>{ const n=document.getElementById('ansNum'); if(n) kpFocus(n); },80);
     } else {
@@ -3762,14 +3768,18 @@ function loadQuestion(idx){
           <input class="answer-input" id="ansInput" inputmode="none" readonly autocomplete="off" placeholder="${q.placeholder||'введи число'}" onclick="kpFocus(this)">
         </div>
         <div class="hint-row">
-          <button class="btn ghost" onclick="askHint()">💡 Подсказка</button>
+          <button id="hintBtn" class="btn ghost" onclick="askHint()" style="opacity:0;pointer-events:none;transition:opacity .4s">💡 Подсказка</button>
         </div>`;
       setTimeout(()=>{ const i=document.getElementById('ansInput'); if(i) kpFocus(i); },80);
     }
   }
 }
 function hintBtnHTML(){
-  return `<div class="hint-row"><button class="btn ghost" onclick="askHint()">💡 Подсказка</button></div>`;
+  return `<div class="hint-row"><button id="hintBtn" class="btn ghost" onclick="askHint()" style="opacity:0;pointer-events:none;transition:opacity .4s">💡 Подсказка</button></div>`;
+}
+function revealHintBtn(){
+  const btn=document.getElementById('hintBtn');
+  if(btn){btn.style.opacity='1';btn.style.pointerEvents='auto';}
 }
 function checkStep1Sign(chosen){
   const box=document.getElementById('step1box');
@@ -3898,8 +3908,9 @@ function chooseOpt(el,opt,q){
     resolve(true);
   }else{
     el.classList.add('wrong','disabled'); attempts++;
-    if(attempts>=2){
-      // reveal correct & move on
+    if(attempts===2){ revealHintBtn(); } // после 2-й ошибки открывается подсказка
+    if(attempts>=3){
+      // 3-я ошибка — показываем правильный ответ и идём дальше
       document.querySelectorAll('.opt').forEach(o=>{
         if(normalize(o.dataset.opt||o.textContent)===normalize(q.answer)) o.classList.add('correct');
         o.classList.add('disabled');
@@ -3929,7 +3940,8 @@ function checkInput(){
     resolve(true);
   }else{
     cells.forEach(c=>c.classList.add('wrong')); attempts++;
-    if(attempts>=2){ cells.forEach(c=>c.disabled=true); resolve(false); }
+    if(attempts===2){ revealHintBtn(); } // после 2-й ошибки открывается подсказка
+    if(attempts>=3){ cells.forEach(c=>c.disabled=true); resolve(false); }
     else{ setTimeout(()=>cells.forEach(c=>c.classList.remove('wrong')),600); }
   }
 }
