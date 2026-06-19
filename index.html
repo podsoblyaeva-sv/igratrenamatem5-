@@ -4068,7 +4068,13 @@ function askHint(){
   const hb=document.getElementById('hintBubble');
   hb.innerHTML='💡 '+fmtFrac(q.hint); hb.classList.add('show');
 }
-function normalize(s){ return (s||'').trim().toLowerCase().replace(/\s+/g,'').replace(/\\/g,'/').replace(',','.'); }
+function normalize(s){
+  let t=(s||'').trim().toLowerCase().replace(/\s+/g,'').replace(/\\/g,'/').replace(',','.');
+  // упрощаем дробь: 3/6 → 1/2, чтобы принимать оба варианта ответа
+  const m=t.match(/^(\d+)\/(\d+)$/);
+  if(m){ const n=parseInt(m[1]),d=parseInt(m[2]),g=gcd(n,d); if(g>1) t=`${n/g}/${d/g}`; }
+  return t;
+}
 
 function chooseOpt(el,opt,q){
   const correct = normalize(opt)===normalize(q.answer);
