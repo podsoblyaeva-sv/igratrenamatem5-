@@ -592,6 +592,21 @@
   </section>
 
   <!-- МИНИ-КОНТРОЛЬНАЯ -->
+  <!-- ===== TASK INTRO: между упражнениями и задачами ===== -->
+  <section class="screen center pad" id="taskIntro">
+    <div style="max-width:420px;margin:0 auto;text-align:center;padding:32px 20px">
+      <div style="font-size:80px;margin-bottom:16px">🌟</div>
+      <h2 style="font-size:26px;font-weight:900;color:var(--ink);margin:0 0 12px">Отличная работа!</h2>
+      <p style="font-size:16px;color:#555;line-height:1.6;margin:0 0 28px">
+        Упражнения пройдены.<br>
+        Теперь применим знания — порешаем <b>задачи</b>!
+      </p>
+      <button class="btn" style="width:100%;padding:16px;font-size:17px;font-weight:800;border-radius:18px;background:#ff8a5c;color:#fff;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(255,138,92,.35)" onclick="continueToTasks()">
+        Решать задачи 📚
+      </button>
+    </div>
+  </section>
+
   <section class="screen center pad" id="miniExam">
     <div style="max-width:480px;margin:0 auto;padding:20px 12px;width:100%">
       <div style="text-align:center;margin-bottom:18px">
@@ -3370,12 +3385,12 @@ function buildLocationQuestions(locIndex, round){
     out.push(gens[Math.floor(Math.random()*gens.length)]());
   }
 
-  // задачи — всегда в конец сессии (ребёнок сначала повторяет правила, потом решает задачи)
-  const isTask = q => (q.tag||'').match(/задача|задач|🌿|🚴|🏍️|🚤|🧥|🚶|🍄|🍬|🍊|🌳|📐 Задача/i);
-  const regular = out.filter(q => !isTask(q));
-  const tasks   = out.filter(q =>  isTask(q));
+  // задачи — всегда в конец сессии
+  const regular = out.filter(q => !isTaskQuestion(q));
+  const tasks   = out.filter(q =>  isTaskQuestion(q));
   return [...shuffle(regular), ...shuffle(tasks)];
 }
+function isTaskQuestion(q){ return !!(q.tag||'').match(/задача|задач/i); }
 /* current location's questions (rebuilt each play) */
 let QUESTIONS = [];
 /* ============ EXAM ============ */
@@ -3649,7 +3664,7 @@ function renderLoc(){
 }
 
 /* ============ QUIZ FLOW ============ */
-let dayGain=0, curIndex=0, attempts=0, usedHint=false;
+let dayGain=0, curIndex=0, attempts=0, usedHint=false, taskIntroShown=false;
 const DAY_LIMIT=5;
 function limitReached(){ return state.limit!=='off' && state.dayCount>=DAY_LIMIT; }
 
@@ -3668,7 +3683,7 @@ function startDay(){
     QUESTIONS = locQCache[currentLoc] || buildLocationQuestions(currentLoc, locRound(currentLoc));
     locQCache[currentLoc] = QUESTIONS;
   }
-  dayGain=0; _perfectCurrentLoc=true;
+  dayGain=0; _perfectCurrentLoc=true; taskIntroShown=false;
   go('quiz');
   loadQuestion(locProgress(currentLoc));
 }
@@ -4004,6 +4019,20 @@ function nextQuestion(){
   const hitLimit = limitReached();
   if(finishedLocation){ startMiniExam(currentLoc); return; }
   if(hitLimit){ endDay(false); return; }
+  // показываем переход к задачам, если следующий вопрос — задача и переход ещё не показывали
+  const nextIdx = locProgress(currentLoc);
+  if(!taskIntroShown && nextIdx < QUESTIONS.length && isTaskQuestion(QUESTIONS[nextIdx])){
+    taskIntroShown = true;
+    document.getElementById('feedback').classList.remove('up');
+    go('taskIntro');
+    return;
+  }
+  loadQuestion(nextIdx);
+}
+
+function continueToTasks(){
+  go('quiz');
+  document.getElementById('feedback').classList.remove('up');
   loadQuestion(locProgress(currentLoc));
 }
 
