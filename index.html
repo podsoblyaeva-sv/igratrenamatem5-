@@ -1511,11 +1511,13 @@ const GEN_COLOSSEUM = [
     const q=pick(cases);
     const step=q.total/q.d;
     const day1=step*q.n1, day2=step*q.n2;
-    return {tag:'🚴 Задача',type:'input',
+    return {tag:'🚴 Задача',type:'steps',
       text:`В первый день велопробега участники проехали ${day1} км, что составляет ${q.n1}/${q.d} пути. Сколько км проехали во второй день, если это ${q.n2}/${q.d} пути?`,
-      answer:`${day2}`,
-      hint:`${q.total}÷${q.d}=${step} (1 часть). ${step}×${q.n2}=${day2} км.`,
-      explain:`Весь путь: ${day1}÷${q.n1}×${q.d}=${q.total} км. Второй день: ${q.total}÷${q.d}×${q.n2}=${day2} км.`};
+      explain:`Весь путь: ${day1}÷${q.n1}×${q.d}=${q.total} км. Второй день: ${q.total}÷${q.d}×${q.n2}=${day2} км.`,
+      steps:[
+        {prompt:`Действие 1: найди весь путь. ${day1} км — это ${q.n1}/${q.d}. Весь путь = ${day1} ÷ ${q.n1} × ${q.d} = ?`, answer:`${q.total}`, unit:'км', hint:`${day1} км — это ${q.n1} части из ${q.d}. Одна часть: ${day1}÷${q.n1}=${step}. Весь путь: ${step}×${q.d}=${q.total} км.`},
+        {prompt:`Действие 2: второй день — это ${q.n2}/${q.d} пути. ${q.total} ÷ ${q.d} × ${q.n2} = ?`, answer:`${day2}`, unit:'км', hint:`1 часть: ${q.total}÷${q.d}=${step} км. За ${q.n2} части: ${step}×${q.n2}=${day2} км.`},
+      ]};
   }
 ];
 
