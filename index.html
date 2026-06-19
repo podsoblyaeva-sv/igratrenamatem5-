@@ -1714,6 +1714,20 @@ const GEN_MACHU = [
       answer:`${total}`,
       hint:`${left} слов = ${d-n1}/${d} всего. ${left}÷${d-n1}×${d}=${total}.`,
       explain:`${left} слов — это ${d-n1}/${d}. Всего: ${left}÷${d-n1}×${d}=${total}.`};
+  },
+  /* §29 задача — конфеты (из учебника) */
+  function(){
+    const d=pick([10,8,6]);
+    const n1=pick([3,2,1]);
+    const extra=pick([1,2]);
+    const n2=n1+extra, total=n1+n2;
+    const g=gcd(total,d), ans=g>1?`${total/g}/${d/g}`:`${total}/${d}`;
+    return {tag:'🍬 Задача',type:'choice',
+      text:`В первой упаковке ${n1}/${d} кг конфет, а во второй — на ${extra}/${d} кг больше. Сколько килограммов конфет в двух упаковках?`,
+      options:shuffle([ans,`${n1+extra}/${d}`,`${n1}/${d}`,`${n1+n2+1}/${d}`]),
+      answer:ans,
+      hint:`Вторая упаковка: ${n1}/${d}+${extra}/${d}=${n2}/${d}. Всего: ${n1}/${d}+${n2}/${d}=${total}/${d}.`,
+      explain:`Вторая: ${n1}/${d}+${extra}/${d}=${n2}/${d}. Итого: ${n1}/${d}+${n2}/${d}=${total}/${d}${g>1?' = '+ans:''}.`};
   }
 ];
 
@@ -1901,6 +1915,23 @@ const GEN_TAJ = [
       answer:`2 ${f1}/${d1} ч`,
       hint:`${f1}/${d1}+1 ${h1}/${d1}: целые 0+1=1, дроби ${f1}/${d1}+${h1}/${d1}=${f1+h1}/${d1}=1 ${f1+h1-d1}/${d1}. Итого: 2 ${f1+h1-d1}/${d1}.`,
       explain:`${f1}/${d1}+1 ${h1}/${d1}=2 ${f1}/${d1} ч (дроби дают перенос).`};
+  },
+  /* §31-32 задача — картофель (из учебника) */
+  function(){
+    const data=[
+      {w:8,n:4,d:5,k:5,less:12},
+      {w:6,n:2,d:3,k:4,less:10},
+      {w:4,n:1,d:2,k:6,less:8},
+    ];
+    const q=pick(data);
+    const day2=q.w*q.k + Math.round(q.n/q.d*q.k);
+    const day3=day2-q.less;
+    return {tag:'🥔 Задача',type:'choice',
+      text:`В первый день израсходовали ${q.w} ${q.n}/${q.d} кг картофеля, во второй — в ${q.k} раз больше, чем в первый, а в третий — на ${q.less} кг меньше, чем во второй. Сколько кг израсходовали в третий день?`,
+      options:shuffle([`${day3} кг`,`${day2} кг`,`${day3+q.less} кг`,`${day2+q.less} кг`]),
+      answer:`${day3} кг`,
+      hint:`День 2: ${q.w} ${q.n}/${q.d}×${q.k}≈${day2} кг. День 3: ${day2}−${q.less}=${day3} кг.`,
+      explain:`День 2: ${q.w} ${q.n}/${q.d}×${q.k}=${day2} кг. День 3: ${day2}−${q.less}=${day3} кг.`};
   }
 ];
 
@@ -2060,6 +2091,37 @@ const GEN_WALL = [
       answer:res,
       hint:`Знаменатели одинаковые — сравниваем числители: ${a1} и ${a2}.`,
       explain:`${a1}/${b1} ${s1>s2?'>':s1<s2?'<':'='} ${a2}/${b2} — ${res}.`};
+  },
+  /* §33-35 задача — мастера совместная работа (НОК, из учебника) */
+  function(){
+    const q=pick([
+      {t1:10,t2:15,nok:30,r1:3,r2:2,together:5,ans:6},
+      {t1:6, t2:12,nok:12,r1:2,r2:1,together:3,ans:4},
+      {t1:4, t2:6, nok:12,r1:3,r2:2,together:5,ans:2},  // 12/5 нецелое, правим
+      {t1:9, t2:18,nok:18,r1:2,r2:1,together:3,ans:6},
+      {t1:12,t2:24,nok:24,r1:2,r2:1,together:3,ans:8},
+    ].filter(x=>x.nok%x.together===0));
+    return {tag:'🔧 Задача: мастера', type:'choice',
+      text:`Первый мастер изготовит нужное количество деталей за ${q.t1} мин, а второй — за ${q.t2} мин. За сколько минут они сделают ту же работу вместе?`,
+      options:shuffle([`${q.ans} мин`,`${q.t1+q.t2} мин`,`${Math.max(q.t1,q.t2)} мин`,`${Math.min(q.t1,q.t2)} мин`]),
+      answer:`${q.ans} мин`,
+      hint:`НОК(${q.t1},${q.t2})=${q.nok}. За 1 мин вместе делают ${q.r1}+${q.r2}=${q.together} частей из ${q.nok}. Ответ: ${q.nok}÷${q.together}=${q.ans} мин.`,
+      explain:`НОК=${q.nok}. Первый делает ${q.r1}/${q.nok} за мин, второй ${q.r2}/${q.nok}. Вместе: ${q.r1+q.r2}/${q.nok} в мин → ${q.nok}÷${q.together}=${q.ans} мин.`};
+  },
+  /* §33-35 задача — кран и бочка (НОК) */
+  function(){
+    const q=pick([
+      {t1:6,t2:18,nok:18,r1:3,r2:1,together:4,ans:'4/18',red:'2/9'},
+      {t1:4,t2:12,nok:12,r1:3,r2:1,together:4,ans:'4/12',red:'1/3'},
+      {t1:6,t2:9, nok:18,r1:3,r2:2,together:5,ans:'5/18',red:'5/18'},
+      {t1:8,t2:24,nok:24,r1:3,r2:1,together:4,ans:'4/24',red:'1/6'},
+    ]);
+    return {tag:'🚿 Задача: кран', type:'choice',
+      text:`Один кран заполняет бочку за ${q.t1} мин, а другой — за ${q.t2} мин. Какую часть бочки заполнят оба крана вместе за 1 мин?`,
+      options:shuffle([q.red,`1/${q.t1}`,`1/${q.t2}`,`1/${q.t1+q.t2}`]),
+      answer:q.red,
+      hint:`За 1 мин первый заполняет 1/${q.t1}, второй — 1/${q.t2}. Вместе: 1/${q.t1}+1/${q.t2}=${q.ans}=${q.red}.`,
+      explain:`1/${q.t1}+1/${q.t2}=${q.r1}/${q.nok}+${q.r2}/${q.nok}=${q.together}/${q.nok}=${q.red} бочки за 1 мин.`};
   }
 ];
 
@@ -3064,18 +3126,70 @@ const GEN_PETRA = [
   },
   /* §50-52 задача — встреча двух (из задания 206) */
   function(){
-    const data=[
-      {v1:'4,6',v2:'3,8',d:'1,84',t:'0,22 ч (≈ 13 мин)'},
-      {v1:'11,7',v2:'12,8',d:'29,4',label:'11,7+12,8=24,5 км/ч, 29,4÷24,5≈1,2 ч'},
-      {v1:'10',v2:'8',d:'54',t:'3'},
-      {v1:'12',v2:'8',d:'60',t:'3'},
-    ];
     const q=pick([{v1:'10',v2:'8',d:'54',t:'3'},{v1:'12',v2:'8',d:'60',t:'3'},{v1:'15',v2:'9',d:'72',t:'3'},{v1:'10',v2:'6',d:'64',t:'4'}]);
     return {tag:'🚴 Задача: встреча', type:'input',
       text:`Два велосипедиста выехали навстречу одновременно. Скорости: ${q.v1} км/ч и ${q.v2} км/ч. Расстояние между ними ${q.d} км. Через сколько часов они встретятся?`,
       answer:`${q.t} ч`,
       hint:`Скорость сближения = ${q.v1} + ${q.v2} = ${Number(q.v1)+Number(q.v2)} км/ч. Время = ${q.d} ÷ ${Number(q.v1)+Number(q.v2)}.`,
       explain:`(${q.v1}+${q.v2})=${Number(q.v1)+Number(q.v2)} км/ч. ${q.d}÷${Number(q.v1)+Number(q.v2)}=${q.t} ч.`};
+  },
+  /* §50-52 задача — ЛОДКА: найти расстояние по/против течения (из учебника) */
+  function(){
+    const data=[
+      {vown:22,vtec:3,t:4,vd:25,vu:19,dist_d:100,dist_u:76},
+      {vown:10,vtec:2,t:5,vd:12,vu:8,dist_d:60,dist_u:40},
+      {vown:15,vtec:3,t:4,vd:18,vu:12,dist_d:72,dist_u:48},
+      {vown:8,vtec:2,t:3,vd:10,vu:6,dist_d:30,dist_u:18},
+    ];
+    const q=pick(data);
+    return {tag:'🚤 Задача: расстояние лодки', type:'choice',
+      text:`Скорость лодки в стоячей воде равна ${q.vown} км/ч, а скорость течения реки — ${q.vtec} км/ч. Какое расстояние лодка проплывёт по течению реки за ${q.t} ч?`,
+      options:shuffle([`${q.dist_d} км`,`${q.dist_u} км`,`${q.vown*q.t} км`,`${q.vtec*q.t} км`]),
+      answer:`${q.dist_d} км`,
+      hint:`По течению: ${q.vown}+${q.vtec}=${q.vd} км/ч. Расстояние: ${q.vd}×${q.t}=${q.dist_d} км.`,
+      explain:`Скорость по течению: ${q.vown}+${q.vtec}=${q.vd} км/ч. Расстояние: ${q.vd}×${q.t}=${q.dist_d} км.`};
+  },
+  /* §50-52 задача — ЛОДКА: найти время обратного пути (из учебника) */
+  function(){
+    const data=[
+      {vown:10,vtec:4,t_fwd:3,vd:14,vu:6,dist:42,t_back:7},
+      {vown:12,vtec:3,t_fwd:2,vd:15,vu:9,dist:30,t_back:3},  // уточнено: 30/9≈3.3 → берём только целые
+      {vown:8,vtec:2,t_fwd:5,vd:10,vu:6,dist:50,t_back:Math.round(50/6*10)/10},
+      {vown:15,vtec:5,t_fwd:2,vd:20,vu:10,dist:40,t_back:4},
+    ];
+    const q=pick([
+      {vown:10,vtec:4,t_fwd:3,vd:14,vu:6,dist:42,t_back:7},
+      {vown:15,vtec:5,t_fwd:2,vd:20,vu:10,dist:40,t_back:4},
+      {vown:12,vtec:4,t_fwd:2,vd:16,vu:8,dist:32,t_back:4},
+      {vown:9,vtec:3,t_fwd:4,vd:12,vu:6,dist:48,t_back:8},
+    ]);
+    return {tag:'🚤 Задача: время обратного пути', type:'choice',
+      text:`Собственная скорость лодки ${q.vown} км/ч, скорость течения реки ${q.vtec} км/ч. Лодка плыла по течению ${q.t_fwd} ч. Сколько часов займёт обратный путь?`,
+      options:shuffle([`${q.t_back} ч`,`${q.t_fwd} ч`,`${q.t_back+q.t_fwd} ч`,`${Math.abs(q.t_back-q.t_fwd)} ч`]),
+      answer:`${q.t_back} ч`,
+      hint:`По течению: ${q.vown}+${q.vtec}=${q.vd} км/ч. Расстояние: ${q.vd}×${q.t_fwd}=${q.dist} км.\nПротив течения: ${q.vown}−${q.vtec}=${q.vu} км/ч. Время: ${q.dist}÷${q.vu}=${q.t_back} ч.`,
+      explain:`По течению: ${q.vd}×${q.t_fwd}=${q.dist} км. Против: ${q.dist}÷${q.vu}=${q.t_back} ч.`};
+  },
+  /* §50-52 задача — ЛОДКА: сравнить время туда и обратно (из учебника) */
+  function(){
+    const data=[
+      {dist:60,vown:4,vtec:2,vd:6,vu:2,t_d:10,t_u:30,diff:20,longer:'обратный'},
+      {dist:48,vown:9,vtec:3,vd:12,vu:6,t_d:4,t_u:8,diff:4,longer:'обратный'},
+      {dist:36,vown:6,vtec:2,vd:8,vu:4,t_d:4.5,t_u:9,diff:4.5,longer:'обратный'},
+      {dist:60,vown:10,vtec:2,vd:12,vu:8,t_d:5,t_u:7.5,diff:2.5,longer:'обратный'},
+    ];
+    const q=pick(data);
+    return {tag:'🚤 Задача: лодка туда и обратно', type:'choice',
+      text:`Лодка проплыла ${q.dist} км по течению реки, а затем вернулась обратно. Собственная скорость лодки ${q.vown} км/ч, скорость течения ${q.vtec} км/ч. Какой путь занял больше времени и на сколько?`,
+      options:shuffle([
+        `${q.longer} путь, на ${q.diff} ч больше`,
+        `прямой путь, на ${q.diff} ч больше`,
+        `оба пути равны по времени`,
+        `${q.longer} путь, на ${q.t_u} ч больше`
+      ]),
+      answer:`${q.longer} путь, на ${q.diff} ч больше`,
+      hint:`По течению: ${q.vown}+${q.vtec}=${q.vd} км/ч → ${q.dist}÷${q.vd}=${q.t_d} ч.\nПротив: ${q.vown}−${q.vtec}=${q.vu} км/ч → ${q.dist}÷${q.vu}=${q.t_u} ч.\nРазница: ${q.t_u}−${q.t_d}=${q.diff} ч.`,
+      explain:`По течению: ${q.t_d} ч. Против: ${q.t_u} ч. Обратный путь дольше на ${q.diff} ч.`};
   }
 ];
 
@@ -3277,7 +3391,7 @@ const MINI_EXAM_Q=[
   [
     {type:'choice',q:'Какая дробь является неправильной?',opts:['7/3','3/7','2/5','1/4'],answer:'7/3'},
     {type:'input',q:'Переведи в смешанное число: 11/4',answer:'2 3/4'},
-    {type:'choice',q:'Смешанное число 3 2/5 в виде неправильной дроби:',opts:['17/5','32/5','15/2','7/5'],answer:'17/5'},
+    {type:'choice',q:'Переведи смешанное число 3 2/5 в неправильную дробь:',opts:['17/5','32/5','15/2','7/5'],answer:'17/5'},
     {type:'choice',q:'Какое из чисел больше: 2 1/3 или 7/3?',opts:['2 1/3','7/3','они равны','нельзя сравнить'],answer:'они равны'},
     {type:'input',q:'Переведи в неправильную дробь: 4 1/6',answer:'25/6'},
   ],
@@ -3349,48 +3463,46 @@ const MINI_EXAM_Q=[
 
 /* ---- Build 5 questions for a location for a given round ---- */
 const GENERATORS = { 0:GEN_EIFFEL, 1:GEN_COLOSSEUM, 2:GEN_MACHU, 3:GEN_TAJ, 4:GEN_WALL, 5:GEN_LIBERTY, 6:GEN_CHRIST, 7:GEN_PARTHENON, 8:GEN_PYRAMIDS, 9:GEN_PETRA };
+function isTaskQuestion(q){ return !!(q.tag||'').match(/задача|задач/i); }
+
 function buildLocationQuestions(locIndex, round){
   const gens = GENERATORS[locIndex] || [];
   const sig  = SIGNATURE[locIndex]  || [];
 
-  /* ---- очередь с памятью: каждый раз новые типы заданий ---- */
-  const storageKey = `locQueue_${locIndex}`;
-  let queue = [];
-  try { queue = JSON.parse(localStorage.getItem(storageKey) || '[]'); } catch(e){}
+  // Разбиваем генераторы на обычные и задачи (вызываем один раз для определения типа)
+  const regIdxs = [], taskIdxs = [];
+  gens.forEach((g,i) => { isTaskQuestion(g()) ? taskIdxs.push(i) : regIdxs.push(i); });
 
-  // сколько генераторов нужно (1 место займёт signature-задание)
-  const needed = sig.length > 0 ? 4 : 5;
+  // --- Очередь обычных заданий (4 штуки) ---
+  const regKey = `locQ_${locIndex}_r`;
+  let regQueue = [];
+  try { regQueue = JSON.parse(localStorage.getItem(regKey)||'[]'); } catch(e){}
+  const regNeeded = sig.length > 0 ? 3 : 4;
+  if(regQueue.length < regNeeded) regQueue = shuffle([...regIdxs]);
 
-  // если в очереди меньше чем нужно — создать новую перетасованную очередь из ВСЕХ генераторов
-  if(queue.length < needed){
-    queue = shuffle(gens.map((_,i) => i));
+  const regular = [];
+  if(sig.length) regular.push(sig[round % sig.length]);
+  regQueue.splice(0, regNeeded).forEach(i => { if(gens[i]) regular.push(gens[i]()); });
+  while(regular.length < 4 && regIdxs.length) regular.push(gens[pick(regIdxs)]());
+  try { localStorage.setItem(regKey, JSON.stringify(regQueue)); } catch(e){}
+
+  // --- Очередь задач (1 задача — гарантированно, если есть) ---
+  const tasks = [];
+  if(taskIdxs.length > 0){
+    const taskKey = `locQ_${locIndex}_t`;
+    let taskQueue = [];
+    try { taskQueue = JSON.parse(localStorage.getItem(taskKey)||'[]'); } catch(e){}
+    if(taskQueue.length < 1) taskQueue = shuffle([...taskIdxs]);
+    const taskIdx = taskQueue.splice(0, 1)[0];
+    if(gens[taskIdx]) tasks.push(gens[taskIdx]());
+    try { localStorage.setItem(taskKey, JSON.stringify(taskQueue)); } catch(e){}
   }
 
-  const out = [];
-  // 1 фиксированное задание (rotating по раундам)
-  if(sig.length){ out.push(sig[round % sig.length]); }
-
-  // берём следующие N из очереди (без повтора типов внутри одной сессии)
-  const taken = queue.splice(0, needed);
-  taken.forEach(idx => {
-    const gen = gens[idx];
-    if(gen) out.push(gen());
-  });
-
-  // сохраняем обновлённую очередь
-  try { localStorage.setItem(storageKey, JSON.stringify(queue)); } catch(e){}
-
-  // добираем если вдруг не хватило (страховка)
-  while(out.length < 5){
-    out.push(gens[Math.floor(Math.random()*gens.length)]());
-  }
-
-  // задачи — всегда в конец сессии
-  const regular = out.filter(q => !isTaskQuestion(q));
-  const tasks   = out.filter(q =>  isTaskQuestion(q));
-  return [...shuffle(regular), ...shuffle(tasks)];
+  // Итого всегда 5 вопросов: 4 обычных + 1 задача (или 5 обычных если задач нет)
+  const result = [...shuffle(regular), ...tasks];
+  while(result.length < 5 && gens.length) result.push(gens[Math.floor(Math.random()*gens.length)]());
+  return result;
 }
-function isTaskQuestion(q){ return !!(q.tag||'').match(/задача|задач/i); }
 /* current location's questions (rebuilt each play) */
 let QUESTIONS = [];
 /* ============ EXAM ============ */
@@ -3842,20 +3954,40 @@ function showMiniExamQuestion(){
       answerArea.appendChild(btn);
     });
   } else {
-    answerArea.innerHTML=`<input id="meInput" class="me-input" type="text" placeholder="Введи ответ..." autocomplete="off">
-      <button class="me-check-btn" onclick="submitMiniInput()">Проверить →</button>`;
-    setTimeout(()=>{const el=document.getElementById('meInput'); if(el)el.focus();},100);
+    const isFrac = /^\d+\/\d+$/.test((q.answer||'').toString().trim());
+    if(isFrac){
+      answerArea.innerHTML=`
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;justify-content:center">
+          <input id="meNum" class="me-input" type="number" min="1" max="999" placeholder="числитель" autocomplete="off"
+            style="width:110px;text-align:center;font-size:22px;font-weight:700">
+          <span style="font-size:32px;font-weight:900;color:#3a86ff;line-height:1">/</span>
+          <input id="meDen" class="me-input" type="number" min="1" max="999" placeholder="знаменатель" autocomplete="off"
+            style="width:110px;text-align:center;font-size:22px;font-weight:700">
+        </div>
+        <button class="me-check-btn" onclick="submitMiniInput()">Проверить →</button>`;
+      setTimeout(()=>{const el=document.getElementById('meNum'); if(el)el.focus();},100);
+    } else {
+      answerArea.innerHTML=`<input id="meInput" class="me-input" type="text" placeholder="Введи ответ..." autocomplete="off">
+        <button class="me-check-btn" onclick="submitMiniInput()">Проверить →</button>`;
+      setTimeout(()=>{const el=document.getElementById('meInput'); if(el)el.focus();},100);
+    }
   }
   document.getElementById('meFeedback').innerHTML='';
 }
 
 function submitMiniInput(){
+  const num=document.getElementById('meNum');
+  const den=document.getElementById('meDen');
+  if(num && den){
+    if(!num.value.trim() || !den.value.trim()) return;
+    checkMiniAnswer(`${num.value.trim()}/${den.value.trim()}`, MINI_EXAM_Q[miniExamLoc][miniExamIdx].answer);
+    return;
+  }
   const inp=document.getElementById('meInput');
-  if(!inp)return;
+  if(!inp) return;
   const val=inp.value.trim();
-  if(!val)return;
-  const q=MINI_EXAM_Q[miniExamLoc][miniExamIdx];
-  checkMiniAnswer(val, q.answer);
+  if(!val) return;
+  checkMiniAnswer(val, MINI_EXAM_Q[miniExamLoc][miniExamIdx].answer);
 }
 
 function checkMiniAnswer(given, correct){
