@@ -1497,19 +1497,25 @@ const GEN_COLOSSEUM = [
       hint:`${q.sold} + ${q.w} ${q.n}/${q.d} = ${q.total}. Проверь сложение.`,
       explain:`${q.sold} + ${q.w} ${q.n}/${q.d} = ${q.total} ${q.item}. Верно!`};
   },
-  /* §28 задача — велопробег */
+  /* §28 задача — велопробег (только пары где total делится на d нацело) */
   function(){
-    const total=pick([144,180,120,200]);
-    const n1=pick([3,5,7]);
-    const d=pick([8,9,10]);
-    const day1=Math.round(total*n1/d);
-    const n2=d-n1-1;
-    const day2=n2>0?Math.round(total*n2/d):Math.round(total/d);
+    const cases=[
+      {total:144,d:8,n1:3,n2:4}, // 144÷8=18, день1=54, день2=72
+      {total:180,d:9,n1:4,n2:3}, // 180÷9=20, день1=80, день2=60
+      {total:120,d:8,n1:3,n2:4}, // 120÷8=15, день1=45, день2=60
+      {total:200,d:10,n1:3,n2:5},// 200÷10=20, день1=60, день2=100
+      {total:180,d:10,n1:5,n2:3},// 180÷10=18, день1=90, день2=54
+      {total:160,d:8,n1:5,n2:2}, // 160÷8=20, день1=100, день2=40
+      {total:270,d:9,n1:5,n2:3}, // 270÷9=30, день1=150, день2=90
+    ];
+    const q=pick(cases);
+    const step=q.total/q.d;
+    const day1=step*q.n1, day2=step*q.n2;
     return {tag:'🚴 Задача',type:'input',
-      text:`В первый день велопробега участники проехали ${total} км, что составляет ${n1}/${d} пути. Сколько км проехали во второй день, если это ${n2>0?n2:1}/${d} пути?`,
-      answer:`${n2>0?day2:Math.round(total/d)}`,
-      hint:`${total}÷${d}×${n2>0?n2:1}=${n2>0?day2:Math.round(total/d)}.`,
-      explain:`${total}÷${d}×${n2>0?n2:1}=${n2>0?day2:Math.round(total/d)} км.`};
+      text:`В первый день велопробега участники проехали ${day1} км, что составляет ${q.n1}/${q.d} пути. Сколько км проехали во второй день, если это ${q.n2}/${q.d} пути?`,
+      answer:`${day2}`,
+      hint:`${q.total}÷${q.d}=${step} (1 часть). ${step}×${q.n2}=${day2} км.`,
+      explain:`Весь путь: ${day1}÷${q.n1}×${q.d}=${q.total} км. Второй день: ${q.total}÷${q.d}×${q.n2}=${day2} км.`};
   }
 ];
 
@@ -1712,8 +1718,8 @@ const GEN_MACHU = [
     return {tag:'📝 Задача',type:'input',
       text:`Маша выучила ${n1}/${d} всех заданных слов, а осталось выучить ${left} слов. Сколько слов было задано всего?`,
       answer:`${total}`,
-      hint:`${left} слов = ${d-n1}/${d} всего. ${left}÷${d-n1}×${d}=${total}.`,
-      explain:`${left} слов — это ${d-n1}/${d}. Всего: ${left}÷${d-n1}×${d}=${total}.`};
+      hint:`Выучила ${n1}/${d}, значит осталось ${d}/${d}−${n1}/${d}=${d-n1}/${d}. ${left} слов = ${d-n1}/${d} всего. ${left}÷${d-n1}×${d}=${total}.`,
+      explain:`Осталось: ${d}/${d}−${n1}/${d}=${d-n1}/${d}. ${left}÷${d-n1}×${d}=${total} слов.`};
   },
   /* §29 задача — конфеты (из учебника) */
   function(){
@@ -3949,14 +3955,15 @@ function showMiniExamQuestion(){
   const total=MINI_EXAM_Q[miniExamLoc].length;
   document.getElementById('meProgress').textContent=`Вопрос ${miniExamIdx+1} из ${total}`;
   document.getElementById('meScore').textContent=`✅ ${miniExamScore}`;
-  document.getElementById('meQuestion').innerHTML=q.q;
+  document.getElementById('meQuestion').innerHTML=fmtFrac(q.q);
   const answerArea=document.getElementById('meAnswerArea');
   answerArea.innerHTML='';
   if(q.type==='choice'){
     q.opts.forEach(opt=>{
       const btn=document.createElement('button');
       btn.className='me-opt-btn';
-      btn.textContent=opt;
+      btn.innerHTML=fmtFrac(opt);
+      btn.dataset.opt=opt;
       btn.onclick=()=>checkMiniAnswer(opt, q.answer);
       answerArea.appendChild(btn);
     });
@@ -4040,7 +4047,7 @@ function checkMiniAnswer(given, correct){
     miniExamScore++;
     fb.innerHTML=`<span style="color:#007038;font-weight:700">✅ Верно!</span>`;
   } else {
-    fb.innerHTML=`<span style="color:#c02828;font-weight:700">❌ Неверно. Правильный ответ: <b>${correct}</b></span>`;
+    fb.innerHTML=`<span style="color:#c02828;font-weight:700">❌ Неверно. Правильный ответ: <b>${fmtFrac(correct)}</b></span>`;
   }
   setTimeout(()=>nextMiniExamQuestion(), 1500);
 }
