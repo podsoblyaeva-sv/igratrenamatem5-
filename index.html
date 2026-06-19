@@ -1961,7 +1961,7 @@ const GEN_WALL = [
     return {tag:'✂️ Сокращение', type:'choice',
       text:`Сократи дробь ${n}/${d}.`,
       options:shuffle([correct,...wrong.slice(0,3)]), answer:correct,
-      hint:`НОД(${n},${d})=${g2}. Делим числитель и знаменатель на ${g2}.`,
+      hint:`Общий делитель ${n} и ${d} равен ${g2}. Делим числитель и знаменатель на ${g2}.`,
       explain:`${n}÷${g2}=${rn}, ${d}÷${g2}=${rd}. Ответ: ${rn}/${rd}.`};
   },
   /* §35: нахождение наименьшего общего знаменателя */
@@ -1973,8 +1973,8 @@ const GEN_WALL = [
     return {tag:'🔢 Общий знаменатель', type:'choice',
       text:`Найди наименьший общий знаменатель для дробей с знаменателями ${d1} и ${d2}.`,
       options:shuffle([`${lcmVal}`,...wrong.slice(0,3).map(String)]), answer:`${lcmVal}`,
-      hint:`НОК(${d1},${d2}) = ${lcmVal}. Это наименьшее число, которое делится и на ${d1}, и на ${d2}.`,
-      explain:`НОК(${d1},${d2}) = ${lcmVal}. Общий знаменатель равен ${lcmVal}.`};
+      hint:`Наименьшее общее кратное ${d1} и ${d2} равно ${lcmVal} — это наименьшее число, которое делится и на ${d1}, и на ${d2}.`,
+      explain:`Наименьшее общее кратное ${d1} и ${d2} равно ${lcmVal}. Общий знаменатель: ${lcmVal}.`};
   },
   /* §35: приведение дроби к заданному знаменателю */
   function(){
@@ -1997,8 +1997,8 @@ const GEN_WALL = [
       text:`Можно ли сократить дробь ${n}/${d}?`,
       options:shuffle(['Да, можно сократить','Нет, уже сокращена','Нельзя определить','Дробь неправильная']),
       answer:correct,
-      hint:`НОД(${n},${d})=${gcd(n,d)}. Если НОД=1 — несократима.`,
-      explain:isRed?`НОД(${n},${d})=${gcd(n,d)}>1 — можно: ${n/gcd(n,d)}/${d/gcd(n,d)}.`:`НОД(${n},${d})=1 — дробь несократима.`};
+      hint:`Общий делитель ${n} и ${d} равен ${gcd(n,d)}. Если он равен 1 — дробь несократима.`,
+      explain:isRed?`Общий делитель равен ${gcd(n,d)}, значит можно сократить: ${n/gcd(n,d)}/${d/gcd(n,d)}.`:`Общий делитель равен 1 — дробь уже несократима.`};
   },
   /* §35: сравнение дробей через общий знаменатель */
   function(){
@@ -2012,7 +2012,7 @@ const GEN_WALL = [
     return {tag:'⚖️ Сравнение дробей', type:'choice',
       text:`Сравни дроби: ${n1}/${d1} и ${n2}/${d2}.`,
       options:shuffle(opts), answer:ans,
-      hint:`Общий знаменатель НОК(${d1},${d2})=${ld}. Приводим: ${n1}/${d1}=${a}/${ld}, ${n2}/${d2}=${b}/${ld}. Сравниваем числители.`,
+      hint:`Общий знаменатель ${ld}. Приводим: ${n1}/${d1}=${a}/${ld}, ${n2}/${d2}=${b}/${ld}. Сравниваем числители.`,
       explain:`${a}/${ld} ${a>b?'>':a<b?'<':'='} ${b}/${ld}, значит ${ans}.`};
   },
   /* §33-35: уравнение x − a/d = b/d (одинаковые знаменатели) */
@@ -2043,7 +2043,7 @@ const GEN_WALL = [
     return {tag:'✂️ Сократи', type:'choice',
       text:`Сократи дробь ${n}/${d} до несократимой.`,
       options:shuffle([correct,...wrong.slice(0,3)]), answer:correct,
-      hint:`НОД(${n},${d})=${gcd(n,d)}. Делим числитель и знаменатель на ${gcd(n,d)}.`,
+      hint:`Общий делитель ${n} и ${d} равен ${gcd(n,d)}. Делим числитель и знаменатель на ${gcd(n,d)}.`,
       explain:`${n}÷${gcd(n,d)}=${n/gcd(n,d)}, ${d}÷${gcd(n,d)}=${d/gcd(n,d)}. Ответ: ${correct}.`};
   },
   /* §35: приведи к НОЗ — задача */
@@ -2056,8 +2056,8 @@ const GEN_WALL = [
       text:`Чему равен наименьший общий знаменатель дробей 1/${d1} и 1/${d2}?`,
       options:shuffle([`${lcmVal}`,`${d1*d2}`,`${d1+d2}`,`${Math.max(d1,d2)}`].filter((v,i,a)=>a.indexOf(v)===i).slice(0,4)),
       answer:`${lcmVal}`,
-      hint:`НОК(${d1},${d2}) = ${lcmVal}. Наименьшее число, которое делится и на ${d1}, и на ${d2}.`,
-      explain:`НОК(${d1},${d2}) = ${lcmVal}.`};
+      hint:`Наименьшее общее кратное ${d1} и ${d2} равно ${lcmVal} — это наименьшее число, которое делится и на ${d1}, и на ${d2}.`,
+      explain:`Наименьшее общее кратное ${d1} и ${d2} равно ${lcmVal}.`};
   },
   /* §35: сравни дроби через приведение */
   function(){
@@ -2112,8 +2112,8 @@ const GEN_WALL = [
       text:`Первый мастер изготовит нужное количество деталей за ${q.t1} мин, а второй — за ${q.t2} мин. За сколько минут они сделают ту же работу вместе?`,
       options:shuffle([`${q.ans} мин`,`${q.t1+q.t2} мин`,`${Math.max(q.t1,q.t2)} мин`,`${Math.min(q.t1,q.t2)} мин`]),
       answer:`${q.ans} мин`,
-      hint:`НОК(${q.t1},${q.t2})=${q.nok}. За 1 мин вместе делают ${q.r1}+${q.r2}=${q.together} частей из ${q.nok}. Ответ: ${q.nok}÷${q.together}=${q.ans} мин.`,
-      explain:`НОК=${q.nok}. Первый делает ${q.r1}/${q.nok} за мин, второй ${q.r2}/${q.nok}. Вместе: ${q.r1+q.r2}/${q.nok} в мин → ${q.nok}÷${q.together}=${q.ans} мин.`};
+      hint:`Общее кратное ${q.t1} и ${q.t2} равно ${q.nok}. За 1 мин вместе: ${q.r1}+${q.r2}=${q.together} частей. Ответ: ${q.nok}÷${q.together}=${q.ans} мин.`,
+      explain:`За 1 мин первый делает ${q.r1}/${q.nok}, второй ${q.r2}/${q.nok}. Вместе: ${q.r1+q.r2}/${q.nok} в мин → ${q.nok}÷${q.together}=${q.ans} мин.`};
   },
   /* §33-35 задача — кран и бочка (НОК) */
   function(){
@@ -2245,7 +2245,7 @@ const GEN_LIBERTY = [
       text:`${n1}/${d1} + ${n2}/${d2} = ?`,
       options:shuffle([correct,`${n1+n2}/${d1}`,`${n1}/${d1+d2}`,`${rn+1}/${rd}`].filter((v,i,a)=>a.indexOf(v)===i).slice(0,4)),
       answer:correct,
-      hint:`Общий знаменатель = НОК(${d1},${d2})=${ld}. Приводим и складываем числители.`,
+      hint:`Общий знаменатель = ${ld}. Приводим и складываем числители.`,
       explain:`${n1*(ld/d1)}/${ld} + ${n2*(ld/d2)}/${ld} = ${num}/${ld} = ${correct}.`};
   },
   /* §36: вычитание дробей с разными знаменателями */
@@ -3149,12 +3149,13 @@ const GEN_PETRA = [
       {vown:8,vtec:2,t:3,vd:10,vu:6,dist_d:30,dist_u:18},
     ];
     const q=pick(data);
-    return {tag:'🚤 Задача: расстояние лодки', type:'choice',
+    return {tag:'🚤 Задача: расстояние лодки', type:'steps',
       text:`Скорость лодки в стоячей воде равна ${q.vown} км/ч, а скорость течения реки — ${q.vtec} км/ч. Какое расстояние лодка проплывёт по течению реки за ${q.t} ч?`,
-      options:shuffle([`${q.dist_d} км`,`${q.dist_u} км`,`${q.vown*q.t} км`,`${q.vtec*q.t} км`]),
-      answer:`${q.dist_d} км`,
-      hint:`По течению: ${q.vown}+${q.vtec}=${q.vd} км/ч. Расстояние: ${q.vd}×${q.t}=${q.dist_d} км.`,
-      explain:`Скорость по течению: ${q.vown}+${q.vtec}=${q.vd} км/ч. Расстояние: ${q.vd}×${q.t}=${q.dist_d} км.`};
+      explain:`Скорость по течению: ${q.vown}+${q.vtec}=${q.vd} км/ч. Расстояние: ${q.vd}×${q.t}=${q.dist_d} км.`,
+      steps:[
+        {prompt:`Действие 1: скорость ПО течению = собственная + течение = ${q.vown} + ${q.vtec} = ?`, answer:`${q.vd}`, unit:'км/ч', hint:`По течению складываем скорости: ${q.vown} + ${q.vtec} = ${q.vd} км/ч.`},
+        {prompt:`Действие 2: расстояние = скорость × время = ${q.vd} × ${q.t} = ?`, answer:`${q.dist_d}`, unit:'км', hint:`Расстояние = скорость × время: ${q.vd} × ${q.t} = ${q.dist_d} км.`},
+      ]};
   },
   /* §50-52 задача — ЛОДКА: найти время обратного пути (из учебника) */
   function(){
@@ -3170,12 +3171,15 @@ const GEN_PETRA = [
       {vown:12,vtec:4,t_fwd:2,vd:16,vu:8,dist:32,t_back:4},
       {vown:9,vtec:3,t_fwd:4,vd:12,vu:6,dist:48,t_back:8},
     ]);
-    return {tag:'🚤 Задача: время обратного пути', type:'choice',
+    return {tag:'🚤 Задача: время обратного пути', type:'steps',
       text:`Собственная скорость лодки ${q.vown} км/ч, скорость течения реки ${q.vtec} км/ч. Лодка плыла по течению ${q.t_fwd} ч. Сколько часов займёт обратный путь?`,
-      options:shuffle([`${q.t_back} ч`,`${q.t_fwd} ч`,`${q.t_back+q.t_fwd} ч`,`${Math.abs(q.t_back-q.t_fwd)} ч`]),
-      answer:`${q.t_back} ч`,
-      hint:`По течению: ${q.vown}+${q.vtec}=${q.vd} км/ч. Расстояние: ${q.vd}×${q.t_fwd}=${q.dist} км.\nПротив течения: ${q.vown}−${q.vtec}=${q.vu} км/ч. Время: ${q.dist}÷${q.vu}=${q.t_back} ч.`,
-      explain:`По течению: ${q.vd}×${q.t_fwd}=${q.dist} км. Против: ${q.dist}÷${q.vu}=${q.t_back} ч.`};
+      explain:`По течению: ${q.vd}×${q.t_fwd}=${q.dist} км. Против течения: ${q.dist}÷${q.vu}=${q.t_back} ч.`,
+      steps:[
+        {prompt:`Действие 1: скорость ПО течению = ${q.vown} + ${q.vtec} = ?`, answer:`${q.vd}`, unit:'км/ч', hint:`По течению: собственная + течение = ${q.vown} + ${q.vtec} = ${q.vd} км/ч.`},
+        {prompt:`Действие 2: расстояние = ${q.vd} × ${q.t_fwd} = ?`, answer:`${q.dist}`, unit:'км', hint:`Расстояние = скорость × время: ${q.vd} × ${q.t_fwd} = ${q.dist} км.`},
+        {prompt:`Действие 3: скорость ПРОТИВ течения = ${q.vown} − ${q.vtec} = ?`, answer:`${q.vu}`, unit:'км/ч', hint:`Против течения: собственная − течение = ${q.vown} − ${q.vtec} = ${q.vu} км/ч.`},
+        {prompt:`Действие 4: время обратного пути = ${q.dist} ÷ ${q.vu} = ?`, answer:`${q.t_back}`, unit:'ч', hint:`Время = расстояние ÷ скорость: ${q.dist} ÷ ${q.vu} = ${q.t_back} ч.`},
+      ]};
   },
   /* §50-52 задача — ЛОДКА: сравнить время туда и обратно (из учебника) */
   function(){
@@ -3299,8 +3303,8 @@ Object.assign(SIGNATURE, {
     {tag:'🏯 Факт о Великой стене', type:'choice',
      text:'Блогер сократил дробь 6/9, описывающую часть стены на видео. Что получилось?',
      options:['2/3','3/4','1/3','6/9'], answer:'2/3',
-     hint:'НОД(6,9)=3. Делим: 6÷3=2, 9÷3=3.',
-     explain:'6/9 = 2/3. НОД(6,9)=3.'}
+     hint:'Общий делитель 6 и 9 равен 3. Делим: 6÷3=2, 9÷3=3.',
+     explain:'6/9 = 2/3. Делили на общий делитель 3.'}
   ],
   5: [
     {tag:'🗽 Факт о Статуе Свободы', type:'choice',
@@ -3440,13 +3444,13 @@ const MINI_EXAM_Q=[
   ],
   /* Loc 4 — Великая стена — §33-35: НОК, НОД, сравнение дробей */
   [
-    {type:'input',q:'Найди наименьшее общее кратное (НОК) чисел 4 и 6:',answer:'12',
-      explain:'Кратные 4: 4, 8, 12... Кратные 6: 6, 12... Первое общее = 12. НОК(4,6) = 12.'},
+    {type:'input',q:'Найди наименьшее общее кратное чисел 4 и 6:',answer:'12',
+      explain:'Кратные 4: 4, 8, 12... Кратные 6: 6, 12... Первое общее = 12.'},
     {type:'choice',q:'Сравни дроби: 2/3 и 3/5 (найди общий знаменатель)',opts:['2/3 > 3/5','2/3 < 3/5','2/3 = 3/5','нельзя сравнить'],answer:'2/3 > 3/5',
       explain:'Общий знаменатель 15. 2/3=10/15, 3/5=9/15. 10/15 > 9/15, значит 2/3 > 3/5.'},
     {type:'input',q:'Приведи дробь 2/3 к знаменателю 15: 2/3 = ?/15. Введи числитель:',answer:'10',
       explain:'15 ÷ 3 = 5 (увеличили знаменатель в 5 раз). Числитель тоже × 5: 2 × 5 = 10.'},
-    {type:'choice',q:'Найди наибольший общий делитель (НОД) чисел 12 и 18:',opts:['6','3','36','9'],answer:'6',
+    {type:'choice',q:'Найди наибольший общий делитель чисел 12 и 18:',opts:['6','3','36','9'],answer:'6',
       explain:'Делители 12: 1,2,3,4,6,12. Делители 18: 1,2,3,6,9,18. Наибольший общий = 6.'},
     {type:'input',q:'Сократи дробь 8/12 (раздели числитель и знаменатель на одно число):',answer:'2/3',
       explain:'Наибольший общий делитель 8 и 12 равен 4. 8÷4=2, 12÷4=3. Ответ: 2/3.'},
@@ -3454,7 +3458,7 @@ const MINI_EXAM_Q=[
   /* Loc 5 — Статуя Свободы — §36-39: дроби с разными знаменателями + умножение дробей */
   [
     {type:'input',q:'Вычисли: 1/2 + 1/3 = ?',answer:'5/6',
-      explain:'НОК(2,3)=6. 1/2=3/6, 1/3=2/6. 3/6 + 2/6 = 5/6.'},
+      explain:'Общий знаменатель 6. 1/2=3/6, 1/3=2/6. 3/6 + 2/6 = 5/6.'},
     {type:'input',q:'Вычисли: 3/4 − 1/6 = ?',answer:'7/12',
       explain:'НОК(4,6)=12. 3/4=9/12, 1/6=2/12. 9/12 − 2/12 = 7/12.'},
     {type:'input',q:'Вычисли: 2/3 × 3/4 = ?',answer:'1/2',
@@ -3620,11 +3624,11 @@ const EXAM_Q=[
    hint:'180° − 70° − 65° = 45°.',
    explain:'180° − 70° − 65° = 45°.'},
   /* ---- Дополнительные вопросы по образцу итоговой контрольной K.1–K.25 ---- */
-  {tag:'📏 Тема 11: НОК и НОД',type:'choice',
-   text:'Найди НОК чисел 6 и 9.',
+  {tag:'📏 Тема 11: общие кратные и делители',type:'choice',
+   text:'Найди наименьшее общее кратное чисел 6 и 9.',
    options:['18','54','3','9'],answer:'18',
-   hint:'Разложи: 6=2×3, 9=3². НОК=2×3²=18.',
-   explain:'НОК(6,9)=18 — наименьшее число, кратное и 6, и 9.'},
+   hint:'Кратные 6: 6,12,18... Кратные 9: 9,18... Первое общее = 18.',
+   explain:'18 — наименьшее число, которое делится и на 6, и на 9.'},
   {tag:'🔢 Тема 11: Сравнение дробей',type:'choice',
    text:'Сравни дроби: 2/3 и 3/5',
    options:['2/3 > 3/5','2/3 < 3/5','2/3 = 3/5','нельзя сравнить'],answer:'2/3 > 3/5',
@@ -3653,8 +3657,8 @@ const EXAM_Q=[
   {tag:'💧 Тема 14: Сложение смешанных',type:'input',
    text:'Вычисли: 4 3/8 + 7/16 = ?',
    answer:['4 13/16'],placeholder:'напр. 4 13/16',
-   hint:'3/8 = 6/16. Потом 6/16 + 7/16 = 13/16.',
-   explain:'4 3/8 + 7/16 = 4 6/16 + 7/16 = 4 13/16.'},
+   hint:'Целая часть (4) остаётся. Дробная: 3/8 = 6/16. Складываем дроби: 6/16 + 7/16 = 13/16. Ответ: 4 13/16.',
+   explain:'Шаг 1: приводим 3/8 = 6/16. Шаг 2: 6/16 + 7/16 = 13/16. Целая часть 4 не меняется. Ответ: 4 13/16.'},
   {tag:'💧 Тема 14: Вычитание смешанных',type:'choice',
    text:'2 4/15 − 1 9/20 = ?',
    options:['51/60','17/20','3/4','7/12'],answer:'51/60',
@@ -3685,11 +3689,13 @@ const EXAM_Q=[
    options:['21,766','21,767','21,76','21,8'],answer:'21,766',
    hint:'Тысячные — третий знак: 6. Десятитысячные: 2 < 5 → не меняем.',
    explain:'21,766|2 → десятитысячная цифра 2 < 5, оставляем: 21,766.'},
-  {tag:'🚤 Тема 19: Задача — лодка',type:'choice',
+  {tag:'🚤 Тема 19: Задача — лодка',type:'steps',
    text:'Собственная скорость лодки 6,1 км/ч, скорость течения — 9,3 км/ч. Какое расстояние пройдёт лодка ПО течению за 1,5 ч?',
-   options:['23,1 км','9,15 км','13,95 км','14,1 км'],answer:'23,1 км',
-   hint:'Скорость по течению: 6,1 + 9,3 = 15,4 км/ч. Расстояние: 15,4 × 1,5.',
-   explain:'6,1 + 9,3 = 15,4 км/ч. 15,4 × 1,5 = 23,1 км.'},
+   explain:'6,1 + 9,3 = 15,4 км/ч. 15,4 × 1,5 = 23,1 км.',
+   steps:[
+     {prompt:'Действие 1: скорость лодки ПО течению = собственная + течение = 6,1 + 9,3 = ?', answer:'15.4', unit:'км/ч', hint:'По течению: собственная скорость + скорость течения. 6,1 + 9,3 = 15,4 км/ч.'},
+     {prompt:'Действие 2: расстояние = скорость × время = 15,4 × 1,5 = ?', answer:'23.1', unit:'км', hint:'Расстояние = скорость × время. 15,4 × 1,5 = 23,1 км.'},
+   ]},
   {tag:'🏍️ Тема 20: Задача — мотоциклист',type:'choice',
    text:'Мотоциклист движется со скоростью 40,5 км/ч. За сколько часов он проедет 60,75 км?',
    options:['1,5 ч','2 ч','1 ч','3 ч'],answer:'1,5 ч',
@@ -3833,7 +3839,7 @@ function renderLoc(){
 }
 
 /* ============ QUIZ FLOW ============ */
-let dayGain=0, curIndex=0, attempts=0, usedHint=false, taskIntroShown=false;
+let dayGain=0, curIndex=0, attempts=0, usedHint=false, taskIntroShown=false, curStep=0;
 const DAY_LIMIT=5;
 function limitReached(){ return state.limit!=='off' && state.dayCount>=DAY_LIMIT; }
 
@@ -3885,7 +3891,7 @@ function fmtFrac(t){
   return r;
 }
 function loadQuestion(idx){
-  curIndex=idx; attempts=0; usedHint=false;
+  curIndex=idx; attempts=0; usedHint=false; curStep=0;
   const q=QUESTIONS[idx];
   document.getElementById('qTag').textContent=q.tag;
   document.getElementById('qText').innerHTML=fmtFrac(q.text);
@@ -3897,6 +3903,10 @@ function loadQuestion(idx){
   document.getElementById('qBar').style.width=`${(idx/QUESTIONS.length)*100}%`;
   // interaction
   const box=document.getElementById('qInteract'); box.innerHTML='';
+  if(q.type==='steps'){
+    renderStep(q, 0);
+    return;
+  }
   if(q.type==='choice'){
     const grid=document.createElement('div'); grid.className='options';
     q.options.forEach(opt=>{
@@ -3906,9 +3916,10 @@ function loadQuestion(idx){
     box.appendChild(grid);
     box.insertAdjacentHTML('beforeend', hintBtnHTML());
   }else{
-    // decide input style: fraction (numerator/denominator) or single number
+    // decide input style: mixed number, fraction, or single number
     const answers=(Array.isArray(q.answer)?q.answer:[q.answer]);
-    const isFraction = answers.some(a=>String(a).includes('/'));
+    const isMixed    = answers.some(a=>/^\d+ \d+\/\d+$/.test(String(a).trim()));
+    const isFraction = !isMixed && answers.some(a=>String(a).includes('/'));
     // step scaffold for equations
     // step scaffold — interactive sign picker
     let stepHtml = '';
@@ -3933,9 +3944,33 @@ function loadQuestion(idx){
         stepHtml = `<div class="eq-step-box"><div class="eq-step-lbl">📌 Шаг 1 — перенесём</div><div class="eq-step-expr">${fmtFrac(raw)}</div></div>`;
       }
     }
-    if(isFraction){
+    const inpSt='width:72px;font-size:24px;font-weight:700;text-align:center;padding:8px 4px;border:2px solid #c5cfe0;border-radius:10px;outline:none;background:#fff;';
+    const fracBarHtml='<div style="width:72px;height:3px;background:#3a86ff;border-radius:2px;margin:2px 0"></div>';
+    if(isMixed){
       box.innerHTML=`${stepHtml}
-        <div class="eq-step-lbl" style="margin-top:4px;margin-bottom:6px">✏️ Шаг 2 — введи ответ (числитель / знаменатель)</div>
+        <div class="eq-step-lbl" style="margin-top:4px;margin-bottom:8px">✏️ Введи ответ: целое число и дробь</div>
+        <div style="display:flex;align-items:center;gap:14px;justify-content:center;margin-bottom:14px">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:2px">
+            <div style="font-size:11px;color:#aaa;margin-bottom:4px">целое</div>
+            <input id="ansWhole" inputmode="decimal" maxlength="3" autocomplete="off" placeholder="?" style="${inpSt}font-size:28px;width:80px" onkeydown="if(event.key==='Enter')checkInput()" oninput="if(this.value.length>=2){document.getElementById('ansNum')&&document.getElementById('ansNum').focus();}">
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center">
+            <div style="font-size:11px;color:#aaa;margin-bottom:4px">дробь</div>
+            <input id="ansNum" inputmode="decimal" maxlength="2" autocomplete="off" placeholder="?" style="${inpSt}border-radius:10px 10px 4px 4px" onkeydown="if(event.key==='Enter')checkInput()" oninput="if(this.value.length>=2){document.getElementById('ansDen')&&document.getElementById('ansDen').focus();}">
+            ${fracBarHtml}
+            <input id="ansDen" inputmode="decimal" maxlength="2" autocomplete="off" placeholder="?" style="${inpSt}border-radius:4px 4px 10px 10px" onkeydown="if(event.key==='Enter')checkInput()">
+          </div>
+        </div>
+        <div style="margin-top:4px">
+          <button class="btn" style="min-width:160px" onclick="checkInput()">Проверить ✓</button>
+        </div>
+        <div class="hint-row">
+          <button id="hintBtn" class="btn ghost" onclick="askHint()" style="opacity:0;pointer-events:none;transition:opacity .4s">💡 Подсказка</button>
+        </div>`;
+      setTimeout(()=>{ const w=document.getElementById('ansWhole'); if(w) w.focus(); },80);
+    } else if(isFraction){
+      box.innerHTML=`${stepHtml}
+        <div class="eq-step-lbl" style="margin-top:4px;margin-bottom:6px">✏️ Введи ответ (числитель и знаменатель)</div>
         <div class="frac-input">
           <input class="frac-cell" id="ansNum" inputmode="decimal" maxlength="2" autocomplete="off" placeholder="?" oninput="if(this.value.length>=2){const d=document.getElementById('ansDen');if(d)d.focus();}" onkeydown="if(event.key==='Enter')checkInput()">
           <div class="frac-bar"></div>
@@ -3964,6 +3999,65 @@ function loadQuestion(idx){
     }
   }
 }
+/* ===== ПОШАГОВЫЕ ЗАДАЧИ ===== */
+function renderStep(q, stepIdx){
+  curStep = stepIdx;
+  attempts = 0;
+  document.getElementById('hintBubble').classList.remove('show');
+  const box = document.getElementById('qInteract');
+  // completed steps above
+  let doneHtml = '';
+  for(let i=0;i<stepIdx;i++){
+    const s=q.steps[i];
+    doneHtml+=`<div style="background:#e8fbf4;border:1.5px solid #b2f0d8;border-radius:10px;padding:8px 14px;margin-bottom:8px;font-size:15px;color:#1a7a4a">
+      ✅ ${fmtFrac(s.prompt)} <b>${fmtFrac(s.answer)} ${s.unit||''}</b></div>`;
+  }
+  const step = q.steps[stepIdx];
+  const isLast = stepIdx === q.steps.length - 1;
+  box.innerHTML = `
+    ${doneHtml}
+    <div style="background:#f0f4ff;border:2px solid #3a86ff;border-radius:12px;padding:12px 14px;margin-bottom:12px">
+      <div style="font-size:13px;font-weight:700;color:#3a86ff;margin-bottom:6px">Действие ${stepIdx+1} из ${q.steps.length}</div>
+      <div style="font-size:16px;font-weight:600;color:#1a1a2e">${fmtFrac(step.prompt)}</div>
+    </div>
+    <div class="answer-area">
+      <input class="answer-input" id="stepInput" inputmode="decimal" autocomplete="off"
+        placeholder="${step.unit||'введи число'}"
+        onkeydown="if(event.key==='Enter')checkStepInput()">
+    </div>
+    <div style="margin-top:12px">
+      <button class="btn" style="min-width:160px" onclick="checkStepInput()">Проверить ✓</button>
+    </div>
+    <div class="hint-row">
+      <button id="hintBtn" class="btn ghost" onclick="askHint()" style="opacity:0;pointer-events:none;transition:opacity .4s">💡 Подсказка</button>
+    </div>`;
+  setTimeout(()=>{ const i=document.getElementById('stepInput'); if(i) i.focus(); },80);
+  // inject step hint into question's hint field so askHint() works
+  QUESTIONS[curIndex]._stepHint = step.hint||'';
+}
+
+function checkStepInput(){
+  const q = QUESTIONS[curIndex];
+  const inp = document.getElementById('stepInput');
+  if(!inp || inp.value.trim()==='') return;
+  const step = q.steps[curStep];
+  const correct = normalize(step.answer);
+  const given   = normalize(inp.value);
+  if(given === correct){
+    inp.classList.add('correct'); inp.disabled=true;
+    if(curStep + 1 < q.steps.length){
+      setTimeout(()=> renderStep(q, curStep+1), 600);
+    } else {
+      resolve(true);
+    }
+  } else {
+    inp.classList.add('wrong'); attempts++;
+    if(attempts===2){ revealHintBtn(); }
+    if(attempts>=3){ inp.disabled=true; resolve(false); }
+    else { setTimeout(()=>{ inp.classList.remove('wrong'); inp.value=''; inp.focus(); },600); }
+  }
+}
+
 function hintBtnHTML(){
   return `<div class="hint-row"><button id="hintBtn" class="btn ghost" onclick="askHint()" style="opacity:0;pointer-events:none;transition:opacity .4s">💡 Подсказка</button></div>`;
 }
@@ -4140,7 +4234,8 @@ function askHint(){
   usedHint=true;
   const q=QUESTIONS[curIndex];
   const hb=document.getElementById('hintBubble');
-  hb.innerHTML='💡 '+fmtFrac(q.hint); hb.classList.add('show');
+  const hintText = q.type==='steps' ? (q._stepHint||q.steps[curStep]?.hint||'') : (q.hint||'');
+  hb.innerHTML='💡 '+fmtFrac(hintText); hb.classList.add('show');
 }
 function normalize(s){
   let t=(s||'').trim().toLowerCase().replace(/\s+/g,'').replace(/\\/g,'/').replace(',','.');
@@ -4172,11 +4267,16 @@ function chooseOpt(el,opt,q){
 function checkInput(){
   const q=QUESTIONS[curIndex];
   const answers=(Array.isArray(q.answer)?q.answer:[q.answer]).map(normalize);
+  const whole=document.getElementById('ansWhole');
   const num=document.getElementById('ansNum');
   const den=document.getElementById('ansDen');
   const single=document.getElementById('ansInput');
   let val, cells;
-  if(num && den){
+  if(whole && num && den){
+    if(whole.value.trim()===''||num.value.trim()===''||den.value.trim()===''){ return; }
+    val=normalize(`${whole.value.trim()} ${num.value.trim()}/${den.value.trim()}`);
+    cells=[whole,num,den];
+  } else if(num && den){
     if(num.value.trim()==='' || den.value.trim()===''){ return; }
     val=normalize(num.value+'/'+den.value);
     cells=[num,den];
