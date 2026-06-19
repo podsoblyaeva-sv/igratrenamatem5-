@@ -3954,15 +3954,29 @@ function showMiniExamQuestion(){
       answerArea.appendChild(btn);
     });
   } else {
-    const isFrac = /^\d+\/\d+$/.test((q.answer||'').toString().trim());
-    if(isFrac){
+    const ans = (q.answer||'').toString().trim();
+    const isMixed = /^\d+ \d+\/\d+$/.test(ans);
+    const isFrac  = !isMixed && /^\d+\/\d+$/.test(ans);
+    const cellStyle = 'width:90px;text-align:center;font-size:20px;font-weight:700;padding:10px 6px';
+    const slash = '<span style="font-size:30px;font-weight:900;color:#3a86ff;line-height:1">/</span>';
+    if(isMixed){
       answerArea.innerHTML=`
+        <div style="font-size:13px;color:#888;margin-bottom:6px;text-align:center">целое &nbsp;&nbsp;&nbsp; числитель &nbsp; знаменатель</div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;justify-content:center">
+          <input id="meWhole" class="me-input" type="number" min="0" max="99" placeholder="0" autocomplete="off" style="${cellStyle}">
+          <input id="meNum"   class="me-input" type="number" min="1" max="99" placeholder="чис" autocomplete="off" style="${cellStyle}">
+          ${slash}
+          <input id="meDen"   class="me-input" type="number" min="1" max="99" placeholder="зна" autocomplete="off" style="${cellStyle}">
+        </div>
+        <button class="me-check-btn" onclick="submitMiniInput()">Проверить →</button>`;
+      setTimeout(()=>{const el=document.getElementById('meWhole'); if(el)el.focus();},100);
+    } else if(isFrac){
+      answerArea.innerHTML=`
+        <div style="font-size:13px;color:#888;margin-bottom:6px;text-align:center">числитель &nbsp; знаменатель</div>
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;justify-content:center">
-          <input id="meNum" class="me-input" type="number" min="1" max="999" placeholder="числитель" autocomplete="off"
-            style="width:110px;text-align:center;font-size:22px;font-weight:700">
-          <span style="font-size:32px;font-weight:900;color:#3a86ff;line-height:1">/</span>
-          <input id="meDen" class="me-input" type="number" min="1" max="999" placeholder="знаменатель" autocomplete="off"
-            style="width:110px;text-align:center;font-size:22px;font-weight:700">
+          <input id="meNum" class="me-input" type="number" min="1" max="999" placeholder="чис" autocomplete="off" style="${cellStyle}">
+          ${slash}
+          <input id="meDen" class="me-input" type="number" min="1" max="999" placeholder="зна" autocomplete="off" style="${cellStyle}">
         </div>
         <button class="me-check-btn" onclick="submitMiniInput()">Проверить →</button>`;
       setTimeout(()=>{const el=document.getElementById('meNum'); if(el)el.focus();},100);
@@ -3976,13 +3990,22 @@ function showMiniExamQuestion(){
 }
 
 function submitMiniInput(){
+  const whole=document.getElementById('meWhole');
   const num=document.getElementById('meNum');
   const den=document.getElementById('meDen');
+  // смешанное число: три поля
+  if(whole && num && den){
+    if(!whole.value.trim() || !num.value.trim() || !den.value.trim()) return;
+    checkMiniAnswer(`${whole.value.trim()} ${num.value.trim()}/${den.value.trim()}`, MINI_EXAM_Q[miniExamLoc][miniExamIdx].answer);
+    return;
+  }
+  // простая дробь: два поля
   if(num && den){
     if(!num.value.trim() || !den.value.trim()) return;
     checkMiniAnswer(`${num.value.trim()}/${den.value.trim()}`, MINI_EXAM_Q[miniExamLoc][miniExamIdx].answer);
     return;
   }
+  // обычное число: одно поле
   const inp=document.getElementById('meInput');
   if(!inp) return;
   const val=inp.value.trim();
