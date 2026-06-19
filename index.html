@@ -3880,24 +3880,30 @@ function loadQuestion(idx){
       box.innerHTML=`${stepHtml}
         <div class="eq-step-lbl" style="margin-top:4px;margin-bottom:6px">✏️ Шаг 2 — введи ответ (числитель / знаменатель)</div>
         <div class="frac-input">
-          <input class="frac-cell" id="ansNum" inputmode="none" readonly maxlength="2" autocomplete="off" placeholder="?" onclick="kpFocus(this)">
+          <input class="frac-cell" id="ansNum" inputmode="decimal" maxlength="2" autocomplete="off" placeholder="?" oninput="if(this.value.length>=2){const d=document.getElementById('ansDen');if(d)d.focus();}" onkeydown="if(event.key==='Enter')checkInput()">
           <div class="frac-bar"></div>
-          <input class="frac-cell" id="ansDen" inputmode="none" readonly maxlength="2" autocomplete="off" placeholder="?" onclick="kpFocus(this)">
+          <input class="frac-cell" id="ansDen" inputmode="decimal" maxlength="2" autocomplete="off" placeholder="?" onkeydown="if(event.key==='Enter')checkInput()">
+        </div>
+        <div style="margin-top:12px">
+          <button class="btn" style="min-width:160px" onclick="checkInput()">Проверить ✓</button>
         </div>
         <div class="hint-row">
           <button id="hintBtn" class="btn ghost" onclick="askHint()" style="opacity:0;pointer-events:none;transition:opacity .4s">💡 Подсказка</button>
         </div>`;
-      setTimeout(()=>{ const n=document.getElementById('ansNum'); if(n) kpFocus(n); },80);
+      setTimeout(()=>{ const n=document.getElementById('ansNum'); if(n) n.focus(); },80);
     } else {
       const step2lbl = q.step1_show ? `<div class="eq-step-lbl" style="margin-bottom:6px">✏️ Шаг 2 — посчитай и введи ответ</div>` : '';
       box.innerHTML=`${stepHtml}${step2lbl}
         <div class="answer-area">
-          <input class="answer-input" id="ansInput" inputmode="none" readonly autocomplete="off" placeholder="${q.placeholder||'введи число'}" onclick="kpFocus(this)">
+          <input class="answer-input" id="ansInput" inputmode="decimal" autocomplete="off" placeholder="${q.placeholder||'введи число'}" onkeydown="if(event.key==='Enter')checkInput()">
+        </div>
+        <div style="margin-top:12px">
+          <button class="btn" style="min-width:160px" onclick="checkInput()">Проверить ✓</button>
         </div>
         <div class="hint-row">
           <button id="hintBtn" class="btn ghost" onclick="askHint()" style="opacity:0;pointer-events:none;transition:opacity .4s">💡 Подсказка</button>
         </div>`;
-      setTimeout(()=>{ const i=document.getElementById('ansInput'); if(i) kpFocus(i); },80);
+      setTimeout(()=>{ const i=document.getElementById('ansInput'); if(i) i.focus(); },80);
     }
   }
 }
