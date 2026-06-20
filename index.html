@@ -740,7 +740,7 @@
 /* ============ STATE ============ */
 const SAVE_KEY = 'chudesa_save_v5';
 const TOTAL_LOCATIONS = 10;
-const QUESTIONS_PER_LOCATION = 5; // fixed length per location
+const QUESTIONS_PER_LOCATION = 11; // 6 обычных + 5 задач
 const EMPTY_PROGRESS = ()=>Object.fromEntries([...Array(10)].map((_,i)=>[i,0]));
 let state = {
   followers: 0,
@@ -3510,35 +3510,36 @@ function buildLocationQuestions(locIndex, round){
   const regIdxs = [], taskIdxs = [];
   gens.forEach((g,i) => { isTaskQuestion(g()) ? taskIdxs.push(i) : regIdxs.push(i); });
 
-  // --- Очередь обычных заданий (4 штуки) ---
+  // --- Очередь обычных заданий (6 штук, без задач) ---
   const regKey = `locQ_${locIndex}_r`;
   let regQueue = [];
   try { regQueue = JSON.parse(localStorage.getItem(regKey)||'[]'); } catch(e){}
-  const regNeeded = sig.length > 0 ? 3 : 4;
+  const regNeeded = sig.length > 0 ? 5 : 6;
   if(regQueue.length < regNeeded) regQueue = shuffle([...regIdxs]);
 
   const regular = [];
   if(sig.length) regular.push(sig[round % sig.length]);
   regQueue.splice(0, regNeeded).forEach(i => { if(gens[i]) regular.push(gens[i]()); });
-  while(regular.length < 4 && regIdxs.length) regular.push(gens[pick(regIdxs)]());
+  while(regular.length < 6 && regIdxs.length) regular.push(gens[pick(regIdxs)]());
   try { localStorage.setItem(regKey, JSON.stringify(regQueue)); } catch(e){}
 
-  // --- Очередь задач (до 2 задач — гарантированно, если есть) ---
+  // --- Очередь задач (5 штук, с повторами если задач меньше 5) ---
   const tasks = [];
   if(taskIdxs.length > 0){
     const taskKey = `locQ_${locIndex}_t`;
     let taskQueue = [];
     try { taskQueue = JSON.parse(localStorage.getItem(taskKey)||'[]'); } catch(e){}
-    const wantTasks = Math.min(3, taskIdxs.length);
-    if(taskQueue.length < wantTasks) taskQueue = shuffle([...taskIdxs]);
-    taskQueue.splice(0, wantTasks).forEach(i => { if(gens[i]) tasks.push(gens[i]()); });
+    if(taskQueue.length < 5) taskQueue = shuffle([...taskIdxs]);
+    const picked = taskQueue.splice(0, Math.min(5, taskQueue.length));
+    // если задач меньше 5 — добираем повторами
+    while(picked.length < 5) picked.push(taskIdxs[Math.floor(Math.random()*taskIdxs.length)]);
+    picked.forEach(i => { if(gens[i]) tasks.push(gens[i]()); });
     try { localStorage.setItem(taskKey, JSON.stringify(taskQueue)); } catch(e){}
   }
 
-  // Итого всегда 5 вопросов: (5 - задачи) обычных + задачи
-  const regCount = 5 - tasks.length;
-  const result = [...shuffle(regular.slice(0, regCount)), ...tasks];
-  while(result.length < 5 && gens.length) result.push(gens[Math.floor(Math.random()*gens.length)]());
+  // Итого 11 вопросов: 6 обычных + 5 задач (задачи всегда в конце)
+  const result = [...shuffle(regular), ...tasks];
+  while(result.length < 11 && regIdxs.length) result.push(gens[pick(regIdxs)]());
   return result;
 }
 /* current location's questions (rebuilt each play) */
