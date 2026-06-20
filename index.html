@@ -4441,10 +4441,11 @@ function endDay(locationDone){
       btn.textContent='На карту 🗺️'; btn.style.display='flex'; btn.onclick=()=>go('map');
       mapBtn.style.display='none';
     } else if(hasNext){
+      const nextIdx = currentLoc+1;
       btn.textContent = (hitLimit && state.limit==='soft') ? 'Снять ещё (следующая локация) →' : 'Следующая локация →';
-      btn.style.display='flex'; btn.onclick=afterDay;
+      btn.style.display='flex'; btn.onclick=()=>openLocation(nextIdx);
     } else {
-      btn.textContent='Забрать награду 🎁'; btn.style.display='flex'; btn.onclick=afterDay;
+      btn.textContent='Забрать награду 🎁'; btn.style.display='flex'; btn.onclick=()=>go('final');
     }
     confetti();
   }else{
