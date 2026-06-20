@@ -3803,7 +3803,7 @@ function renderLoc(){
   const nextBtn=document.getElementById('nextLocBtn');
   if(done){
     btn.textContent='Пройти заново (новые задания) 🔁';
-    if(currentLoc+1 < TOTAL_LOCATIONS){
+    if(currentLoc+1 < TOTAL_LOCATIONS && locUnlocked(currentLoc+1)){
       nextBtn.style.display='flex';
       nextBtn.textContent=`Дальше: ${LOCATIONS[currentLoc+1].name} →`;
     } else { nextBtn.style.display='none'; }
