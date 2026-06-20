@@ -725,7 +725,7 @@
       <b>Жёсткий</b> — стоп до завтра. <b>Без</b> — без ограничений.
     </p>
     <div class="opt-line" style="border-bottom:none">
-      <span>Заданий сегодня: <b id="dayCountLabel">0</b> из 5</span>
+      <span>Заданий сегодня: <b id="dayCountLabel">0</b> из 15</span>
       <button class="btn small ghost" onclick="resetDay()">Сбросить день</button>
     </div>
     <div style="height:10px"></div>
@@ -2046,18 +2046,75 @@ const GEN_WALL = [
       hint:`Умножь ${n1}/${d1} на ${k}/${k}: получишь ${n2}/${d2}. Сравни с ${actualN2}/${d2}.`,
       explain:mistake?`${n1}×${k}=${n2}≠${actualN2}. Неверно.`:`${n1}×${k}=${n2}=${actualN2}. Верно!`};
   },
-  /* §33-35 задача — сравни суммы */
+  /* §33-35 обычное — сравни дроби с одинаковыми знаменателями */
   function(){
     const a1=pick([1,2,3]), b1=pick([4,5,6,8]);
     const a2=pick([3,5,7]), b2=b1;
     const s1=a1/b1, s2=a2/b2;
     const res=s1>s2?'первая больше':s1<s2?'вторая больше':'они равны';
-    return {tag:'⚖️ Задача',type:'choice',
+    return {tag:'⚖️ Сравни дроби',type:'choice',
       text:`Сравни: ${a1}/${b1} и ${a2}/${b2}`,
       options:shuffle(['первая больше','вторая больше','они равны','нельзя сравнить']),
       answer:res,
       hint:`Знаменатели одинаковые — сравниваем числители: ${a1} и ${a2}.`,
       explain:`${a1}/${b1} ${s1>s2?'>':s1<s2?'<':'='} ${a2}/${b2} — ${res}.`};
+  },
+  /* §34 задача — что за часть сделали рабочие */
+  function(){
+    const data=[
+      {n:9,d:12,rn:3,rd:4,what:'рядов кирпичей выложили'},
+      {n:6,d:10,rn:3,rd:5,what:'участков стены покрасили'},
+      {n:8,d:12,rn:2,rd:3,what:'метров отремонтировали'},
+      {n:4,d:6, rn:2,rd:3,what:'башен отреставрировали'},
+      {n:6,d:9, rn:2,rd:3,what:'пролётов проверили'},
+      {n:10,d:15,rn:2,rd:3,what:'секций осмотрели'},
+    ];
+    const q=pick(data);
+    const wrong=[`${q.n}/${q.d}`,`${q.rn+1}/${q.rd}`,`${q.rn}/${q.rd+1}`].filter(x=>x!==`${q.rn}/${q.rd}`);
+    return {tag:'🧱 Задача',type:'choice',
+      text:`Рабочие ${q.what} ${q.n} из ${q.d}. Какую часть работы они выполнили? Сократи дробь.`,
+      options:shuffle([`${q.rn}/${q.rd}`,...wrong.slice(0,3)]),
+      answer:`${q.rn}/${q.rd}`,
+      hint:`Дробь ${q.n}/${q.d}. Общий делитель ${q.n} и ${q.d} равен ${q.n/q.rn}. Сокращаем: ${q.n}÷${q.n/q.rn}=${q.rn}, ${q.d}÷${q.n/q.rn}=${q.rd}.`,
+      explain:`${q.n}/${q.d} = ${q.rn}/${q.rd} после сокращения.`};
+  },
+  /* §35 задача — привести дроби к общему знаменателю для сравнения */
+  function(){
+    const lcmFn=(a,b)=>a*b/gcd(a,b);
+    const data=[
+      {n1:1,d1:3,n2:1,d2:4,k1:4,k2:3,ld:12,a:4,b:3,res:'1/3 > 1/4'},
+      {n1:2,d1:5,n2:1,d2:3,k1:3,k2:5,ld:15,a:6,b:5,res:'2/5 > 1/3'},
+      {n1:3,d1:4,n2:2,d2:3,k1:3,k2:4,ld:12,a:9,b:8,res:'3/4 > 2/3'},
+      {n1:1,d1:2,n2:3,d2:7,k1:7,k2:2,ld:14,a:7,b:6,res:'1/2 > 3/7'},
+      {n1:3,d1:8,n2:2,d2:5,k1:5,k2:8,ld:40,a:15,b:16,res:'3/8 < 2/5'},
+    ];
+    const q=pick(data);
+    const wrong=q.res.includes('>')?`${q.n1}/${q.d1} < ${q.n2}/${q.d2}`:`${q.n1}/${q.d1} > ${q.n2}/${q.d2}`;
+    return {tag:'📐 Задача',type:'choice',
+      text:`Дорожки в саду составляют ${q.n1}/${q.d1} и ${q.n2}/${q.d2} всей длины забора. Какая дорожка длиннее?`,
+      options:shuffle([q.res,wrong,`${q.n1}/${q.d1} = ${q.n2}/${q.d2}`,'нельзя сравнить']),
+      answer:q.res,
+      hint:`Общий знаменатель ${q.ld}. Приводим: ${q.n1}/${q.d1}=${q.a}/${q.ld}, ${q.n2}/${q.d2}=${q.b}/${q.ld}. Сравниваем ${q.a} и ${q.b}.`,
+      explain:`${q.a}/${q.ld} ${q.a>q.b?'>':'<'} ${q.b}/${q.ld}: ${q.res}.`};
+  },
+  /* §35 задача — найди дробь части */
+  function(){
+    const data=[
+      {total:24,part:18,rn:3,rd:4,item:'кирпичей уложили за смену'},
+      {total:20,part:15,rn:3,rd:4,item:'метров стены осмотрели'},
+      {total:30,part:18,rn:3,rd:5,item:'туристов прошли на запад'},
+      {total:28,part:21,rn:3,rd:4,item:'рабочих вышли на смену'},
+      {total:15,part:9, rn:3,rd:5,item:'часов работали без перерыва'},
+    ];
+    const q=pick(data);
+    const g2=gcd(q.part,q.total);
+    const wrong=[`${q.part}/${q.total}`,`${q.rn+1}/${q.rd}`,`${q.rn}/${q.rd-1}`].filter(x=>x!==`${q.rn}/${q.rd}`);
+    return {tag:'🏯 Задача',type:'choice',
+      text:`Всего ${q.total}, а ${q.part} ${q.item}. Какую часть это составляет? Ответ сократи.`,
+      options:shuffle([`${q.rn}/${q.rd}`,...wrong.slice(0,3)]),
+      answer:`${q.rn}/${q.rd}`,
+      hint:`Дробь: ${q.part}/${q.total}. Общий делитель равен ${g2}. Делим: ${q.part}÷${g2}=${q.rn}, ${q.total}÷${g2}=${q.rd}.`,
+      explain:`${q.part}/${q.total} = ${q.rn}/${q.rd}.`};
   },
   /* §33-35 задача — мастера совместная работа (НОК, из учебника) */
   function(){
@@ -3804,7 +3861,7 @@ function renderLoc(){
 
 /* ============ QUIZ FLOW ============ */
 let dayGain=0, curIndex=0, attempts=0, usedHint=false, taskIntroShown=false, curStep=0;
-const DAY_LIMIT=5;
+const DAY_LIMIT=15;
 function limitReached(){ return state.limit!=='off' && state.dayCount>=DAY_LIMIT; }
 
 function startDay(){
@@ -3831,7 +3888,7 @@ function showLimitGate(){
   go('dayend');
   document.getElementById('dayEndEmoji').textContent='😴';
   document.getElementById('dayEndTitle').textContent='На сегодня всё!';
-  document.getElementById('dayEndMsg').textContent='Ты уже снял 5 заданий за сегодня. Возвращайся завтра за новыми кадрами!';
+  document.getElementById('dayEndMsg').textContent='Ты уже снял 15 заданий за сегодня. Возвращайся завтра за новыми кадрами!';
   document.getElementById('dayEndGain').textContent='✓';
   document.querySelector('#dayend .summary .cap').textContent='съёмочный день завершён';
   const btn=document.getElementById('dayEndBtn');
