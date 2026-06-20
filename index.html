@@ -1598,20 +1598,6 @@ const GEN_MACHU = [
       hint:'Знаменатель не меняется, вычитаем числители.',
       explain:`${n1}−${n2}=${diff}, знаменатель ${d}: ${diff}/${d}${g>1?' = '+correct:''}.`};
   },
-  /* §29 задача — апельсины */
-  function(){
-    const n1=pick([4,3,5,2]); const d=5;
-    const sold=pick([7,6,9,8]); const d2=10;
-    const remain=n1*2-sold;
-    const remainStr=remain>0?`${remain}/${d2}`:'0';
-    return {tag:'🍊 Задача',type:'choice',
-      text:`В магазин завезли ${n1}/${d} т апельсинов, а продали ${sold}/${d2} т. Сколько тонн осталось? (в виде дроби)`,
-      opts:[remainStr,`${n1+sold}/${d2}`,`${n1*2+sold}/${d2}`,`${Math.abs(sold-n1*2)+1}/${d2}`],
-      options:shuffle([remainStr,`${n1+sold}/${d2}`,`${n1*2+sold}/${d2}`,`${Math.abs(sold-n1*2)+1}/${d2}`]),
-      answer:remainStr,
-      hint:`${n1}/${d}=${n1*2}/${d2}. Осталось: ${n1*2}/${d2}−${sold}/${d2}=${remain}/${d2}.`,
-      explain:`${n1}/${d}=${n1*2}/${d2}. ${n1*2}/${d2}−${sold}/${d2}=${remainStr} т.`};
-  },
   /* §29 задача — учим слова */
   function(){
     const total=pick([35,42,28,56]); const n1=4; const d=7;
