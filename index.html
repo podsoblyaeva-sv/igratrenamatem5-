@@ -3529,7 +3529,7 @@ function buildLocationQuestions(locIndex, round){
     const taskKey = `locQ_${locIndex}_t`;
     let taskQueue = [];
     try { taskQueue = JSON.parse(localStorage.getItem(taskKey)||'[]'); } catch(e){}
-    const wantTasks = Math.min(2, taskIdxs.length);
+    const wantTasks = Math.min(3, taskIdxs.length);
     if(taskQueue.length < wantTasks) taskQueue = shuffle([...taskIdxs]);
     taskQueue.splice(0, wantTasks).forEach(i => { if(gens[i]) tasks.push(gens[i]()); });
     try { localStorage.setItem(taskKey, JSON.stringify(taskQueue)); } catch(e){}
