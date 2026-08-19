@@ -439,7 +439,7 @@
     <h1 style="margin-top:20px">Чудеса света</h1>
     <p class="lead" style="max-width:300px">Привет! Ты — начинающий тревел-блогер. Тебя ждёт кругосветное путешествие по самым знаменитым местам планеты!</p>
     <div class="spacer"></div>
-    <button class="btn" onclick="go('onboard'); showSlide(0)">Поехали! ✈️</button>
+    <button class="btn" data-act="start-onboarding">Поехали! ✈️</button>
     <div style="height:8px"></div>
   </section>
 
@@ -476,7 +476,7 @@
       <div class="dots" id="dots">
         <div class="dot on"></div><div class="dot"></div><div class="dot"></div>
       </div>
-      <button class="btn" id="onboardBtn" onclick="nextSlide()">Дальше</button>
+      <button class="btn" id="onboardBtn" data-act="next-slide">Дальше</button>
     </div>
   </section>
 
@@ -488,8 +488,8 @@
         <span class="num" id="mapFollowers">0</span>
         <span class="lbl">ПОДПИСЧИКОВ</span>
       </div>
-      <button class="menu-btn" onclick="go('gear')" title="Техника">🎒</button>
-      <button class="menu-btn" onclick="openSheet()">⚙️</button>
+      <button class="menu-btn" data-act="go" data-arg="gear" title="Техника">🎒</button>
+      <button class="menu-btn" data-act="open-sheet">⚙️</button>
     </div>
     <div class="map-head">
       <h2>Твой маршрут 🗺️</h2>
@@ -499,7 +499,7 @@
       <div class="route" id="route"></div>
       <p class="lock-note">Проходи локации одну за другой — каждая открывает следующую. Все 10 чудес света ждут тебя!</p>
       <div style="padding:0 22px 24px">
-        <button id="mapExamBtn" class="btn warm" style="display:none;margin-top:4px" onclick="startExam()">📝 Итоговая контрольная за 5 класс</button>
+        <button id="mapExamBtn" class="btn warm" style="display:none;margin-top:4px" data-act="start-exam">📝 Итоговая контрольная за 5 класс</button>
       </div>
     </div>
   </section>
@@ -519,11 +519,11 @@
         <div class="progress-pills" id="locPills"></div>
       </div>
       <div class="pad" style="padding-top:4px">
-        <button class="btn warm" onclick="startDay()" id="startDayBtn">Начать съёмку 🎥</button>
+        <button class="btn warm" data-act="start-day" id="startDayBtn">Начать съёмку 🎥</button>
         <div style="height:10px"></div>
-        <button class="btn" onclick="goNextLoc()" id="nextLocBtn" style="display:none">Дальше →</button>
+        <button class="btn" data-act="go-next-loc" id="nextLocBtn" style="display:none">Дальше →</button>
         <div style="height:10px"></div>
-        <button class="btn ghost" onclick="go('map')">← На карту</button>
+        <button class="btn ghost" data-act="go" data-arg="map">← На карту</button>
       </div>
     </div>
   </section>
@@ -555,7 +555,7 @@
       <h3 id="fbTitle">Отличный кадр!</h3>
       <div class="fb-gain" id="fbGain">+100 подписчиков</div>
       <div class="fb-explain" id="fbExplain"></div>
-      <button class="btn" id="fbNext" onclick="nextQuestion()">Дальше →</button>
+      <button class="btn" id="fbNext" data-act="next-question">Дальше →</button>
     </div>
   </section>
 
@@ -571,7 +571,7 @@
     </div>
     <div class="spacer"></div>
     <button class="btn" id="dayEndBtn">Продолжить</button>
-    <button class="btn ghost" id="dayEndMapBtn" onclick="go('map')">На карту 🗺️</button>
+    <button class="btn ghost" id="dayEndMapBtn" data-act="go" data-arg="map">На карту 🗺️</button>
     <div style="height:6px"></div>
   </section>
 
@@ -585,9 +585,9 @@
     <div class="ach-list" id="finalAchList"></div>
     <div class="spacer"></div>
     <div style="font-size:20px;font-weight:800;color:rgba(255,255,255,.9)" id="finalFollowers"></div>
-    <button class="btn" style="margin-top:16px;background:#fff;color:#6f2dbd" onclick="startExam()">📝 Итоговая контрольная</button>
-    <button class="btn ghost" style="margin-top:8px" onclick="go('map')">Смотреть карту 🗺️</button>
-    <button class="btn ghost" style="margin-top:8px" onclick="resetProgress()">Начать заново</button>
+    <button class="btn" style="margin-top:16px;background:#fff;color:#6f2dbd" data-act="start-exam">📝 Итоговая контрольная</button>
+    <button class="btn ghost" style="margin-top:8px" data-act="go" data-arg="map">Смотреть карту 🗺️</button>
+    <button class="btn ghost" style="margin-top:8px" data-act="reset-progress">Начать заново</button>
     <div style="height:8px"></div>
   </section>
 
@@ -601,7 +601,7 @@
         Упражнения пройдены.<br>
         Теперь применим знания — порешаем <b>задачи</b>!
       </p>
-      <button class="btn" style="width:100%;padding:16px;font-size:17px;font-weight:800;border-radius:18px;background:#ff8a5c;color:#fff;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(255,138,92,.35)" onclick="continueToTasks()">
+      <button class="btn" style="width:100%;padding:16px;font-size:17px;font-weight:800;border-radius:18px;background:#ff8a5c;color:#fff;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(255,138,92,.35)" data-act="continue-to-tasks">
         Решать задачи 📚
       </button>
     </div>
@@ -644,15 +644,15 @@
     <p class="lead" id="examGradeMsg" style="max-width:300px"></p>
     <div style="background:rgba(255,255,255,.18);border-radius:18px;padding:14px 24px;margin:14px 0;font-size:17px;font-weight:700" id="examScoreBox"></div>
     <div class="spacer"></div>
-    <button class="btn" style="background:#fff;color:#2b0e6e" onclick="go('map')">На карту 🗺️</button>
-    <button class="btn ghost" style="margin-top:8px;border-color:rgba(255,255,255,.5);color:#fff" onclick="startExam()">Пересдать 🔁</button>
+    <button class="btn" style="background:#fff;color:#2b0e6e" data-act="go" data-arg="map">На карту 🗺️</button>
+    <button class="btn ghost" style="margin-top:8px;border-color:rgba(255,255,255,.5);color:#fff" data-act="start-exam">Пересдать 🔁</button>
     <div style="height:10px"></div>
   </section>
 
   <!-- ====== GEAR SCREEN ====== -->
   <section class="screen" id="gear">
     <div class="topbar">
-      <button class="menu-btn" onclick="go('map')" style="margin-left:0;margin-right:auto">←</button>
+      <button class="menu-btn" data-act="go" data-arg="map" style="margin-left:0;margin-right:auto">←</button>
       <div class="followers">
         <span class="num" id="gearFollowers">0</span>
         <span class="lbl">ПОДПИСЧИКОВ</span>
@@ -670,25 +670,25 @@
   <!-- ====== KEYPAD ====== -->
   <div id="keypad" class="keypad">
     <div class="kp-row">
-      <button class="kp-btn" onclick="kpPress('7')">7</button>
-      <button class="kp-btn" onclick="kpPress('8')">8</button>
-      <button class="kp-btn" onclick="kpPress('9')">9</button>
+      <button class="kp-btn" data-act="kp-press" data-arg="7">7</button>
+      <button class="kp-btn" data-act="kp-press" data-arg="8">8</button>
+      <button class="kp-btn" data-act="kp-press" data-arg="9">9</button>
     </div>
     <div class="kp-row">
-      <button class="kp-btn" onclick="kpPress('4')">4</button>
-      <button class="kp-btn" onclick="kpPress('5')">5</button>
-      <button class="kp-btn" onclick="kpPress('6')">6</button>
+      <button class="kp-btn" data-act="kp-press" data-arg="4">4</button>
+      <button class="kp-btn" data-act="kp-press" data-arg="5">5</button>
+      <button class="kp-btn" data-act="kp-press" data-arg="6">6</button>
     </div>
     <div class="kp-row">
-      <button class="kp-btn" onclick="kpPress('1')">1</button>
-      <button class="kp-btn" onclick="kpPress('2')">2</button>
-      <button class="kp-btn" onclick="kpPress('3')">3</button>
+      <button class="kp-btn" data-act="kp-press" data-arg="1">1</button>
+      <button class="kp-btn" data-act="kp-press" data-arg="2">2</button>
+      <button class="kp-btn" data-act="kp-press" data-arg="3">3</button>
     </div>
     <div class="kp-row">
-      <button class="kp-btn kp-del" onclick="kpPress('del')">⌫</button>
-      <button class="kp-btn" onclick="kpPress('0')">0</button>
-      <button class="kp-btn kp-comma" onclick="kpPress(',')">，</button>
-      <button class="kp-btn kp-ok" onclick="kpPress('ok')">Ввод ✓</button>
+      <button class="kp-btn kp-del" data-act="kp-press" data-arg="del">⌫</button>
+      <button class="kp-btn" data-act="kp-press" data-arg="0">0</button>
+      <button class="kp-btn kp-comma" data-act="kp-press" data-arg=",">，</button>
+      <button class="kp-btn kp-ok" data-act="kp-press" data-arg="ok">Ввод ✓</button>
     </div>
   </div>
 
@@ -706,11 +706,11 @@
   </div>
 
   <!-- ====== SETTINGS SHEET ====== -->
-  <div class="sheet-bg" id="sheetBg" onclick="closeSheet()"></div>
+  <div class="sheet-bg" id="sheetBg" data-act="close-sheet"></div>
   <div class="sheet" id="sheet">
     <div class="sheet-head">
       <h3>Настройки</h3>
-      <button class="sheet-x" onclick="closeSheet()" aria-label="Закрыть">✕</button>
+      <button class="sheet-x" data-act="close-sheet" aria-label="Закрыть">✕</button>
     </div>
     <div class="opt-line">
       <span>Лимит заданий в день</span>
@@ -726,12 +726,12 @@
     </p>
     <div class="opt-line" style="border-bottom:none">
       <span>Заданий сегодня: <b id="dayCountLabel">0</b> из 15</span>
-      <button class="btn small ghost" onclick="resetDay()">Сбросить день</button>
+      <button class="btn small ghost" data-act="reset-day">Сбросить день</button>
     </div>
     <div style="height:10px"></div>
-    <button class="btn ghost" onclick="resetProgress()">Сбросить весь прогресс</button>
+    <button class="btn ghost" data-act="reset-progress">Сбросить весь прогресс</button>
     <div style="height:10px"></div>
-    <button class="btn" onclick="closeSheet()">Готово</button>
+    <button class="btn" data-act="close-sheet">Готово</button>
   </div>
 
 </div>
@@ -792,7 +792,7 @@ function renderGear(){
       <div class="g-info">
         <div class="g-name">${g.name}</div>
         <div class="g-desc">${g.desc}</div>
-        ${canBuy?`<button class="btn small" style="margin-top:8px;width:auto" onclick="buyGear(${i})">Купить за ${g.cost.toLocaleString('ru-RU')} 👤</button>`:
+        ${canBuy?`<button class="btn small" style="margin-top:8px;width:auto" data-act="buy-gear" data-arg="${i}">Купить за ${g.cost.toLocaleString('ru-RU')} 👤</button>`:
           !owned?`<div class="g-cost">Нужно: ${g.cost.toLocaleString('ru-RU')} подписчиков</div>`:''}
       </div>
       <div class="g-badge">${badgeText}</div>`;
@@ -1183,9 +1183,9 @@ const GEN_EIFFEL = [
       text:'Посевная площадь аграрного комплекса равна 120 км². На них 49 км² засеяно овсом, 37 км² — ячменём, а остальная площадь оставлена под пар. Какая часть поля оставлена под пар?',
       explain:'Занято овсом и ячменём: 49+37=86 км². Под пар: 120−86=34 км², то есть 34/120 (=17/60) поля.',
       steps:[
-        {prompt:'Сколько км² занято овсом и ячменём вместе (49+37)?', answer:'86', unit:'км²', hint:'49+37=?'},
-        {prompt:'Сколько км² оставлено под пар (120−86)?', answer:'34', unit:'км²', hint:'120−86=?'},
-        {prompt:'Какую часть поля составляет пар (34 из 120)?', answer:'34/120', hint:'34 км² из 120 км² — это дробь 34/120.'},
+        {prompt:'Сколько км² занято овсом и ячменём вместе?', answer:'86', unit:'км²', hint:'49+37=?'},
+        {prompt:'Сколько км² оставлено под пар?', answer:'34', unit:'км²', hint:'120−86=?'},
+        {prompt:'Какую часть поля составляет пар?', answer:'34/120', hint:'34 км² из 120 км² — это дробь 34/120.'},
       ]};
   },
   function(){
@@ -1207,11 +1207,13 @@ const GEN_EIFFEL = [
       ]};
   },
   function(){
-    return {tag:'🥬 Упр. 5.85', type:'input',
+    return {tag:'🥬 Упр. 5.85', type:'steps',
       text:'Собрали 112 кг капусты и 5/8 этой капусты заквасили. Сколько килограммов капусты заквасили?',
-      answer:['70'], placeholder:'число',
-      hint:'112 ÷ 8 × 5 = ?',
-      explain:'112 ÷ 8 = 14. 14 × 5 = 70 кг.'};
+      explain:'112 ÷ 8 = 14. 14 × 5 = 70 кг.',
+      steps:[
+        {prompt:'Чему равна 1/8 часть капусты?', answer:'14', unit:'кг', hint:'112÷8=?'},
+        {prompt:'Сколько килограммов капусты заквасили (5/8)?', answer:'70', unit:'кг', hint:'14×5=?'},
+      ]};
   },
   function(){
     return {tag:'🧮 Тренажёр. Зад. 4', type:'steps',
@@ -1245,8 +1247,8 @@ const GEN_EIFFEL = [
       explain:'Масса арбуза 4800 г. Ярославу: 4800÷10=480 г. Даше: 4800÷12=400 г. Осталось: 4800−480−400=3920 г.',
       steps:[
         {prompt:'4 кг 800 г — это сколько граммов?', answer:'4800', unit:'г', hint:'4 кг=4000 г, плюс 800 г.'},
-        {prompt:'Сколько граммов отрезали Ярославу (1/10 от 4800 г)?', answer:'480', unit:'г', hint:'4800÷10=?'},
-        {prompt:'Сколько граммов отрезали Даше (1/12 от 4800 г)?', answer:'400', unit:'г', hint:'4800÷12=?'},
+        {prompt:'Сколько граммов отрезали Ярославу?', answer:'480', unit:'г', hint:'4800÷10=?'},
+        {prompt:'Сколько граммов отрезали Даше?', answer:'400', unit:'г', hint:'4800÷12=?'},
         {prompt:'Сколько граммов арбуза осталось?', answer:'3920', unit:'г', hint:'4800−480−400=?'},
       ]};
   },
@@ -1262,8 +1264,8 @@ const GEN_EIFFEL = [
       text:'Протяжённость Кунгурской ледяной пещеры на Урале равна 5700 м. Туристическая тропа в ней составляет 5/19 общей протяжённости пещеры. Найдите длину туристической тропы.',
       explain:'5700 ÷ 19 = 300. 300 × 5 = 1500 м.',
       steps:[
-        {prompt:'Чему равна 1/19 часть пещеры (5700 ÷ 19)?', answer:'300', unit:'м', hint:'5700÷19=?'},
-        {prompt:'Чему равна длина тропы (5/19, то есть 300 × 5)?', answer:'1500', unit:'м', hint:'300×5=?'},
+        {prompt:'Чему равна 1/19 часть пещеры?', answer:'300', unit:'м', hint:'5700÷19=?'},
+        {prompt:'Чему равна длина тропы?', answer:'1500', unit:'м', hint:'300×5=?'},
       ]};
   },
   function(){
@@ -1278,8 +1280,8 @@ const GEN_EIFFEL = [
       text:'На базу для полярников архипелага Шпицберген доставили 28 ездовых собак. Из 6/14 всех собак составили упряжку. Сколько собак осталось на базе?',
       explain:'В упряжке: 28÷14×6=12 собак. Осталось: 28−12=16 собак.',
       steps:[
-        {prompt:'Сколько собак в упряжке (6/14 от 28)?', answer:'12', unit:'собак', hint:'28÷14×6=?'},
-        {prompt:'Сколько собак осталось на базе (28−12)?', answer:'16', unit:'собак', hint:'28−12=?'},
+        {prompt:'Сколько собак в упряжке?', answer:'12', unit:'собак', hint:'28÷14×6=?'},
+        {prompt:'Сколько собак осталось на базе?', answer:'16', unit:'собак', hint:'28−12=?'},
       ]};
   },
   function(){
@@ -1288,8 +1290,8 @@ const GEN_EIFFEL = [
       explain:'2 км=2000 м. 2000÷4×9=4500 м.',
       steps:[
         {prompt:'2 км — это сколько метров?', answer:'2000', unit:'м', hint:'1 км=1000 м.'},
-        {prompt:'Чему равна 1/4 часть проспекта (2000 ÷ 4)?', answer:'500', unit:'м', hint:'2000÷4=?'},
-        {prompt:'Чему равна длина всего проспекта (500 × 9)?', answer:'4500', unit:'м', hint:'500×9=?'},
+        {prompt:'Чему равна 1/4 часть проспекта?', answer:'500', unit:'м', hint:'2000÷4=?'},
+        {prompt:'Чему равна длина всего проспекта?', answer:'4500', unit:'м', hint:'500×9=?'},
       ]};
   },
   function(){
@@ -1297,8 +1299,8 @@ const GEN_EIFFEL = [
       text:'Длина Яузского бульвара 400 м и составляет 8/15 Гоголевского бульвара. Какова протяжённость Гоголевского бульвара?',
       explain:'400÷8×15=750 м.',
       steps:[
-        {prompt:'Чему равна 1/8 часть Гоголевского бульвара (400 ÷ 8)?', answer:'50', unit:'м', hint:'400÷8=?'},
-        {prompt:'Чему равна длина всего Гоголевского бульвара (50 × 15)?', answer:'750', unit:'м', hint:'50×15=?'},
+        {prompt:'Чему равна 1/8 часть Гоголевского бульвара?', answer:'50', unit:'м', hint:'400÷8=?'},
+        {prompt:'Чему равна длина всего Гоголевского бульвара?', answer:'750', unit:'м', hint:'50×15=?'},
       ]};
   },
   function(){
@@ -1306,8 +1308,8 @@ const GEN_EIFFEL = [
       text:'За полгода в тетради для контрольных работ было написано 10 листов, что составило 5/9 всей тетради. Сколько чистых листов осталось в тетради?',
       explain:'Всего листов: 10÷5×9=18. Осталось чистых: 18−10=8 листов.',
       steps:[
-        {prompt:'Сколько всего листов в тетради (10 — это 5/9, найди 1/9, потом всё)?', answer:'18', unit:'листов', hint:'10÷5=2 (это 1/9). 2×9=18.'},
-        {prompt:'Сколько чистых листов осталось (18−10)?', answer:'8', unit:'листов', hint:'18−10=?'},
+        {prompt:'Сколько всего листов в тетради?', answer:'18', unit:'листов', hint:'10÷5=2 (это 1/9). 2×9=18.'},
+        {prompt:'Сколько чистых листов осталось?', answer:'8', unit:'листов', hint:'18−10=?'},
       ]};
   },
   function(){
@@ -1315,8 +1317,8 @@ const GEN_EIFFEL = [
       text:'Площадь двухкомнатной квартиры равна 56 м². Площадь одной комнаты составляет 5/14 всей площади, а другой — 3/8 всей площади. На сколько площадь одной комнаты больше площади другой?',
       explain:'Первая комната: 56÷14×5=20 м². Вторая: 56÷8×3=21 м². Разница: 21−20=1 м².',
       steps:[
-        {prompt:'Какая площадь первой комнаты (5/14 от 56)?', answer:'20', unit:'м²', hint:'56÷14×5=?'},
-        {prompt:'Какая площадь второй комнаты (3/8 от 56)?', answer:'21', unit:'м²', hint:'56÷8×3=?'},
+        {prompt:'Какая площадь первой комнаты?', answer:'20', unit:'м²', hint:'56÷14×5=?'},
+        {prompt:'Какая площадь второй комнаты?', answer:'21', unit:'м²', hint:'56÷8×3=?'},
         {prompt:'На сколько м² вторая комната больше первой?', answer:'1', unit:'м²', hint:'21−20=?'},
       ]};
   },
@@ -1325,8 +1327,8 @@ const GEN_EIFFEL = [
       text:'Турист прошёл 20 км, а за второй день — 2/5 того расстояния. Сколько километров прошёл турист за два дня?',
       explain:'Второй день: 20÷5×2=8 км. Всего: 20+8=28 км.',
       steps:[
-        {prompt:'Сколько км прошёл турист во второй день (2/5 от 20)?', answer:'8', unit:'км', hint:'20÷5×2=?'},
-        {prompt:'Сколько км прошёл турист за оба дня (20+8)?', answer:'28', unit:'км', hint:'20+8=?'},
+        {prompt:'Сколько км прошёл турист во второй день?', answer:'8', unit:'км', hint:'20÷5×2=?'},
+        {prompt:'Сколько км прошёл турист за оба дня?', answer:'28', unit:'км', hint:'20+8=?'},
       ]};
   },
   function(){
@@ -1341,9 +1343,9 @@ const GEN_EIFFEL = [
       text:'Из 64 грибов дедушка нашёл 1/2, внук — 1/4, остальные нашла бабушка. Сколько грибов нашла бабушка?',
       explain:'Дедушка нашёл 32, внук — 16. Вместе 48. Бабушка: 64−48=16 грибов.',
       steps:[
-        {prompt:'Сколько грибов нашёл дедушка (1/2 от 64)?', answer:'32', unit:'грибов', hint:'64÷2=?'},
-        {prompt:'Сколько грибов нашёл внук (1/4 от 64)?', answer:'16', unit:'грибов', hint:'64÷4=?'},
-        {prompt:'Сколько грибов нашла бабушка (64−32−16)?', answer:'16', unit:'грибов', hint:'64−32−16=?'},
+        {prompt:'Сколько грибов нашёл дедушка?', answer:'32', unit:'грибов', hint:'64÷2=?'},
+        {prompt:'Сколько грибов нашёл внук?', answer:'16', unit:'грибов', hint:'64÷4=?'},
+        {prompt:'Сколько грибов нашла бабушка?', answer:'16', unit:'грибов', hint:'64−32−16=?'},
       ]};
   },
 ];
@@ -1502,8 +1504,8 @@ const GEN_COLOSSEUM = [
       text:'У светофора остановилось 15 машин: 3 автобуса, 4 легковых автомобиля и 8 грузовых. Какую часть всех машин составляют автобусы и какую — легковые?',
       explain:'Автобусы: 3/15 (=1/5). Легковые: 4/15.',
       steps:[
-        {prompt:'Какую часть составляют автобусы (3 из 15)?', answer:'3/15', hint:'3 из 15 машин.'},
-        {prompt:'Какую часть составляют легковые (4 из 15)?', answer:'4/15', hint:'4 из 15 машин.'},
+        {prompt:'Какую часть составляют автобусы?', answer:'3/15', hint:'3 из 15 машин.'},
+        {prompt:'Какую часть составляют легковые?', answer:'4/15', hint:'4 из 15 машин.'},
       ]};
   },
   function(){
@@ -1511,8 +1513,8 @@ const GEN_COLOSSEUM = [
       text:'Школьная экскурсия в музей длилась 5 ч. На дорогу было потрачено 2/5 этого времени. Сколько часов потратили на дорогу, сколько осталось на музей, и сколько минут длился сам осмотр музея, если 15 мин потратили на сувениры?',
       explain:'На дорогу: 5÷5×2=2 ч. Осталось: 5−2=3 ч (180 мин). На осмотр музея: 180−15=165 мин.',
       steps:[
-        {prompt:'Сколько часов потратили на дорогу (2/5 от 5 ч)?', answer:'2', unit:'ч', hint:'5÷5×2=?'},
-        {prompt:'Сколько часов осталось на музей (5−2)?', answer:'3', unit:'ч', hint:'5−2=?'},
+        {prompt:'Сколько часов потратили на дорогу?', answer:'2', unit:'ч', hint:'5÷5×2=?'},
+        {prompt:'Сколько часов осталось на музей?', answer:'3', unit:'ч', hint:'5−2=?'},
         {prompt:'3 часа — это 180 минут. Сколько минут длился сам осмотр, если 15 мин потратили на сувениры?', answer:'165', unit:'мин', hint:'180−15=?'},
       ]};
   },
@@ -1522,7 +1524,7 @@ const GEN_COLOSSEUM = [
       explain:'55 ÷ 5 × 6 = 66 дней.',
       steps:[
         {prompt:'Чему равна 1/5 часть от 55 дней?', answer:'11', unit:'дней', hint:'55÷5=?'},
-        {prompt:'Сколько дней планировали (6/5, то есть 11×6)?', answer:'66', unit:'дней', hint:'11×6=?'},
+        {prompt:'Сколько дней планировали?', answer:'66', unit:'дней', hint:'11×6=?'},
       ]};
   },
   function(){
@@ -1531,7 +1533,7 @@ const GEN_COLOSSEUM = [
       explain:'112 ÷ 8 × 3 = 42 детали.',
       steps:[
         {prompt:'Чему равна 1/8 часть от 112 деталей?', answer:'14', unit:'деталей', hint:'112÷8=?'},
-        {prompt:'Сколько деталей вытачивает рабочий (3/8, то есть 14×3)?', answer:'42', unit:'деталей', hint:'14×3=?'},
+        {prompt:'Сколько деталей вытачивает рабочий?', answer:'42', unit:'деталей', hint:'14×3=?'},
       ]};
   },
   function(){
@@ -1547,7 +1549,7 @@ const GEN_COLOSSEUM = [
       explain:'30 ÷ 5 × 6 = 36 литров.',
       steps:[
         {prompt:'Чему равна 1/5 часть от 30 л?', answer:'6', unit:'л', hint:'30÷5=?'},
-        {prompt:'Сколько литров вмещает весь аквариум (6×6)?', answer:'36', unit:'л', hint:'6×6=?'},
+        {prompt:'Сколько литров вмещает весь аквариум?', answer:'36', unit:'л', hint:'6×6=?'},
       ]};
   },
   function(){
@@ -1576,9 +1578,9 @@ const GEN_COLOSSEUM = [
       text:'Масса арбуза 6 кг 300 г. Найдите массу 3/5 арбуза (в граммах).',
       explain:'6300 ÷ 5 × 3 = 3780 г.',
       steps:[
-        {prompt:'Сколько граммов весит арбуз (6 кг 300 г)?', answer:'6300', unit:'г', hint:'6 кг=6000 г, плюс 300 г.'},
+        {prompt:'Сколько граммов весит арбуз?', answer:'6300', unit:'г', hint:'6 кг=6000 г, плюс 300 г.'},
         {prompt:'Чему равна 1/5 часть от 6300 г?', answer:'1260', unit:'г', hint:'6300÷5=?'},
-        {prompt:'Чему равна масса 3/5 арбуза (1260×3)?', answer:'3780', unit:'г', hint:'1260×3=?'},
+        {prompt:'Чему равна масса 3/5 арбуза?', answer:'3780', unit:'г', hint:'1260×3=?'},
       ]};
   },
   function(){
@@ -1587,8 +1589,8 @@ const GEN_COLOSSEUM = [
       explain:'Пусть со второго поля x т. Тогда 2x+x+(x+6)=54 → 4x=48 → x=12. Первое: 24 т, второе: 12 т, третье: 18 т.',
       steps:[
         {prompt:'Обозначим урожай со второго поля за x. Уравнение: 2x + x + (x+6) = 54, то есть 4x+6=54. Чему равен x (второе поле)?', answer:'12', unit:'т', hint:'4x=54−6=48. x=48÷4.'},
-        {prompt:'Сколько тонн собрали с первого поля (2x)?', answer:'24', unit:'т', hint:'2×12=?'},
-        {prompt:'Сколько тонн собрали с третьего поля (x+6)?', answer:'18', unit:'т', hint:'12+6=?'},
+        {prompt:'Сколько тонн собрали с первого поля?', answer:'24', unit:'т', hint:'2×12=?'},
+        {prompt:'Сколько тонн собрали с третьего поля?', answer:'18', unit:'т', hint:'12+6=?'},
       ]};
   },
   function(){
@@ -1596,8 +1598,8 @@ const GEN_COLOSSEUM = [
       text:'У Светы было 35 красных кубиков, а зелёных — 2/7 красных. Сколько всего кубиков у Светы?',
       explain:'Зелёных: 35÷7×2=10. Всего: 35+10=45.',
       steps:[
-        {prompt:'Сколько зелёных кубиков (2/7 от 35)?', answer:'10', hint:'35÷7×2=?'},
-        {prompt:'Сколько всего кубиков (35+10)?', answer:'45', hint:'Сложи красные и зелёные.'},
+        {prompt:'Сколько зелёных кубиков?', answer:'10', hint:'35÷7×2=?'},
+        {prompt:'Сколько всего кубиков?', answer:'45', hint:'Сложи красные и зелёные.'},
       ]};
   },
 ];
@@ -1703,11 +1705,14 @@ const GEN_MACHU = [
       explain:'8/100 + 2/100 = 10/100 (=1/10) т.'};
   },
   function(){
-    return {tag:'🥔 Упр. 5.172', type:'input',
+    return {tag:'🥔 Упр. 5.172', type:'steps',
       text:'Фермерскому хозяйству требуется отгрузить 120 т картофеля. В первый день отгрузили 9/24 этого количества, во второй — 7/24, а остальное — в третий день. Сколько тонн картофеля отгрузили в третий день?',
-      answer:['40'], placeholder:'число',
-      hint:'За 2 дня: 9+7=16 из 24. Осталось 8/24=1/3. 120÷3=?',
-      explain:'За первые 2 дня отгрузили 16/24. Осталось 8/24=1/3 от 120 = 40 т.'};
+      explain:'За первые 2 дня отгрузили 16/24. Осталось 8/24=1/3 от 120 = 40 т.',
+      steps:[
+        {prompt:'Какую часть картофеля отгрузили за первые два дня вместе?', answer:'16/24', hint:'9+7=16.'},
+        {prompt:'Какая часть осталась на третий день?', answer:'8/24', hint:'24/24−16/24=8/24.'},
+        {prompt:'Сколько тонн отгрузили в третий день?', answer:'40', unit:'т', hint:'8/24=1/3. 120÷3=?'},
+      ]};
   },
   function(){
     return {tag:'🔢 Упр. 5.179а', type:'input',
@@ -1764,7 +1769,7 @@ const GEN_MACHU = [
       text:'Бочка была заполнена водой на 9/10 своего объёма. На полив огорода затратили 5/10 объёма бочки и затем в неё добавили 3/10 её объёма. Какая часть бочки после этого заполнена водой?',
       explain:'После полива: 9/10−5/10=4/10. После добавления: 4/10+3/10=7/10.',
       steps:[
-        {prompt:'Какая часть осталась после полива (9/10 − 5/10)?', answer:'4/10', hint:'9−5=4.'},
+        {prompt:'Какая часть осталась после полива?', answer:'4/10', hint:'9−5=4.'},
         {prompt:'Какая часть стала после того, как добавили 3/10?', answer:'7/10', hint:'4+3=7.'},
       ]};
   },
@@ -1780,8 +1785,8 @@ const GEN_MACHU = [
       text:'В садоводческом питомнике яблони занимают 5/18 всей площади, а вишни — 7/18. Сколько гектаров занимают яблони и вишни вместе, если площадь питомника 72 га?',
       explain:'5/18+7/18=12/18(=2/3). 72÷18×12=48 га.',
       steps:[
-        {prompt:'Какую часть площади занимают яблони и вишни вместе (5/18 + 7/18)?', answer:'12/18', hint:'5+7=12.'},
-        {prompt:'Сколько это гектаров (12/18 от 72 га)?', answer:'48', unit:'га', hint:'72÷18×12=?'},
+        {prompt:'Какую часть площади занимают яблони и вишни вместе?', answer:'12/18', hint:'5+7=12.'},
+        {prompt:'Сколько это гектаров?', answer:'48', unit:'га', hint:'72÷18×12=?'},
       ]};
   },
   function(){
@@ -1789,9 +1794,9 @@ const GEN_MACHU = [
       text:'В первый день Миша прочитал 7/20 всей книги, а во второй — 9/20. Сколько страниц в книге, если за 2 дня Миша прочитал 32 страницы?',
       explain:'За 2 дня прочитано 16/20 книги = 32 стр. Вся книга: 32÷16×20=40 стр.',
       steps:[
-        {prompt:'Какую часть книги Миша прочитал за 2 дня вместе (7/20 + 9/20)?', answer:'16/20', hint:'7+9=16.'},
+        {prompt:'Какую часть книги Миша прочитал за 2 дня вместе?', answer:'16/20', hint:'7+9=16.'},
         {prompt:'Чему равна 1/20 часть книги, если 16/20 равны 32 страницам?', answer:'2', unit:'стр', hint:'32÷16=?'},
-        {prompt:'Сколько страниц во всей книге (2×20)?', answer:'40', unit:'стр', hint:'2×20=?'},
+        {prompt:'Сколько страниц во всей книге?', answer:'40', unit:'стр', hint:'2×20=?'},
       ]};
   },
   function(){
@@ -1799,8 +1804,8 @@ const GEN_MACHU = [
       text:'За день овощной отдел магазина продал 2 ц 70 кг фруктов (270 кг). Апельсины составляли 5/9 всех проданных фруктов, а мандарины — 1/9. На сколько больше продали апельсинов, чем мандаринов?',
       explain:'Апельсины: 270÷9×5=150 кг. Мандарины: 270÷9×1=30 кг. Разница: 150−30=120 кг.',
       steps:[
-        {prompt:'Сколько кг апельсинов (5/9 от 270 кг)?', answer:'150', unit:'кг', hint:'270÷9×5=?'},
-        {prompt:'Сколько кг мандаринов (1/9 от 270 кг)?', answer:'30', unit:'кг', hint:'270÷9×1=?'},
+        {prompt:'Сколько кг апельсинов?', answer:'150', unit:'кг', hint:'270÷9×5=?'},
+        {prompt:'Сколько кг мандаринов?', answer:'30', unit:'кг', hint:'270÷9×1=?'},
         {prompt:'На сколько кг апельсинов больше?', answer:'120', unit:'кг', hint:'150−30=?'},
       ]};
   },
@@ -1809,9 +1814,9 @@ const GEN_MACHU = [
       text:'Сёстры Лиза и Лида вырезали снежинки для новогоднего праздника. Лиза вырезала 11/25 всех снежинок, а Лида — 14/25. Сколько снежинок вырезали сёстры, если Лида вырезала на 18 снежинок больше, чем сестра?',
       explain:'Разница долей: 14/25−11/25=3/25=18 штук. Одна 25-я часть: 18÷3=6. Всего: 6×25=150.',
       steps:[
-        {prompt:'На какую часть больше вырезала Лида (14/25 − 11/25)?', answer:'3/25', hint:'14−11=3.'},
+        {prompt:'На какую часть больше вырезала Лида?', answer:'3/25', hint:'14−11=3.'},
         {prompt:'3/25 — это 18 снежинок. Сколько снежинок в 1/25 части?', answer:'6', hint:'18÷3=?'},
-        {prompt:'Сколько снежинок всего (25 частей)?', answer:'150', hint:'6×25=?'},
+        {prompt:'Сколько снежинок всего?', answer:'150', hint:'6×25=?'},
       ]};
   },
   function(){
@@ -1819,9 +1824,9 @@ const GEN_MACHU = [
       text:'При подготовке к контрольной работе Андрей планировал решить 32 упражнения. В первый день он решил 5/16 всех упражнений, а во второй — 6/16. Сколько упражнений он решил за два дня?',
       explain:'За 2 дня решил 11/16 от 32 = 22 упражнения.',
       steps:[
-        {prompt:'Какую часть упражнений Андрей решил за 2 дня вместе (5/16 + 6/16)?', answer:'11/16', hint:'5+6=11.'},
+        {prompt:'Какую часть упражнений Андрей решил за 2 дня вместе?', answer:'11/16', hint:'5+6=11.'},
         {prompt:'Чему равна 1/16 часть от 32 упражнений?', answer:'2', unit:'упр.', hint:'32÷16=?'},
-        {prompt:'Сколько упражнений решил за 2 дня (2×11)?', answer:'22', unit:'упр.', hint:'2×11=?'},
+        {prompt:'Сколько упражнений решил за 2 дня?', answer:'22', unit:'упр.', hint:'2×11=?'},
       ]};
   },
   function(){
@@ -1829,8 +1834,8 @@ const GEN_MACHU = [
       text:'От города до посёлка Поленово 32 км. Из них 3/16 всего пути надо пройти пешком, а остальной путь можно проехать на автобусе. Сколько километров можно проехать на автобусе?',
       explain:'Пешком: 32÷16×3=6 км. На автобусе: 32−6=26 км.',
       steps:[
-        {prompt:'Сколько км нужно пройти пешком (3/16 от 32)?', answer:'6', unit:'км', hint:'32÷16×3=?'},
-        {prompt:'Сколько км можно проехать на автобусе (32−6)?', answer:'26', unit:'км', hint:'32−6=?'},
+        {prompt:'Сколько км нужно пройти пешком?', answer:'6', unit:'км', hint:'32÷16×3=?'},
+        {prompt:'Сколько км можно проехать на автобусе?', answer:'26', unit:'км', hint:'32−6=?'},
       ]};
   },
 ];
@@ -2029,9 +2034,9 @@ const GEN_TAJ = [
       text:'В первый рейс грузовой автомобиль привёз на элеватор 6 7/10 т зерна, что на 1 3/10 т больше, чем во второй рейс. Сколько тонн зерна привёз автомобиль за два рейса? Выразите ответ в центнерах.',
       explain:'Второй рейс: 6 7/10 − 1 3/10 = 5 4/10. Всего: 6 7/10 + 5 4/10 = 12 1/10 т = 121 ц.',
       steps:[
-        {prompt:'Сколько тонн привезли во второй рейс (6 7/10 − 1 3/10)?', answer:'5 4/10', hint:'Целые 6−1=5, дроби 7/10−3/10=4/10.'},
-        {prompt:'Сколько всего тонн за два рейса (6 7/10 + 5 4/10)?', answer:'12 1/10', hint:'Целые 6+5=11, дроби 7/10+4/10=11/10=1 целый и 1/10.'},
-        {prompt:'Сколько это центнеров (1 т = 10 ц)?', answer:'121', unit:'ц', hint:'12 1/10 т × 10 = 121 ц.'},
+        {prompt:'Сколько тонн привезли во второй рейс?', answer:'5 4/10', hint:'Целые 6−1=5, дроби 7/10−3/10=4/10.'},
+        {prompt:'Сколько всего тонн за два рейса?', answer:'12 1/10', hint:'Целые 6+5=11, дроби 7/10+4/10=11/10=1 целый и 1/10.'},
+        {prompt:'Сколько это центнеров?', answer:'121', unit:'ц', hint:'12 1/10 т × 10 = 121 ц.'},
       ]};
   },
   function(){
@@ -2039,9 +2044,9 @@ const GEN_TAJ = [
       text:'Улитка ползёт со скоростью 8 1/2 см/мин, а гусеница — со скоростью 12 1/2 см/мин. Сейчас улитка впереди гусеницы на 10 см. Какое расстояние будет между ними через 1 мин и через 2 мин?',
       explain:'Гусеница быстрее на 4 см/мин. Через 1 мин разрыв: 10−4=6 см. Через 2 мин: 10−8=2 см.',
       steps:[
-        {prompt:'На сколько см/мин гусеница быстрее улитки (12 1/2 − 8 1/2)?', answer:'4', unit:'см', hint:'12,5−8,5=4.'},
-        {prompt:'Каким будет расстояние через 1 мин (10 − 4)?', answer:'6', unit:'см', hint:'10−4=?'},
-        {prompt:'Каким будет расстояние через 2 мин (10 − 4×2)?', answer:'2', unit:'см', hint:'10−8=?'},
+        {prompt:'На сколько см/мин гусеница быстрее улитки?', answer:'4', unit:'см', hint:'12,5−8,5=4.'},
+        {prompt:'Каким будет расстояние через 1 мин?', answer:'6', unit:'см', hint:'10−4=?'},
+        {prompt:'Каким будет расстояние через 2 мин?', answer:'2', unit:'см', hint:'10−8=?'},
       ]};
   },
   function(){
@@ -2049,9 +2054,9 @@ const GEN_TAJ = [
       text:'В бензобаке машины было 4 л бензина. В него вылили весь бензин из двух канистр, и он оказался полным (60 л). Найдите, сколько литров бензина было в каждой канистре, если в одной канистре бензина было в 6 раз меньше, чем в другой.',
       explain:'Долили: 60−4=56 л. Малая канистра x, большая 6x: 7x=56, x=8. Большая: 48 л.',
       steps:[
-        {prompt:'Сколько литров долили из двух канистр (60 − 4)?', answer:'56', unit:'л', hint:'60−4=?'},
+        {prompt:'Сколько литров долили из двух канистр?', answer:'56', unit:'л', hint:'60−4=?'},
         {prompt:'Пусть в маленькой канистре x л, в большой 6x л. Тогда 7x=56. Чему равен x (маленькая канистра)?', answer:'8', unit:'л', hint:'56÷7=?'},
-        {prompt:'Сколько литров в большой канистре (6x)?', answer:'48', unit:'л', hint:'6×8=?'},
+        {prompt:'Сколько литров в большой канистре?', answer:'48', unit:'л', hint:'6×8=?'},
       ]};
   },
   function(){
@@ -2059,10 +2064,10 @@ const GEN_TAJ = [
       text:'Из посёлка вышел пешеход со скоростью 90 м/мин. Через 20 мин вслед за ним выехал велосипедист и через 15 мин после своего выезда обогнал пешехода на 450 м. С какой скоростью двигался велосипедист?',
       explain:'К моменту, когда велосипедист обогнал, пешеход шёл 35 мин: 90×35=3150 м. Велосипедист проехал 3150+450=3600 м за 15 мин. Скорость: 3600÷15=240 м/мин.',
       steps:[
-        {prompt:'Сколько минут в сумме шёл пешеход к моменту обгона (20+15)?', answer:'35', unit:'мин', hint:'20+15=?'},
-        {prompt:'Сколько метров прошёл пешеход за эти 35 минут (90×35)?', answer:'3150', unit:'м', hint:'90×35=?'},
-        {prompt:'Сколько метров проехал велосипедист за свои 15 минут (3150+450)?', answer:'3600', unit:'м', hint:'Велосипедист обогнал на 450 м, значит проехал больше.'},
-        {prompt:'Какая скорость велосипедиста (3600 ÷ 15)?', answer:'240', unit:'м/мин', hint:'3600÷15=?'},
+        {prompt:'Сколько минут в сумме шёл пешеход к моменту обгона?', answer:'35', unit:'мин', hint:'20+15=?'},
+        {prompt:'Сколько метров прошёл пешеход за эти 35 минут?', answer:'3150', unit:'м', hint:'90×35=?'},
+        {prompt:'Сколько метров проехал велосипедист за свои 15 минут?', answer:'3600', unit:'м', hint:'Велосипедист обогнал на 450 м, значит проехал больше.'},
+        {prompt:'Какая скорость велосипедиста?', answer:'240', unit:'м/мин', hint:'3600÷15=?'},
       ]};
   },
   function(){
@@ -2084,9 +2089,9 @@ const GEN_TAJ = [
       text:'Из двух пунктов А и В одновременно навстречу друг другу выехали два велосипедиста. Скорость первого составляет 5/7 скорости второго. Найдите скорость каждого велосипедиста, если расстояние между пунктами 24 км и они встретились через 1 1/2 ч.',
       explain:'Суммарная скорость: 24÷1,5=16 км/ч. Если скорость второго v, то 5/7v+v=12/7v=16, v=9 1/3. Первый: 5/7×9 1/3=6 2/3 км/ч.',
       steps:[
-        {prompt:'Какая суммарная скорость сближения (24 км за 1 1/2 ч)?', answer:'16', unit:'км/ч', hint:'24÷1,5=?'},
+        {prompt:'Какая суммарная скорость сближения?', answer:'16', unit:'км/ч', hint:'24÷1,5=?'},
         {prompt:'Скорость второго велосипедиста v удовлетворяет 12/7×v=16. Чему равно v?', answer:'9 1/3', unit:'км/ч', hint:'16÷12×7=112/12=9 1/3.'},
-        {prompt:'Скорость первого велосипедиста (5/7 от скорости второго)?', answer:'6 2/3', unit:'км/ч', hint:'9 1/3 × 5/7 = 28/3×5/7=20/3=6 2/3.'},
+        {prompt:'Скорость первого велосипедиста?', answer:'6 2/3', unit:'км/ч', hint:'9 1/3 × 5/7 = 28/3×5/7=20/3=6 2/3.'},
       ]};
   },
 ];
@@ -2266,8 +2271,8 @@ const GEN_WALL = [
       text:'Из 17 кг муки выпекли 9 одинаковых тортов, а из 11 кг муки — 8 одинаковых кексов. Сколько муки пошло на выпечку одного торта? Одного кекса?',
       explain:'На торт: 17/9 кг (=1 8/9). На кекс: 11/8 кг (=1 3/8).',
       steps:[
-        {prompt:'Сколько кг муки на один торт (17 ÷ 9)?', answer:'17/9', hint:'17 кг на 9 тортов.'},
-        {prompt:'Сколько кг муки на один кекс (11 ÷ 8)?', answer:'11/8', hint:'11 кг на 8 кексов.'},
+        {prompt:'Сколько кг муки на один торт?', answer:'17/9', hint:'17 кг на 9 тортов.'},
+        {prompt:'Сколько кг муки на один кекс?', answer:'11/8', hint:'11 кг на 8 кексов.'},
       ]};
   },
   function(){
@@ -2275,9 +2280,9 @@ const GEN_WALL = [
       text:'Космический корабль «Вега-1» приближался к комете Галлея. На каком расстоянии они находились за полчаса (30 мин = 1800 с) до предполагаемой встречи, если скорость корабля 34 км/с, а скорость кометы — 46 км/с (летят навстречу)?',
       explain:'Скорость сближения: 34+46=80 км/с. За 1800 с: 80×1800=144000 км.',
       steps:[
-        {prompt:'Какая скорость сближения корабля и кометы (34+46)?', answer:'80', unit:'км/с', hint:'Складываем скорости, так как летят навстречу.'},
+        {prompt:'Какая скорость сближения корабля и кометы?', answer:'80', unit:'км/с', hint:'Складываем скорости, так как летят навстречу.'},
         {prompt:'Сколько секунд в получасе?', answer:'1800', unit:'с', hint:'30×60=?'},
-        {prompt:'Какое расстояние было между ними (80 км/с × 1800 с)?', answer:'144000', unit:'км', hint:'80×1800=?'},
+        {prompt:'Какое расстояние было между ними?', answer:'144000', unit:'км', hint:'80×1800=?'},
       ]};
   },
   function(){
@@ -2294,7 +2299,7 @@ const GEN_WALL = [
       steps:[
         {prompt:'Чему равна дробь 7/10 при знаменателе 30?', answer:'21/30', hint:'30÷10=3. 7×3=21.'},
         {prompt:'Чему равна дробь 11/15 при знаменателе 30?', answer:'22/30', hint:'30÷15=2. 11×2=22.'},
-        {prompt:'Какая игра длилась дольше: баскетбол (21/30) или волейбол (22/30)?', answer:'волейбол', hint:'22 > 21.'},
+        {prompt:'Какая игра длилась дольше: баскетбол (21/30) или волейбол?', answer:'волейбол', hint:'22 > 21.'},
       ]};
   },
   function(){
@@ -2302,9 +2307,9 @@ const GEN_WALL = [
       text:'Кирилл прочитал за три дня 60 страниц книги, хотя планировал прочитать 54 страницы. В первый день он прочитал треть запланированных страниц, во второй день — 1/3 всех прочитанных за три дня страниц. Сколько страниц прочитал Кирилл в третий день?',
       explain:'День1: 54÷3=18. День2: 60÷3=20. День3: 60−18−20=22.',
       steps:[
-        {prompt:'Сколько страниц прочитал в первый день (треть от 54 запланированных)?', answer:'18', unit:'стр', hint:'54÷3=?'},
-        {prompt:'Сколько страниц прочитал во второй день (1/3 от 60 прочитанных всего)?', answer:'20', unit:'стр', hint:'60÷3=?'},
-        {prompt:'Сколько страниц прочитал в третий день (60−18−20)?', answer:'22', unit:'стр', hint:'60−18−20=?'},
+        {prompt:'Сколько страниц прочитал в первый день?', answer:'18', unit:'стр', hint:'54÷3=?'},
+        {prompt:'Сколько страниц прочитал во второй день?', answer:'20', unit:'стр', hint:'60÷3=?'},
+        {prompt:'Сколько страниц прочитал в третий день?', answer:'22', unit:'стр', hint:'60−18−20=?'},
       ]};
   },
   function(){
@@ -2312,9 +2317,9 @@ const GEN_WALL = [
       text:'Лес сплавляли по реке (скорость течения 6 км/ч) 3 ч, а затем буксировали по озеру 2 ч со скоростью 8 км/ч. Найдите общее расстояние.',
       explain:'По реке: 6×3=18 км. По озеру: 8×2=16 км. Всего: 18+16=34 км.',
       steps:[
-        {prompt:'Сколько км прошли по реке (6 км/ч × 3 ч)?', answer:'18', unit:'км', hint:'6×3=?'},
-        {prompt:'Сколько км прошли по озеру (8 км/ч × 2 ч)?', answer:'16', unit:'км', hint:'8×2=?'},
-        {prompt:'Каково общее расстояние (18+16)?', answer:'34', unit:'км', hint:'18+16=?'},
+        {prompt:'Сколько км прошли по реке?', answer:'18', unit:'км', hint:'6×3=?'},
+        {prompt:'Сколько км прошли по озеру?', answer:'16', unit:'км', hint:'8×2=?'},
+        {prompt:'Каково общее расстояние?', answer:'34', unit:'км', hint:'18+16=?'},
       ]};
   },
   function(){
@@ -2338,7 +2343,7 @@ const GEN_WALL = [
       steps:[
         {prompt:'Приведи все три дроби (2/3, 5/9, 3/5) к знаменателю 45. Какая из них самая большая (это Матвей, вскопавший больше всех)?', answer:'2/3', hint:'2/3=30/45 — самая большая.'},
         {prompt:'Раз Андрей вскопал больше Тимофея, но меньше Матвея — какая дробь у Андрея (средняя по величине)?', answer:'3/5', hint:'3/5=27/45 — среднее значение.'},
-        {prompt:'Сколько грядки осталось вскопать Андрею (1 − 3/5)?', answer:'2/5', hint:'5/5−3/5=2/5.'},
+        {prompt:'Сколько грядки осталось вскопать Андрею?', answer:'2/5', hint:'5/5−3/5=2/5.'},
       ]};
   },
   function(){
@@ -2353,8 +2358,8 @@ const GEN_WALL = [
       text:'В коробке 50 кубиков: 10 жёлтых, остальные — синие. Какую часть кубиков составляют жёлтые и какую — синие?',
       explain:'Жёлтые: 10/50=1/5. Синие: 40/50=4/5.',
       steps:[
-        {prompt:'Какую часть составляют жёлтые кубики (10 из 50)?', answer:'10/50', hint:'10/50 можно сократить, но сначала запиши как есть.'},
-        {prompt:'Какую часть составляют синие кубики (40 из 50)?', answer:'40/50', hint:'50−10=40 синих.'},
+        {prompt:'Какую часть составляют жёлтые кубики?', answer:'10/50', hint:'10/50 можно сократить, но сначала запиши как есть.'},
+        {prompt:'Какую часть составляют синие кубики?', answer:'40/50', hint:'50−10=40 синих.'},
       ]};
   },
 ];
@@ -2522,7 +2527,7 @@ const GEN_LIBERTY = [
       explain:'130÷5=26, 26×3=78 л.',
       steps:[
         {prompt:'Чему равна 1/5 часть от 130 л?', answer:'26', unit:'л', hint:'130÷5=?'},
-        {prompt:'Сколько литров израсходовали (3/5, то есть 26×3)?', answer:'78', unit:'л', hint:'26×3=?'},
+        {prompt:'Сколько литров израсходовали?', answer:'78', unit:'л', hint:'26×3=?'},
       ]};
   },
   function(){
@@ -2530,8 +2535,8 @@ const GEN_LIBERTY = [
       text:'Дачный участок имеет площадь 15 соток. Из них 2/5 занимает огород, а 3/10 — сад. Какую площадь занимают сад и огород вместе?',
       explain:'2/5+3/10=4/10+3/10=7/10. 15×7/10=10,5 (10 1/2) соток.',
       steps:[
-        {prompt:'Какую часть участка занимают огород и сад вместе (2/5 + 3/10)?', answer:'7/10', hint:'2/5=4/10. 4/10+3/10=7/10.'},
-        {prompt:'Сколько это соток (7/10 от 15)?', answer:'10 1/2', unit:'соток', hint:'15×7÷10=105÷10=10,5.'},
+        {prompt:'Какую часть участка занимают огород и сад вместе?', answer:'7/10', hint:'2/5=4/10. 4/10+3/10=7/10.'},
+        {prompt:'Сколько это соток?', answer:'10 1/2', unit:'соток', hint:'15×7÷10=105÷10=10,5.'},
       ]};
   },
   function(){
@@ -2540,8 +2545,8 @@ const GEN_LIBERTY = [
       explain:'Пусть после обеда x км, до обеда 5/7x. Разница: x−5/7x=2/7x=14, x=49. До обеда: 35. Всего: 49+35=84.',
       steps:[
         {prompt:'Обозначим участок после обеда за x км, тогда до обеда — 5/7x км. Разница x−5/7x=2/7x=14. Чему равен x (после обеда)?', answer:'49', unit:'км', hint:'14÷2×7=?'},
-        {prompt:'Сколько км расчистили до обеда (5/7 от 49)?', answer:'35', unit:'км', hint:'49÷7×5=?'},
-        {prompt:'Сколько всего км за весь день (49+35)?', answer:'84', unit:'км', hint:'49+35=?'},
+        {prompt:'Сколько км расчистили до обеда?', answer:'35', unit:'км', hint:'49÷7×5=?'},
+        {prompt:'Сколько всего км за весь день?', answer:'84', unit:'км', hint:'49+35=?'},
       ]};
   },
   function(){
@@ -2549,9 +2554,9 @@ const GEN_LIBERTY = [
       text:'Из двух посёлков (расстояние 30 км) навстречу друг другу выехали два велосипедиста. Скорость первого составляла 7/8 скорости второго. Найдите скорость каждого, если они встретились через 2/3 ч.',
       explain:'Скорость сближения: 30÷2/3=45. v2: (7/8+1)v2=15/8v2=45, v2=24. v1=7/8×24=21.',
       steps:[
-        {prompt:'Какая суммарная скорость сближения (30 км за 2/3 ч)?', answer:'45', unit:'км/ч', hint:'30×3÷2=?'},
+        {prompt:'Какая суммарная скорость сближения?', answer:'45', unit:'км/ч', hint:'30×3÷2=?'},
         {prompt:'Скорость второго велосипедиста v2 из уравнения 15/8·v2=45. Чему равна v2?', answer:'24', unit:'км/ч', hint:'45÷15×8=?'},
-        {prompt:'Скорость первого велосипедиста (7/8 от v2)?', answer:'21', unit:'км/ч', hint:'24÷8×7=?'},
+        {prompt:'Скорость первого велосипедиста?', answer:'21', unit:'км/ч', hint:'24÷8×7=?'},
       ]};
   },
   function(){
@@ -2559,9 +2564,9 @@ const GEN_LIBERTY = [
       text:'Длина классной комнаты 12 м, ширина 10 м, высота 4 м. Найдите массу воздуха в комнате, если масса 1 дм³ воздуха равна 13/10 г.',
       explain:'Объём: 12×10×4=480 м³=480000 дм³. Масса: 480000×1,3=624000 г=624 кг.',
       steps:[
-        {prompt:'Какой объём комнаты в м³ (12×10×4)?', answer:'480', unit:'м³', hint:'12×10×4=?'},
-        {prompt:'Сколько это дм³ (1 м³=1000 дм³)?', answer:'480000', unit:'дм³', hint:'480×1000=?'},
-        {prompt:'Какая масса воздуха в кг, если 1 дм³ весит 13/10 г (480000×1,3 г = ? кг)?', answer:'624', unit:'кг', hint:'480000×1,3=624000 г=624 кг.'},
+        {prompt:'Какой объём комнаты в м³?', answer:'480', unit:'м³', hint:'12×10×4=?'},
+        {prompt:'Сколько это дм³?', answer:'480000', unit:'дм³', hint:'480×1000=?'},
+        {prompt:'Какая масса воздуха в кг, если 1 дм³ весит 13/10 г?', answer:'624', unit:'кг', hint:'480000×1,3=624000 г=624 кг.'},
       ]};
   },
   function(){
@@ -2569,8 +2574,8 @@ const GEN_LIBERTY = [
       text:'В пекарне было 2/3 т муки. Сколько тонн муки стало после того, как на хлеб израсходовали 1/2 т, а затем привезли 5/6 т?',
       explain:'2/3−1/2+5/6. Общий знаменатель 6: 4/6−3/6+5/6=6/6=1 т.',
       steps:[
-        {prompt:'Сколько муки осталось после расхода (2/3 − 1/2)?', answer:'1/6', hint:'Общий знаменатель 6: 4/6−3/6=1/6.'},
-        {prompt:'Сколько муки стало после того, как привезли ещё 5/6 т (1/6 + 5/6)?', answer:'1', unit:'т', hint:'1/6+5/6=6/6=1.'},
+        {prompt:'Сколько муки осталось после расхода?', answer:'1/6', hint:'Общий знаменатель 6: 4/6−3/6=1/6.'},
+        {prompt:'Сколько муки стало после того, как привезли ещё 5/6 т?', answer:'1', unit:'т', hint:'1/6+5/6=6/6=1.'},
       ]};
   },
   function(){
@@ -2578,9 +2583,9 @@ const GEN_LIBERTY = [
       text:'Бригада железнодорожников в первый день отремонтировала 2/9 всего участка пути, во второй день — 4/7 оставшегося участка, а в третий — остальные 6 км. Сколько километров пути отремонтировала бригада за три дня?',
       explain:'После 1 дня осталось 7/9 пути. За 2 день: 4/7×7/9=4/9 всего пути. Осталось: 7/9−4/9=3/9=1/3=6 км → весь путь 18 км.',
       steps:[
-        {prompt:'Какая часть пути осталась после первого дня (1 − 2/9)?', answer:'7/9', hint:'9/9−2/9=7/9.'},
-        {prompt:'Какую часть ВСЕГО пути отремонтировали во второй день (4/7 от 7/9)?', answer:'4/9', hint:'7/9÷7×4=4/9.'},
-        {prompt:'Какая часть всего пути осталась на третий день (7/9 − 4/9)?', answer:'3/9', hint:'7/9−4/9=3/9 (=1/3).'},
+        {prompt:'Какая часть пути осталась после первого дня?', answer:'7/9', hint:'9/9−2/9=7/9.'},
+        {prompt:'Какую часть ВСЕГО пути отремонтировали во второй день?', answer:'4/9', hint:'7/9÷7×4=4/9.'},
+        {prompt:'Какая часть всего пути осталась на третий день?', answer:'3/9', hint:'7/9−4/9=3/9 (=1/3).'},
         {prompt:'3/9 (=1/3) пути — это 6 км. Сколько км весь путь?', answer:'18', unit:'км', hint:'6×3=?'},
       ]};
   },
@@ -2589,8 +2594,8 @@ const GEN_LIBERTY = [
       text:'Девочка прошла на лыжах 300 м, что составило 3/8 всей дистанции. Чему равна длина дистанции?',
       explain:'300÷3=100, 100×8=800 м.',
       steps:[
-        {prompt:'Чему равна 1/8 часть дистанции (300 — это 3/8, найди 1/8)?', answer:'100', unit:'м', hint:'300÷3=?'},
-        {prompt:'Чему равна вся дистанция (100×8)?', answer:'800', unit:'м', hint:'100×8=?'},
+        {prompt:'Чему равна 1/8 часть дистанции?', answer:'100', unit:'м', hint:'300÷3=?'},
+        {prompt:'Чему равна вся дистанция?', answer:'800', unit:'м', hint:'100×8=?'},
       ]};
   },
   function(){
@@ -2598,8 +2603,8 @@ const GEN_LIBERTY = [
       text:'Лёня прочитал в первый день 39 страниц, что составило 3/5 всей повести. Сколько страниц в повести?',
       explain:'39÷3=13, 13×5=65 страниц.',
       steps:[
-        {prompt:'Чему равна 1/5 часть повести (39 — это 3/5, найди 1/5)?', answer:'13', unit:'стр', hint:'39÷3=?'},
-        {prompt:'Сколько страниц во всей повести (13×5)?', answer:'65', unit:'стр', hint:'13×5=?'},
+        {prompt:'Чему равна 1/5 часть повести?', answer:'13', unit:'стр', hint:'39÷3=?'},
+        {prompt:'Сколько страниц во всей повести?', answer:'65', unit:'стр', hint:'13×5=?'},
       ]};
   },
 ];
@@ -2767,7 +2772,7 @@ const GEN_CHRIST = [
       explain:'Пусть пирожок p, ватрушка 4p. 3p+2×4p=11p=770, p=70. Ватрушка: 4×70=280 г.',
       steps:[
         {prompt:'Пусть масса пирожка p, тогда масса ватрушки 4p. Уравнение: 3p+8p=770, то есть 11p=770. Чему равен p (масса пирожка)?', answer:'70', unit:'г', hint:'770÷11=?'},
-        {prompt:'Чему равна масса ватрушки (4p)?', answer:'280', unit:'г', hint:'4×70=?'},
+        {prompt:'Чему равна масса ватрушки?', answer:'280', unit:'г', hint:'4×70=?'},
       ]};
   },
   function(){
@@ -2775,8 +2780,8 @@ const GEN_CHRIST = [
       text:'Водитель автомобиля увидел идущий впереди автобус, когда расстояние до него было 900 м, и через 3 мин его догнал. С какой скоростью двигался автобус, если скорость автомобиля 1500 м/мин?',
       explain:'Сближение: 900÷3=300 м/мин. Автобус: 1500−300=1200 м/мин.',
       steps:[
-        {prompt:'Какая скорость сближения (900 м за 3 мин)?', answer:'300', unit:'м/мин', hint:'900÷3=?'},
-        {prompt:'Какая скорость автобуса (скорость машины − скорость сближения)?', answer:'1200', unit:'м/мин', hint:'1500−300=?'},
+        {prompt:'Какая скорость сближения?', answer:'300', unit:'м/мин', hint:'900÷3=?'},
+        {prompt:'Какая скорость автобуса?', answer:'1200', unit:'м/мин', hint:'1500−300=?'},
       ]};
   },
   function(){
@@ -2791,9 +2796,9 @@ const GEN_CHRIST = [
       text:'Из посёлка вышел турист со скоростью 5 км/ч. Через 3 ч из того же посёлка вслед за ним выехал турист на самокате со скоростью 8 км/ч. Через сколько часов после выхода второго туриста они встретятся?',
       explain:'К моменту выезда самоката первый турист прошёл 5×3=15 км. Скорость сближения: 8−5=3 км/ч. Время: 15÷3=5 ч.',
       steps:[
-        {prompt:'Сколько км прошёл первый турист за первые 3 часа (5×3)?', answer:'15', unit:'км', hint:'5×3=?'},
-        {prompt:'На сколько км/ч самокат быстрее пешего туриста (8−5)?', answer:'3', unit:'км/ч', hint:'8−5=?'},
-        {prompt:'Через сколько часов самокат догонит туриста (15÷3)?', answer:'5', unit:'ч', hint:'15÷3=?'},
+        {prompt:'Сколько км прошёл первый турист за первые 3 часа?', answer:'15', unit:'км', hint:'5×3=?'},
+        {prompt:'На сколько км/ч самокат быстрее пешего туриста?', answer:'3', unit:'км/ч', hint:'8−5=?'},
+        {prompt:'Через сколько часов самокат догонит туриста?', answer:'5', unit:'ч', hint:'15÷3=?'},
       ]};
   },
   function(){
@@ -2801,8 +2806,8 @@ const GEN_CHRIST = [
       text:'Аня и Яна одновременно вышли из школы и отправились в противоположных направлениях. Через сколько минут расстояние между девочками будет 540 м, если Аня идёт со скоростью 80 м/мин, а Яна — со скоростью 100 м/мин?',
       explain:'80+100=180 м/мин. 540÷180=3 мин.',
       steps:[
-        {prompt:'Какая скорость удаления девочек друг от друга (80+100)?', answer:'180', unit:'м/мин', hint:'80+100=?'},
-        {prompt:'Через сколько минут расстояние станет 540 м (540÷180)?', answer:'3', unit:'мин', hint:'540÷180=?'},
+        {prompt:'Какая скорость удаления девочек друг от друга?', answer:'180', unit:'м/мин', hint:'80+100=?'},
+        {prompt:'Через сколько минут расстояние станет 540 м?', answer:'3', unit:'мин', hint:'540÷180=?'},
       ]};
   },
   function(){
@@ -2811,10 +2816,10 @@ const GEN_CHRIST = [
       explain:'Собственная скорость катера = скорость по озеру = 15 км/ч. Вверх по реке: 15−3=12 км/ч, за 3 ч — 36 км. По озеру: 15×2=30 км. Всего: 36+30=66 км.',
       steps:[
         {prompt:'Собственная скорость катера равна его скорости по озеру. Чему она равна?', answer:'15', unit:'км/ч', hint:'На озере нет течения — скорость там и есть собственная.'},
-        {prompt:'Какая скорость катера против течения реки (15−3)?', answer:'12', unit:'км/ч', hint:'Против течения скорость уменьшается на скорость течения.'},
-        {prompt:'Сколько км прошёл катер по реке за 3 ч (12×3)?', answer:'36', unit:'км', hint:'12×3=?'},
-        {prompt:'Сколько км прошёл катер по озеру за 2 ч (15×2)?', answer:'30', unit:'км', hint:'15×2=?'},
-        {prompt:'Какое расстояние прошёл катер всего (36+30)?', answer:'66', unit:'км', hint:'36+30=?'},
+        {prompt:'Какая скорость катера против течения реки?', answer:'12', unit:'км/ч', hint:'Против течения скорость уменьшается на скорость течения.'},
+        {prompt:'Сколько км прошёл катер по реке за 3 ч?', answer:'36', unit:'км', hint:'12×3=?'},
+        {prompt:'Сколько км прошёл катер по озеру за 2 ч?', answer:'30', unit:'км', hint:'15×2=?'},
+        {prompt:'Какое расстояние прошёл катер всего?', answer:'66', unit:'км', hint:'36+30=?'},
       ]};
   },
 ];
@@ -2933,7 +2938,7 @@ const GEN_PARTHENON = [
       text:'За яблоки заплатили 178,4 р., а за мандарины — на 18,2 р. больше. Сколько заплатили за яблоки и мандарины вместе?',
       explain:'Мандарины: 178,4+18,2=196,6 р. Вместе: 178,4+196,6=375 р.',
       steps:[
-        {prompt:'Сколько заплатили за мандарины (178,4+18,2)?', answer:'196,6', unit:'р.', hint:'178,4+18,2=?'},
+        {prompt:'Сколько заплатили за мандарины?', answer:'196,6', unit:'р.', hint:'178,4+18,2=?'},
         {prompt:'Сколько заплатили за яблоки и мандарины вместе?', answer:'375', unit:'р.', hint:'178,4+196,6=?'},
       ]};
   },
@@ -2942,7 +2947,7 @@ const GEN_PARTHENON = [
       text:'Бабушка с внучкой ходила в лес за малиной. Внучка собрала 3,5 кг малины, что оказалось на 1,8 кг меньше, чем собрала бабушка. Сколько малины собрали бабушка и внучка вместе?',
       explain:'Бабушка: 3,5+1,8=5,3 кг. Вместе: 3,5+5,3=8,8 кг.',
       steps:[
-        {prompt:'Сколько кг малины собрала бабушка (3,5+1,8)?', answer:'5,3', unit:'кг', hint:'3,5+1,8=?'},
+        {prompt:'Сколько кг малины собрала бабушка?', answer:'5,3', unit:'кг', hint:'3,5+1,8=?'},
         {prompt:'Сколько кг малины собрали вместе?', answer:'8,8', unit:'кг', hint:'3,5+5,3=?'},
       ]};
   },
@@ -2951,8 +2956,8 @@ const GEN_PARTHENON = [
       text:'От одной пристани в противоположных направлениях отошли два катера. Скорость одного катера 12,8 км/ч, а другого — 15,2 км/ч. Через какое время катера удалятся друг от друга на 84 км?',
       explain:'12,8+15,2=28 км/ч. 84÷28=3 ч.',
       steps:[
-        {prompt:'Какая скорость удаления катеров друг от друга (12,8+15,2)?', answer:'28', unit:'км/ч', hint:'12,8+15,2=?'},
-        {prompt:'Через сколько часов катера удалятся на 84 км (84÷28)?', answer:'3', unit:'ч', hint:'84÷28=?'},
+        {prompt:'Какая скорость удаления катеров друг от друга?', answer:'28', unit:'км/ч', hint:'12,8+15,2=?'},
+        {prompt:'Через сколько часов катера удалятся на 84 км?', answer:'3', unit:'ч', hint:'84÷28=?'},
       ]};
   },
   function(){
@@ -2960,7 +2965,7 @@ const GEN_PARTHENON = [
       text:'На клумбе площадью 7,33 м² высадили тюльпаны на площади 3,85 м², а на оставшейся части — пионы. На сколько площадь тюльпанов больше площади пионов?',
       explain:'Пионы: 7,33−3,85=3,48 м². Разница: 3,85−3,48=0,37 м².',
       steps:[
-        {prompt:'Какая площадь пионов (7,33−3,85)?', answer:'3,48', unit:'м²', hint:'7,33−3,85=?'},
+        {prompt:'Какая площадь пионов?', answer:'3,48', unit:'м²', hint:'7,33−3,85=?'},
         {prompt:'На сколько площадь тюльпанов больше площади пионов?', answer:'0,37', unit:'м²', hint:'3,85−3,48=?'},
       ]};
   },
@@ -2969,9 +2974,9 @@ const GEN_PARTHENON = [
       text:'Масса оболочки воздушного шара равна 0,56 т. Она больше массы гондолы на 0,33 т и больше массы газовой горелки на 0,47 т. Чему равна масса воздушного шара (оболочка + гондола + горелка)?',
       explain:'Гондола: 0,56−0,33=0,23 т. Горелка: 0,56−0,47=0,09 т. Всего: 0,56+0,23+0,09=0,88 т.',
       steps:[
-        {prompt:'Какая масса гондолы (0,56−0,33)?', answer:'0,23', unit:'т', hint:'0,56−0,33=?'},
-        {prompt:'Какая масса горелки (0,56−0,47)?', answer:'0,09', unit:'т', hint:'0,56−0,47=?'},
-        {prompt:'Какая масса всего шара (0,56+0,23+0,09)?', answer:'0,88', unit:'т', hint:'0,56+0,23+0,09=?'},
+        {prompt:'Какая масса гондолы?', answer:'0,23', unit:'т', hint:'0,56−0,33=?'},
+        {prompt:'Какая масса горелки?', answer:'0,09', unit:'т', hint:'0,56−0,47=?'},
+        {prompt:'Какая масса всего шара?', answer:'0,88', unit:'т', hint:'0,56+0,23+0,09=?'},
       ]};
   },
   function(){
@@ -2979,9 +2984,9 @@ const GEN_PARTHENON = [
       text:'С первого поля собрали 12,8 т моркови, со второго — на 3,4 т больше. После того как с каждого поля увезли часть моркови, на первом поле осталось 5,6 т, а на втором — 8,3 т. С какого поля увезли моркови больше?',
       explain:'Второе поле: 12,8+3,4=16,2 т. Увезли с первого: 12,8−5,6=7,2 т. Увезли со второго: 16,2−8,3=7,9 т. 7,9>7,2, значит увезли больше со второго поля.',
       steps:[
-        {prompt:'Сколько тонн моркови собрали со второго поля (12,8+3,4)?', answer:'16,2', unit:'т', hint:'12,8+3,4=?'},
-        {prompt:'Сколько тонн увезли с первого поля (12,8−5,6)?', answer:'7,2', unit:'т', hint:'12,8−5,6=?'},
-        {prompt:'Сколько тонн увезли со второго поля (16,2−8,3)?', answer:'7,9', unit:'т', hint:'16,2−8,3=?'},
+        {prompt:'Сколько тонн моркови собрали со второго поля?', answer:'16,2', unit:'т', hint:'12,8+3,4=?'},
+        {prompt:'Сколько тонн увезли с первого поля?', answer:'7,2', unit:'т', hint:'12,8−5,6=?'},
+        {prompt:'Сколько тонн увезли со второго поля?', answer:'7,9', unit:'т', hint:'16,2−8,3=?'},
         {prompt:'С какого поля увезли больше моркови?', answer:'со второго', hint:'Сравни 7,2 и 7,9.'},
       ]};
   },
@@ -3004,7 +3009,7 @@ const GEN_PARTHENON = [
       text:'Найдите массу самолёта с грузом, если масса самолёта 6,2 т и он тяжелее поднимаемого им груза на 5,31 т.',
       explain:'Груз: 6,2−5,31=0,89 т. Вместе: 6,2+0,89=7,09 т.',
       steps:[
-        {prompt:'Какая масса груза (6,2−5,31)?', answer:'0,89', unit:'т', hint:'6,2−5,31=?'},
+        {prompt:'Какая масса груза?', answer:'0,89', unit:'т', hint:'6,2−5,31=?'},
         {prompt:'Какая масса самолёта вместе с грузом?', answer:'7,09', unit:'т', hint:'6,2+0,89=?'},
       ]};
   },
@@ -3190,8 +3195,8 @@ const GEN_PYRAMIDS = [
       text:'Один перегон электропоезда прошёл за 0,75 ч со скоростью 62 км/ч, а другой — за 2 ч со скоростью 54,2 км/ч. Какое расстояние прошёл электропоезд за всё это время?',
       explain:'Первый: 0,75×62=46,5 км. Второй: 2×54,2=108,4 км. Всего: 46,5+108,4=154,9 км.',
       steps:[
-        {prompt:'Сколько км прошли на первом перегоне (0,75×62)?', answer:'46,5', unit:'км', hint:'0,75×62=?'},
-        {prompt:'Сколько км прошли на втором перегоне (2×54,2)?', answer:'108,4', unit:'км', hint:'2×54,2=?'},
+        {prompt:'Сколько км прошли на первом перегоне?', answer:'46,5', unit:'км', hint:'0,75×62=?'},
+        {prompt:'Сколько км прошли на втором перегоне?', answer:'108,4', unit:'км', hint:'2×54,2=?'},
         {prompt:'Сколько всего км прошёл электропоезд?', answer:'154,9', unit:'км', hint:'46,5+108,4=?'},
       ]};
   },
@@ -3200,8 +3205,8 @@ const GEN_PYRAMIDS = [
       text:'За две недели Миша съел 4 порции мороженого массой 0,18 кг каждая, а Петя — 9 порций массой 0,25 кг каждая. Сколько мороженого они съели вместе? На сколько больше съел Петя, чем Миша?',
       explain:'Миша: 4×0,18=0,72 кг. Петя: 9×0,25=2,25 кг. Вместе: 2,97 кг. Разница: 2,25−0,72=1,53 кг.',
       steps:[
-        {prompt:'Сколько кг съел Миша (4×0,18)?', answer:'0,72', unit:'кг', hint:'4×0,18=?'},
-        {prompt:'Сколько кг съел Петя (9×0,25)?', answer:'2,25', unit:'кг', hint:'9×0,25=?'},
+        {prompt:'Сколько кг съел Миша?', answer:'0,72', unit:'кг', hint:'4×0,18=?'},
+        {prompt:'Сколько кг съел Петя?', answer:'2,25', unit:'кг', hint:'9×0,25=?'},
         {prompt:'Сколько кг они съели вместе?', answer:'2,97', unit:'кг', hint:'0,72+2,25=?'},
         {prompt:'На сколько кг больше съел Петя?', answer:'1,53', unit:'кг', hint:'2,25−0,72=?'},
       ]};
@@ -3211,8 +3216,8 @@ const GEN_PYRAMIDS = [
       text:'На ярмарке мёда 1 кг липового мёда стоил 570 р., а 1 кг гречишного — 470 р. Сколько надо заплатить за 1,2 кг липового мёда и 0,8 кг гречишного вместе?',
       explain:'Липовый: 570×1,2=684 р. Гречишный: 470×0,8=376 р. Вместе: 684+376=1060 р.',
       steps:[
-        {prompt:'Сколько стоит 1,2 кг липового мёда (570×1,2)?', answer:'684', unit:'р.', hint:'570×1,2=?'},
-        {prompt:'Сколько стоит 0,8 кг гречишного мёда (470×0,8)?', answer:'376', unit:'р.', hint:'470×0,8=?'},
+        {prompt:'Сколько стоит 1,2 кг липового мёда?', answer:'684', unit:'р.', hint:'570×1,2=?'},
+        {prompt:'Сколько стоит 0,8 кг гречишного мёда?', answer:'376', unit:'р.', hint:'470×0,8=?'},
         {prompt:'Сколько заплатили за оба мёда вместе?', answer:'1060', unit:'р.', hint:'684+376=?'},
       ]};
   },
@@ -3221,9 +3226,9 @@ const GEN_PYRAMIDS = [
       text:'Масса 1 м² листа металлочерепицы 4,5 кг. Какую массу имеет лист размером 0,8 × 5 м? Сколько таких листов можно перевезти на автомобиле «Газель» грузоподъёмностью 1500 кг?',
       explain:'Площадь листа: 0,8×5=4 м². Масса: 4×4,5=18 кг. Листов: 1500÷18≈83 (целых листов).',
       steps:[
-        {prompt:'Какая площадь одного листа (0,8×5)?', answer:'4', unit:'м²', hint:'0,8×5=?'},
-        {prompt:'Какая масса одного листа (4×4,5)?', answer:'18', unit:'кг', hint:'4×4,5=?'},
-        {prompt:'Сколько целых листов можно перевезти на Газели (1500÷18, округли вниз до целого)?', answer:'83', unit:'листов', hint:'1500÷18=83,3… Берём только целые листы — 83.'},
+        {prompt:'Какая площадь одного листа?', answer:'4', unit:'м²', hint:'0,8×5=?'},
+        {prompt:'Какая масса одного листа?', answer:'18', unit:'кг', hint:'4×4,5=?'},
+        {prompt:'Сколько целых листов можно перевезти на Газели?', answer:'83', unit:'листов', hint:'1500÷18=83,3… Берём только целые листы — 83.'},
       ]};
   },
   function(){
@@ -3231,9 +3236,9 @@ const GEN_PYRAMIDS = [
       text:'Стороны первого прямоугольника равны 11 см и 7,2 см, и его площадь в 6 раз меньше площади второго прямоугольника. Чему равна длина второго прямоугольника, если его ширина 12 см?',
       explain:'Площадь первого: 11×7,2=79,2 см². Площадь второго: 79,2×6=475,2 см². Длина второго: 475,2÷12=39,6 см.',
       steps:[
-        {prompt:'Какая площадь первого прямоугольника (11×7,2)?', answer:'79,2', unit:'см²', hint:'11×7,2=?'},
-        {prompt:'Какая площадь второго прямоугольника (в 6 раз больше)?', answer:'475,2', unit:'см²', hint:'79,2×6=?'},
-        {prompt:'Какая длина второго прямоугольника (площадь ÷ ширина 12)?', answer:'39,6', unit:'см', hint:'475,2÷12=?'},
+        {prompt:'Какая площадь первого прямоугольника?', answer:'79,2', unit:'см²', hint:'11×7,2=?'},
+        {prompt:'Какая площадь второго прямоугольника?', answer:'475,2', unit:'см²', hint:'79,2×6=?'},
+        {prompt:'Какая длина второго прямоугольника?', answer:'39,6', unit:'см', hint:'475,2÷12=?'},
       ]};
   },
   function(){
@@ -3241,8 +3246,8 @@ const GEN_PYRAMIDS = [
       text:'Велосипедист ехал 35 мин по шоссе со скоростью 0,28 км/мин и 24 мин по лесной дороге со скоростью 0,18 км/мин. Сколько километров он проехал?',
       explain:'По шоссе: 35×0,28=9,8 км. По лесу: 24×0,18=4,32 км. Всего: 9,8+4,32=14,12 км.',
       steps:[
-        {prompt:'Сколько км проехал по шоссе (35×0,28)?', answer:'9,8', unit:'км', hint:'35×0,28=?'},
-        {prompt:'Сколько км проехал по лесной дороге (24×0,18)?', answer:'4,32', unit:'км', hint:'24×0,18=?'},
+        {prompt:'Сколько км проехал по шоссе?', answer:'9,8', unit:'км', hint:'35×0,28=?'},
+        {prompt:'Сколько км проехал по лесной дороге?', answer:'4,32', unit:'км', hint:'24×0,18=?'},
         {prompt:'Сколько всего км проехал?', answer:'14,12', unit:'км', hint:'9,8+4,32=?'},
       ]};
   },
@@ -3251,8 +3256,8 @@ const GEN_PYRAMIDS = [
       text:'Два самосвала доставляли песок из карьера. Самосвал грузоподъёмностью 4,8 т сделал 8 рейсов, а самосвал грузоподъёмностью 7,2 т — 5 рейсов. На сколько тонн песка больше перевёз один самосвал, чем другой?',
       explain:'Первый: 4,8×8=38,4 т. Второй: 7,2×5=36 т. Разница: 38,4−36=2,4 т.',
       steps:[
-        {prompt:'Сколько тонн перевёз первый самосвал (4,8×8)?', answer:'38,4', unit:'т', hint:'4,8×8=?'},
-        {prompt:'Сколько тонн перевёз второй самосвал (7,2×5)?', answer:'36', unit:'т', hint:'7,2×5=?'},
+        {prompt:'Сколько тонн перевёз первый самосвал?', answer:'38,4', unit:'т', hint:'4,8×8=?'},
+        {prompt:'Сколько тонн перевёз второй самосвал?', answer:'36', unit:'т', hint:'7,2×5=?'},
         {prompt:'На сколько тонн больше перевёз первый самосвал?', answer:'2,4', unit:'т', hint:'38,4−36=?'},
       ]};
   },
@@ -3261,8 +3266,8 @@ const GEN_PYRAMIDS = [
       text:'Цена яблок в 2021 г. была 84 р. за 1 кг. Найдите стоимость 2 кг и стоимость 1,2 кг яблок.',
       explain:'2 кг: 84×2=168 р. 1,2 кг: 84×1,2=100,8 р.',
       steps:[
-        {prompt:'Сколько стоят 2 кг яблок (84×2)?', answer:'168', unit:'р.', hint:'84×2=?'},
-        {prompt:'Сколько стоят 1,2 кг яблок (84×1,2)?', answer:'100,8', unit:'р.', hint:'84×1,2=?'},
+        {prompt:'Сколько стоят 2 кг яблок?', answer:'168', unit:'р.', hint:'84×2=?'},
+        {prompt:'Сколько стоят 1,2 кг яблок?', answer:'100,8', unit:'р.', hint:'84×1,2=?'},
       ]};
   },
   function(){
@@ -3270,8 +3275,8 @@ const GEN_PYRAMIDS = [
       text:'Катер, двигаясь по течению реки, за 4 ч прошёл 139,2 км. Найдите собственную скорость катера, если скорость течения равна 2,4 км/ч.',
       explain:'Скорость по течению: 139,2÷4=34,8 км/ч. Собственная скорость: 34,8−2,4=32,4 км/ч.',
       steps:[
-        {prompt:'Какая скорость катера по течению (139,2÷4)?', answer:'34,8', unit:'км/ч', hint:'139,2÷4=?'},
-        {prompt:'Какая собственная скорость катера (34,8−2,4)?', answer:'32,4', unit:'км/ч', hint:'По течению = собственная + течение, значит собственная = по течению − течение.'},
+        {prompt:'Какая скорость катера по течению?', answer:'34,8', unit:'км/ч', hint:'139,2÷4=?'},
+        {prompt:'Какая собственная скорость катера?', answer:'32,4', unit:'км/ч', hint:'По течению = собственная + течение, значит собственная = по течению − течение.'},
       ]};
   },
   function(){
@@ -3279,7 +3284,7 @@ const GEN_PYRAMIDS = [
       text:'Пешеход прошёл 3/8 расстояния от остановки до дома. Сколько километров ему осталось пройти, если он прошёл 0,24 км?',
       explain:'Весь путь: 0,24÷3×8=0,64 км. Осталось: 0,64−0,24=0,4 км.',
       steps:[
-        {prompt:'Чему равен весь путь (0,24 — это 3/8 пути)?', answer:'0,64', unit:'км', hint:'0,24÷3×8=?'},
+        {prompt:'Чему равен весь путь?', answer:'0,64', unit:'км', hint:'0,24÷3×8=?'},
         {prompt:'Сколько км осталось пройти?', answer:'0,4', unit:'км', hint:'0,64−0,24=?'},
       ]};
   },
@@ -3440,9 +3445,9 @@ const GEN_PETRA = [
       text:'Комнату длиной 5,6 м, шириной 3,2 м и высотой 2,85 м, имеющую окно и дверь общей площадью 5,28 м², требуется оклеить обоями. Какое наименьшее количество рулонов обоев необходимо купить, если длина рулона 10 м, а ширина 1 м?',
       explain:'Периметр: 2×(5,6+3,2)=17,6 м. Площадь стен: 17,6×2,85=50,16 м². За вычетом окна и двери: 50,16−5,28=44,88 м². Площадь рулона: 10 м². Рулонов: 44,88÷10≈5 (округляем вверх).',
       steps:[
-        {prompt:'Какой периметр комнаты (2×(5,6+3,2))?', answer:'17,6', unit:'м', hint:'5,6+3,2=8,8. 8,8×2=17,6.'},
-        {prompt:'Какая площадь всех стен (периметр × высота)?', answer:'50,16', unit:'м²', hint:'17,6×2,85=?'},
-        {prompt:'Какую площадь нужно оклеить, вычитая окно и дверь (50,16−5,28)?', answer:'44,88', unit:'м²', hint:'50,16−5,28=?'},
+        {prompt:'Какой периметр комнаты?', answer:'17,6', unit:'м', hint:'5,6+3,2=8,8. 8,8×2=17,6.'},
+        {prompt:'Какая площадь всех стен?', answer:'50,16', unit:'м²', hint:'17,6×2,85=?'},
+        {prompt:'Какую площадь нужно оклеить, вычитая окно и дверь?', answer:'44,88', unit:'м²', hint:'50,16−5,28=?'},
         {prompt:'Сколько рулонов нужно купить, если один рулон покрывает 10 м² (округли вверх до целого)?', answer:'5', unit:'рулонов', hint:'44,88÷10=4,488 — нужно 5 целых рулонов.'},
       ]};
   },
@@ -3451,9 +3456,9 @@ const GEN_PETRA = [
       text:'Скорость движения Луны вокруг Земли 1,023 км/с, а скорость движения Земли вокруг Солнца на 28,777 км/с больше. Какой путь пройдёт каждое космическое тело за 4 с?',
       explain:'Скорость Земли: 1,023+28,777=29,8 км/с. Путь Луны за 4с: 1,023×4=4,092 км. Путь Земли за 4с: 29,8×4=119,2 км.',
       steps:[
-        {prompt:'Какая скорость Земли (1,023+28,777)?', answer:'29,8', unit:'км/с', hint:'1,023+28,777=?'},
-        {prompt:'Какой путь пройдёт Луна за 4 с (1,023×4)?', answer:'4,092', unit:'км', hint:'1,023×4=?'},
-        {prompt:'Какой путь пройдёт Земля за 4 с (29,8×4)?', answer:'119,2', unit:'км', hint:'29,8×4=?'},
+        {prompt:'Какая скорость Земли?', answer:'29,8', unit:'км/с', hint:'1,023+28,777=?'},
+        {prompt:'Какой путь пройдёт Луна за 4 с?', answer:'4,092', unit:'км', hint:'1,023×4=?'},
+        {prompt:'Какой путь пройдёт Земля за 4 с?', answer:'119,2', unit:'км', hint:'29,8×4=?'},
       ]};
   },
   function(){
@@ -3475,8 +3480,8 @@ const GEN_PETRA = [
       text:'Катамаран плыл 2 ч по течению реки и 3 ч против течения. Сколько километров проплыл катамаран, если его собственная скорость 17,6 км/ч, а скорость течения 3,2 км/ч?',
       explain:'По течению: (17,6+3,2)×2=41,6 км. Против течения: (17,6−3,2)×3=43,2 км. Всего: 41,6+43,2=84,8 км.',
       steps:[
-        {prompt:'Сколько км проплыл по течению за 2 ч ((17,6+3,2)×2)?', answer:'41,6', unit:'км', hint:'17,6+3,2=20,8. 20,8×2=41,6.'},
-        {prompt:'Сколько км проплыл против течения за 3 ч ((17,6−3,2)×3)?', answer:'43,2', unit:'км', hint:'17,6−3,2=14,4. 14,4×3=43,2.'},
+        {prompt:'Сколько км проплыл по течению за 2 ч?', answer:'41,6', unit:'км', hint:'17,6+3,2=20,8. 20,8×2=41,6.'},
+        {prompt:'Сколько км проплыл против течения за 3 ч?', answer:'43,2', unit:'км', hint:'17,6−3,2=14,4. 14,4×3=43,2.'},
         {prompt:'Сколько всего км проплыл катамаран?', answer:'84,8', unit:'км', hint:'41,6+43,2=?'},
       ]};
   },
@@ -3485,7 +3490,7 @@ const GEN_PETRA = [
       text:'На занятие хореографией Таня затратила в 1,5 раза больше времени, чем на уборку своей комнаты. Сколько часов затратила Таня на занятие хореографией и уборку комнаты, если занятие хореографией заняло 2,4 ч?',
       explain:'Уборка: 2,4÷1,5=1,6 ч. Вместе: 2,4+1,6=4 ч.',
       steps:[
-        {prompt:'Сколько часов заняла уборка комнаты (2,4÷1,5)?', answer:'1,6', unit:'ч', hint:'2,4÷1,5=?'},
+        {prompt:'Сколько часов заняла уборка комнаты?', answer:'1,6', unit:'ч', hint:'2,4÷1,5=?'},
         {prompt:'Сколько всего часов заняли хореография и уборка вместе?', answer:'4', unit:'ч', hint:'2,4+1,6=?'},
       ]};
   },
@@ -3494,8 +3499,8 @@ const GEN_PETRA = [
       text:'За 3,5 ч было переработано на варенье 10,5 т клубники. Сколько тонн клубники будет переработано за 2,7 ч (при той же скорости работы)?',
       explain:'Скорость: 10,5÷3,5=3 т/ч. За 2,7 ч: 3×2,7=8,1 т.',
       steps:[
-        {prompt:'Сколько тонн перерабатывают за 1 час (10,5÷3,5)?', answer:'3', unit:'т/ч', hint:'10,5÷3,5=?'},
-        {prompt:'Сколько тонн переработают за 2,7 ч (3×2,7)?', answer:'8,1', unit:'т', hint:'3×2,7=?'},
+        {prompt:'Сколько тонн перерабатывают за 1 час?', answer:'3', unit:'т/ч', hint:'10,5÷3,5=?'},
+        {prompt:'Сколько тонн переработают за 2,7 ч?', answer:'8,1', unit:'т', hint:'3×2,7=?'},
       ]};
   },
   function(){
@@ -3504,7 +3509,7 @@ const GEN_PETRA = [
       explain:'Пусть в малом бассейне x, тогда в большом 8,5x. Сумма: 9,5x=608,95, x=64,1. Большой: 8,5×64,1=544,85.',
       steps:[
         {prompt:'Пусть в малом бассейне x м³, тогда в большом 8,5x м³. Уравнение: x+8,5x=608,95, то есть 9,5x=608,95. Чему равен x (малый бассейн)?', answer:'64,1', unit:'м³', hint:'608,95÷9,5=?'},
-        {prompt:'Сколько воды в большом бассейне (8,5×64,1)?', answer:'544,85', unit:'м³', hint:'8,5×64,1=?'},
+        {prompt:'Сколько воды в большом бассейне?', answer:'544,85', unit:'м³', hint:'8,5×64,1=?'},
       ]};
   },
   function(){
@@ -3512,9 +3517,9 @@ const GEN_PETRA = [
       text:'Из двух пунктов, расстояние между которыми 14,76 км, выехали два велосипедиста и встретились через полчаса. Чему равны их скорости, если скорость одного в 1,4 раза меньше скорости другого?',
       explain:'Скорость сближения: 14,76÷0,5=29,52 км/ч. Медленный: x, быстрый: 1,4x. 2,4x=29,52, x=12,3. Быстрый: 1,4×12,3=17,22.',
       steps:[
-        {prompt:'Какая суммарная скорость сближения (14,76 км за 0,5 ч)?', answer:'29,52', unit:'км/ч', hint:'14,76÷0,5=?'},
+        {prompt:'Какая суммарная скорость сближения?', answer:'29,52', unit:'км/ч', hint:'14,76÷0,5=?'},
         {prompt:'Пусть скорость медленного велосипедиста x, а быстрого — 1,4x. Уравнение: x+1,4x=29,52, то есть 2,4x=29,52. Чему равен x (медленный)?', answer:'12,3', unit:'км/ч', hint:'29,52÷2,4=?'},
-        {prompt:'Какая скорость быстрого велосипедиста (1,4×12,3)?', answer:'17,22', unit:'км/ч', hint:'1,4×12,3=?'},
+        {prompt:'Какая скорость быстрого велосипедиста?', answer:'17,22', unit:'км/ч', hint:'1,4×12,3=?'},
       ]};
   },
 ];
@@ -4252,8 +4257,8 @@ function loadQuestion(idx){
           <div class="eq-step-lbl">📌 Шаг 1 — какой знак поставить?</div>
           <div class="eq-step-expr">${left} <span id="step1sign" class="sign-blank">?</span> ${right}</div>
           <div id="step1btns" class="sign-btns">
-            <button class="sign-btn" onclick="checkStep1Sign('+')">+</button>
-            <button class="sign-btn" onclick="checkStep1Sign('−')">−</button>
+            <button class="sign-btn" data-act="check-step1-sign" data-arg="+">+</button>
+            <button class="sign-btn" data-act="check-step1-sign" data-arg="−">−</button>
           </div>
           <div id="step1fb" class="sign-fb"></div>
         </div>`;
@@ -4269,49 +4274,52 @@ function loadQuestion(idx){
         <div style="display:flex;align-items:center;gap:14px;justify-content:center;margin-bottom:14px">
           <div style="display:flex;flex-direction:column;align-items:center;gap:2px">
             <div style="font-size:11px;color:#aaa;margin-bottom:4px">целое</div>
-            <input id="ansWhole" inputmode="decimal" maxlength="3" autocomplete="off" placeholder="?" style="${inpSt}font-size:28px;width:80px" onkeydown="if(event.key==='Enter')checkInput()" oninput="if(this.value.length>=2){document.getElementById('ansNum')&&document.getElementById('ansNum').focus();}">
+            <input id="ansWhole" inputmode="decimal" maxlength="3" autocomplete="off" placeholder="?" style="${inpSt}font-size:28px;width:80px">
           </div>
           <div style="display:flex;flex-direction:column;align-items:center">
             <div style="font-size:11px;color:#aaa;margin-bottom:4px">дробь</div>
-            <input id="ansNum" inputmode="decimal" maxlength="2" autocomplete="off" placeholder="?" style="${inpSt}border-radius:10px 10px 4px 4px" onkeydown="if(event.key==='Enter')checkInput()" oninput="if(this.value.length>=2){document.getElementById('ansDen')&&document.getElementById('ansDen').focus();}">
+            <input id="ansNum" inputmode="decimal" maxlength="2" autocomplete="off" placeholder="?" style="${inpSt}border-radius:10px 10px 4px 4px">
             ${fracBarHtml}
-            <input id="ansDen" inputmode="decimal" maxlength="2" autocomplete="off" placeholder="?" style="${inpSt}border-radius:4px 4px 10px 10px" onkeydown="if(event.key==='Enter')checkInput()">
+            <input id="ansDen" inputmode="decimal" maxlength="2" autocomplete="off" placeholder="?" style="${inpSt}border-radius:4px 4px 10px 10px">
           </div>
         </div>
         <div style="margin-top:4px">
-          <button class="btn" style="min-width:160px" onclick="checkInput()">Проверить ✓</button>
+          <button class="btn" style="min-width:160px" data-act="check-input">Проверить ✓</button>
         </div>
         <div class="hint-row">
-          <button id="hintBtn" class="btn ghost" onclick="askHint()" style="opacity:0;pointer-events:none;transition:opacity .4s">💡 Подсказка</button>
+          <button id="hintBtn" class="btn ghost" data-act="ask-hint" style="opacity:0;pointer-events:none;transition:opacity .4s">💡 Подсказка</button>
         </div>`;
+      wireAnswerInputs();
       setTimeout(()=>{ const w=document.getElementById('ansWhole'); if(w) w.focus(); },80);
     } else if(isFraction){
       box.innerHTML=`${stepHtml}
         <div class="eq-step-lbl" style="margin-top:4px;margin-bottom:6px">✏️ Введи ответ (числитель и знаменатель)</div>
         <div class="frac-input">
-          <input class="frac-cell" id="ansNum" inputmode="decimal" maxlength="2" autocomplete="off" placeholder="?" oninput="if(this.value.length>=2){const d=document.getElementById('ansDen');if(d)d.focus();}" onkeydown="if(event.key==='Enter')checkInput()">
+          <input class="frac-cell" id="ansNum" inputmode="decimal" maxlength="2" autocomplete="off" placeholder="?">
           <div class="frac-bar"></div>
-          <input class="frac-cell" id="ansDen" inputmode="decimal" maxlength="2" autocomplete="off" placeholder="?" onkeydown="if(event.key==='Enter')checkInput()">
+          <input class="frac-cell" id="ansDen" inputmode="decimal" maxlength="2" autocomplete="off" placeholder="?">
         </div>
         <div style="margin-top:12px">
-          <button class="btn" style="min-width:160px" onclick="checkInput()">Проверить ✓</button>
+          <button class="btn" style="min-width:160px" data-act="check-input">Проверить ✓</button>
         </div>
         <div class="hint-row">
-          <button id="hintBtn" class="btn ghost" onclick="askHint()" style="opacity:0;pointer-events:none;transition:opacity .4s">💡 Подсказка</button>
+          <button id="hintBtn" class="btn ghost" data-act="ask-hint" style="opacity:0;pointer-events:none;transition:opacity .4s">💡 Подсказка</button>
         </div>`;
+      wireAnswerInputs();
       setTimeout(()=>{ const n=document.getElementById('ansNum'); if(n) n.focus(); },80);
     } else {
       const step2lbl = q.step1_show ? `<div class="eq-step-lbl" style="margin-bottom:6px">✏️ Шаг 2 — посчитай и введи ответ</div>` : '';
       box.innerHTML=`${stepHtml}${step2lbl}
         <div class="answer-area">
-          <input class="answer-input" id="ansInput" inputmode="decimal" autocomplete="off" placeholder="${q.placeholder||'введи число'}" onkeydown="if(event.key==='Enter')checkInput()">
+          <input class="answer-input" id="ansInput" inputmode="decimal" autocomplete="off" placeholder="${q.placeholder||'введи число'}">
         </div>
         <div style="margin-top:12px">
-          <button class="btn" style="min-width:160px" onclick="checkInput()">Проверить ✓</button>
+          <button class="btn" style="min-width:160px" data-act="check-input">Проверить ✓</button>
         </div>
         <div class="hint-row">
-          <button id="hintBtn" class="btn ghost" onclick="askHint()" style="opacity:0;pointer-events:none;transition:opacity .4s">💡 Подсказка</button>
+          <button id="hintBtn" class="btn ghost" data-act="ask-hint" style="opacity:0;pointer-events:none;transition:opacity .4s">💡 Подсказка</button>
         </div>`;
+      wireAnswerInputs();
       setTimeout(()=>{ const i=document.getElementById('ansInput'); if(i) i.focus(); },80);
     }
   }
@@ -4339,15 +4347,15 @@ function renderStep(q, stepIdx){
     </div>
     <div class="answer-area">
       <input class="answer-input" id="stepInput" inputmode="decimal" autocomplete="off"
-        placeholder="${step.unit||'введи число'}"
-        onkeydown="if(event.key==='Enter')checkStepInput()">
+        placeholder="${step.unit||'введи число'}">
     </div>
     <div style="margin-top:12px">
-      <button class="btn" style="min-width:160px" onclick="checkStepInput()">Проверить ✓</button>
+      <button class="btn" style="min-width:160px" data-act="check-step-input">Проверить ✓</button>
     </div>
     <div class="hint-row">
-      <button id="hintBtn" class="btn ghost" onclick="askHint()" style="opacity:0;pointer-events:none;transition:opacity .4s">💡 Подсказка</button>
+      <button id="hintBtn" class="btn ghost" data-act="ask-hint" style="opacity:0;pointer-events:none;transition:opacity .4s">💡 Подсказка</button>
     </div>`;
+  wireAnswerInputs();
   setTimeout(()=>{ const i=document.getElementById('stepInput'); if(i) i.focus(); },80);
   // inject step hint into question's hint field so askHint() works
   QUESTIONS[curIndex]._stepHint = step.hint||'';
@@ -4376,7 +4384,7 @@ function checkStepInput(){
 }
 
 function hintBtnHTML(){
-  return `<div class="hint-row"><button id="hintBtn" class="btn ghost" onclick="askHint()" style="opacity:0;pointer-events:none;transition:opacity .4s">💡 Подсказка</button></div>`;
+  return `<div class="hint-row"><button id="hintBtn" class="btn ghost" data-act="ask-hint" style="opacity:0;pointer-events:none;transition:opacity .4s">💡 Подсказка</button></div>`;
 }
 function revealHintBtn(){
   const btn=document.getElementById('hintBtn');
@@ -4450,7 +4458,7 @@ function showMiniExamQuestion(){
             <input id="meDen" class="me-input" type="number" min="1" max="99" placeholder="?" autocomplete="off" style="${inpStyle}border-radius:4px 4px 10px 10px">
           </div>
         </div>
-        <button class="me-check-btn" onclick="submitMiniInput()">Проверить →</button>`;
+        <button class="me-check-btn" data-act="submit-mini-input">Проверить →</button>`;
       setTimeout(()=>{const el=document.getElementById('meWhole'); if(el)el.focus();},100);
     } else if(isFrac){
       answerArea.innerHTML=`
@@ -4460,11 +4468,11 @@ function showMiniExamQuestion(){
           ${fracBar}
           <input id="meDen" class="me-input" type="number" min="1" max="999" placeholder="?" autocomplete="off" style="${inpStyle}border-radius:4px 4px 10px 10px">
         </div>
-        <button class="me-check-btn" onclick="submitMiniInput()">Проверить →</button>`;
+        <button class="me-check-btn" data-act="submit-mini-input">Проверить →</button>`;
       setTimeout(()=>{const el=document.getElementById('meNum'); if(el)el.focus();},100);
     } else {
       answerArea.innerHTML=`<input id="meInput" class="me-input" type="text" placeholder="Введи ответ..." autocomplete="off">
-        <button class="me-check-btn" onclick="submitMiniInput()">Проверить →</button>`;
+        <button class="me-check-btn" data-act="submit-mini-input">Проверить →</button>`;
       setTimeout(()=>{const el=document.getElementById('meInput'); if(el)el.focus();},100);
     }
   }
@@ -4849,6 +4857,60 @@ function resetProgress(){
     currentLoc=0; QUESTIONS=[];
     save(); syncFollowers(); syncAvatar(); closeSheet(); renderMap();
     go('welcome'); showSlide(0);
+  }
+}
+
+/* ============ ГЛОБАЛЬНЫЙ ОБРАБОТЧИК КЛИКОВ (CSP-safe, без inline onclick) ============ */
+document.addEventListener('click', function(e){
+  const el = e.target.closest('[data-act]');
+  if(!el) return;
+  const act = el.dataset.act, arg = el.dataset.arg;
+  switch(act){
+    case 'start-onboarding': go('onboard'); showSlide(0); break;
+    case 'next-slide': nextSlide(); break;
+    case 'go': go(arg); break;
+    case 'open-sheet': openSheet(); break;
+    case 'close-sheet': closeSheet(); break;
+    case 'start-exam': startExam(); break;
+    case 'start-day': startDay(); break;
+    case 'go-next-loc': goNextLoc(); break;
+    case 'next-question': nextQuestion(); break;
+    case 'reset-progress': resetProgress(); break;
+    case 'reset-day': resetDay(); break;
+    case 'continue-to-tasks': continueToTasks(); break;
+    case 'kp-press': kpPress(arg); break;
+    case 'buy-gear': buyGear(Number(arg)); break;
+    case 'check-step1-sign': checkStep1Sign(arg); break;
+    case 'check-input': checkInput(); break;
+    case 'ask-hint': askHint(); break;
+    case 'check-step-input': checkStepInput(); break;
+    case 'submit-mini-input': submitMiniInput(); break;
+    case 'print': window.print(); break;
+  }
+});
+/* Привязка обработчиков ввода к полям ответа (CSP-safe, без inline oninput/onkeydown) */
+function wireAnswerInputs(){
+  const whole=document.getElementById('ansWhole');
+  const num=document.getElementById('ansNum');
+  const den=document.getElementById('ansDen');
+  const single=document.getElementById('ansInput');
+  const stepInp=document.getElementById('stepInput');
+  if(whole){
+    whole.addEventListener('keydown', ev=>{ if(ev.key==='Enter') checkInput(); });
+    whole.addEventListener('input', function(){ if(this.value.length>=2 && num) num.focus(); });
+  }
+  if(num){
+    num.addEventListener('keydown', ev=>{ if(ev.key==='Enter') checkInput(); });
+    num.addEventListener('input', function(){ if(this.value.length>=2 && den) den.focus(); });
+  }
+  if(den){
+    den.addEventListener('keydown', ev=>{ if(ev.key==='Enter') checkInput(); });
+  }
+  if(single){
+    single.addEventListener('keydown', ev=>{ if(ev.key==='Enter') checkInput(); });
+  }
+  if(stepInp){
+    stepInp.addEventListener('keydown', ev=>{ if(ev.key==='Enter') checkStepInput(); });
   }
 }
 
