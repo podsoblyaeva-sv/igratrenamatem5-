@@ -321,6 +321,23 @@
 
   .lock-note{font-size:13px; color:var(--muted); text-align:center; padding:10px 30px 0; line-height:1.5}
 
+  /* ---- rule reminder (animated demo) ---- */
+  #ruleDemo{background:linear-gradient(160deg,#667eea,#5b6fd8)}
+  .rd-card{background:#fff; border-radius:24px; padding:26px 20px 22px; margin:0 auto; max-width:400px; width:100%; box-shadow:0 10px 34px rgba(20,20,50,.25)}
+  .rd-title{font-size:19px; font-weight:800; color:var(--ink); text-align:center}
+  .rd-sub{font-size:13px; color:var(--muted); text-align:center; margin-top:2px; margin-bottom:16px}
+  .rd-lcd{text-align:center; font-size:15px; color:var(--sky-deep); font-weight:700; margin-bottom:6px}
+  #rdStage{position:relative; display:flex; align-items:center; justify-content:center; min-height:120px; padding:26px 6px 10px}
+  .rd-row{display:flex; align-items:center; gap:18px}
+  .rd-frac{display:flex; flex-direction:column; align-items:center; font-size:21px; font-weight:800; color:var(--ink)}
+  .rd-num, .rd-den{min-width:46px; text-align:center; padding:2px 5px; border-radius:8px; transition:background .3s ease, color .3s ease, transform .3s ease}
+  .rd-bar{width:42px; height:3px; background:var(--ink); margin:4px 0; border-radius:2px}
+  .rd-num.rd-pop, .rd-den.rd-pop{animation:rdpop .45s ease; background:#eafff0; color:#0a8f4c}
+  @keyframes rdpop{0%{transform:scale(1)} 50%{transform:scale(1.4)} 100%{transform:scale(1)}}
+  .rd-eq{font-size:17px; color:var(--muted); font-weight:700}
+  .rd-finger{position:absolute; left:0; top:0; font-size:30px; transition:left .7s cubic-bezier(.4,0,.2,1), top .7s cubic-bezier(.4,0,.2,1); pointer-events:none; filter:drop-shadow(0 4px 6px rgba(0,0,0,.25))}
+  .rd-bubble{background:#fff8e1; border-left:4px solid #ffb300; border-radius:10px; padding:12px 14px; font-size:14.5px; color:#5a4a1a; line-height:1.55; min-height:64px}
+
   /* ---- on-screen keypad ---- */
   .keypad{
     position:absolute; left:0; right:0; bottom:0; z-index:32;
@@ -538,6 +555,36 @@
         <div style="height:10px"></div>
         <button class="btn ghost" data-act="go" data-arg="map">← На карту</button>
       </div>
+    </div>
+  </section>
+
+  <!-- ====== НАПОМИНАНИЕ ПРАВИЛА (анимация) ====== -->
+  <section class="screen center pad" id="ruleDemo">
+    <div class="rd-card">
+      <div class="rd-title" id="rdTitle">💡 Общий знаменатель</div>
+      <div class="rd-sub" id="rdSub">Как привести дроби к одному знаменателю</div>
+      <div class="rd-lcd">Общий знаменатель: <b id="rdLcdNum">12</b></div>
+      <div id="rdStage">
+        <div class="rd-row">
+          <div class="rd-frac" id="rdF1">
+            <span class="rd-num" id="rdF1n">1</span>
+            <span class="rd-bar"></span>
+            <span class="rd-den" id="rdF1d">4</span>
+          </div>
+          <span class="rd-eq">и</span>
+          <div class="rd-frac" id="rdF2">
+            <span class="rd-num" id="rdF2n">1</span>
+            <span class="rd-bar"></span>
+            <span class="rd-den" id="rdF2d">6</span>
+          </div>
+        </div>
+        <div class="rd-finger" id="rdFinger">👆</div>
+      </div>
+      <div class="rd-bubble" id="rdBubble">Сейчас покажу, как это делается!</div>
+      <div style="height:14px"></div>
+      <button class="btn" data-act="replay-rule">▶️ Показать ещё раз</button>
+      <div style="height:8px"></div>
+      <button class="btn ghost" data-act="go" data-arg="loc">Понятно, к заданиям →</button>
     </div>
   </section>
 
@@ -4239,7 +4286,70 @@ function renderLoc(){
   } else {
     btn.textContent='Начать съёмку 🎥'; nextBtn.style.display='none';
   }
+  const ruleBtn=document.getElementById('ruleDemoBtn');
+  const ruleGap=document.getElementById('ruleDemoBtnGap');
+  const hasRuleDemo = !!RULE_DEMOS[currentLoc];
+  ruleBtn.style.display = hasRuleDemo ? 'flex' : 'none';
+  ruleGap.style.display = hasRuleDemo ? 'block' : 'none';
 }
+
+/* ============ НАПОМИНАНИЕ ПРАВИЛА (анимированная демонстрация) ============ */
+let _rdTimers = [];
+function rdClearTimers(){ _rdTimers.forEach(t=>clearTimeout(t)); _rdTimers=[]; }
+function rdAfter(ms, fn){ _rdTimers.push(setTimeout(fn, ms)); }
+function rdSetBubble(text){ document.getElementById('rdBubble').innerHTML = text; }
+function rdMoveFinger(targetId){
+  const stage = document.getElementById('rdStage');
+  const target = document.getElementById(targetId);
+  const finger = document.getElementById('rdFinger');
+  if(!stage || !target || !finger) return;
+  const sRect = stage.getBoundingClientRect();
+  const tRect = target.getBoundingClientRect();
+  finger.style.left = (tRect.left - sRect.left + tRect.width/2 - 15) + 'px';
+  finger.style.top = (tRect.top - sRect.top + tRect.height/2 - 15) + 'px';
+}
+/* Демонстрация: приведение дробей 1/4 и 1/6 к общему знаменателю 12 (§33-34) */
+function playRuleDemoWall(){
+  rdClearTimers();
+  document.getElementById('rdTitle').textContent = '💡 Общий знаменатель';
+  document.getElementById('rdSub').textContent = 'Как привести дроби к одному знаменателю';
+  document.getElementById('rdLcdNum').textContent = '12';
+  const F1N=document.getElementById('rdF1n'), F1D=document.getElementById('rdF1d');
+  const F2N=document.getElementById('rdF2n'), F2D=document.getElementById('rdF2d');
+  [F1N,F1D,F2N,F2D].forEach(el=>el.classList.remove('rd-pop'));
+  F1N.textContent='1'; F1D.textContent='4'; F2N.textContent='1'; F2D.textContent='6';
+  rdSetBubble('Приведём дроби 1/4 и 1/6 к общему знаменателю 12.');
+  rdMoveFinger('rdLcdNum');
+  rdAfter(1300, ()=>{
+    rdMoveFinger('rdF1d');
+    rdSetBubble('Смотрим на знаменатель первой дроби — 4. Считаем: 12 ÷ 4 = 3. Это множитель для первой дроби.');
+  });
+  rdAfter(2600, ()=>{
+    F1N.textContent='1×3'; F1D.textContent='4×3';
+    rdSetBubble('Умножаем числитель и знаменатель первой дроби на 3.');
+  });
+  rdAfter(3700, ()=>{
+    F1N.textContent='3'; F1D.textContent='12';
+    F1N.classList.add('rd-pop'); F1D.classList.add('rd-pop');
+    rdSetBubble('Получили: 1/4 = 3/12.');
+  });
+  rdAfter(4800, ()=>{
+    rdMoveFinger('rdF2d');
+    rdSetBubble('Теперь знаменатель второй дроби — 6. Считаем: 12 ÷ 6 = 2. Это множитель для второй дроби.');
+  });
+  rdAfter(6100, ()=>{
+    F2N.textContent='1×2'; F2D.textContent='6×2';
+    rdSetBubble('Умножаем числитель и знаменатель второй дроби на 2.');
+  });
+  rdAfter(7200, ()=>{
+    F2N.textContent='2'; F2D.textContent='12';
+    F2N.classList.add('rd-pop'); F2D.classList.add('rd-pop');
+    rdSetBubble('Получили: 1/6 = 2/12. Теперь у обеих дробей знаменатель 12 — можно сравнивать, складывать и вычитать!');
+    rdMoveFinger('rdLcdNum');
+  });
+}
+/* по номеру локации — какую демонстрацию показать (пока только Великая стена) */
+const RULE_DEMOS = { 4: playRuleDemoWall };
 
 /* ============ QUIZ FLOW ============ */
 let dayGain=0, curIndex=0, attempts=0, usedHint=false, taskIntroShown=false, curStep=0;
@@ -5027,6 +5137,8 @@ document.addEventListener('click', function(e){
       case 'close-report': closeReport(); break;
       case 'start-exam': startExam(); break;
       case 'start-day': startDay(); break;
+      case 'show-rule-demo': go('ruleDemo'); setTimeout(()=>{ if(RULE_DEMOS[currentLoc]) RULE_DEMOS[currentLoc](); }, 60); break;
+      case 'replay-rule': if(RULE_DEMOS[currentLoc]) RULE_DEMOS[currentLoc](); break;
       case 'go-next-loc': goNextLoc(); break;
       case 'next-question': nextQuestion(); break;
       case 'reset-progress': resetProgress(); break;
