@@ -338,6 +338,25 @@
   .rd-eq{font-size:17px; color:var(--muted); font-weight:700}
   .rd-finger{position:absolute; left:0; top:0; font-size:30px; transition:left .7s cubic-bezier(.4,0,.2,1), top .7s cubic-bezier(.4,0,.2,1); pointer-events:none; filter:drop-shadow(0 4px 6px rgba(0,0,0,.25))}
   .rd-bubble{background:#fff8e1; border-left:4px solid #ffb300; border-radius:10px; padding:12px 14px; font-size:14.5px; color:#5a4a1a; line-height:1.55; min-height:64px}
+  /* доли/дроби как ряд ячеек (LOC0) */
+  .rd-cells{display:flex; gap:6px}
+  .rd-cell{width:30px; height:30px; border-radius:7px; border:2px solid var(--soft); background:#fff; transition:background .3s ease, border-color .3s ease, transform .3s ease}
+  .rd-cell.filled{background:var(--sky); border-color:var(--sky-deep); animation:rdpop .45s ease}
+  /* колонки для сложения/вычитания десятичных, запятая под запятой (LOC7/8) */
+  .rd-col{display:flex; flex-direction:column; align-items:flex-end; gap:6px; font-size:19px; font-weight:800; color:var(--ink); font-variant-numeric:tabular-nums}
+  .rd-col .rd-numrow{display:flex; align-items:center}
+  .rd-col .rd-int{min-width:34px; text-align:right; transition:background .3s ease, color .3s ease, transform .3s ease; border-radius:6px; padding:1px 3px}
+  .rd-col .rd-comma{width:10px; text-align:center; font-weight:900}
+  .rd-col .rd-frac2{min-width:34px; text-align:left; transition:background .3s ease, color .3s ease, transform .3s ease; border-radius:6px; padding:1px 3px}
+  .rd-col .rd-line{width:100%; height:2px; background:var(--ink); margin:2px 0}
+  .rd-col .rd-op{align-self:flex-start; font-size:16px; margin-right:6px}
+  .rd-int.rd-pop, .rd-frac2.rd-pop{animation:rdpop .45s ease; background:#eafff0; color:#0a8f4c}
+  /* транспортир (LOC9) */
+  .rd-protractor{position:relative; width:220px; height:130px; margin:0 auto}
+  .rd-ray{position:absolute; left:110px; bottom:6px; width:96px; height:3px; background:var(--coral); border-radius:2px; transform-origin:0 50%; transform:rotate(0deg); transition:transform .8s cubic-bezier(.4,0,.2,1)}
+  .rd-ray.rd-base{background:var(--ink); opacity:.55}
+  .rd-center{position:absolute; left:106px; bottom:2px; width:8px; height:8px; border-radius:50%; background:var(--sky-deep)}
+  .rd-angle-label{position:absolute; left:50%; top:8px; transform:translateX(-50%); font-size:20px; font-weight:800; color:var(--sky-deep)}
 
   /* ---- on-screen keypad ---- */
   .keypad{
@@ -568,21 +587,8 @@
       <div class="rd-title" id="rdTitle">💡 Общий знаменатель</div>
       <div class="rd-sub" id="rdSub">Как привести дроби к одному знаменателю</div>
       <div class="rd-progress" id="rdProgress">Шаг 1 из 7</div>
-      <div class="rd-lcd">Общий знаменатель: <b id="rdLcdNum">12</b></div>
       <div id="rdStage">
-        <div class="rd-row">
-          <div class="rd-frac" id="rdF1">
-            <span class="rd-num" id="rdF1n">1</span>
-            <span class="rd-bar"></span>
-            <span class="rd-den" id="rdF1d">4</span>
-          </div>
-          <span class="rd-eq">и</span>
-          <div class="rd-frac" id="rdF2">
-            <span class="rd-num" id="rdF2n">1</span>
-            <span class="rd-bar"></span>
-            <span class="rd-den" id="rdF2d">6</span>
-          </div>
-        </div>
+        <div id="rdStageContent"></div>
         <div class="rd-finger" id="rdFinger">👆</div>
       </div>
       <div class="rd-bubble" id="rdBubble">Сейчас покажу, как это делается!</div>
@@ -4325,29 +4331,240 @@ function rdMoveFinger(targetId){
   finger.style.left = (tRect.left - sRect.left + tRect.width/2 - 15) + 'px';
   finger.style.top = (tRect.top - sRect.top + tRect.height/2 - 15) + 'px';
 }
-/* Демонстрация: приведение дробей 1/4 и 1/6 к общему знаменателю 12 (§33-34) */
+/* ---- helpers для построения содержимого стенда конкретной демонстрации ---- */
+function rdStageHTML(html){ document.getElementById('rdStageContent').innerHTML = html; }
+function rdEl(id){ return document.getElementById(id); }
+function rdSetText(id, text){ const el=rdEl(id); if(el) el.textContent=text; }
+function rdPop(...ids){ ids.forEach(id=>{ const el=rdEl(id); if(el) el.classList.add('rd-pop'); }); }
+
+/* ---- LOC4 Великая стена: приведение дробей к общему знаменателю (§33-36) ---- */
 function rdResetWall(){
-  const F1N=document.getElementById('rdF1n'), F1D=document.getElementById('rdF1d');
-  const F2N=document.getElementById('rdF2n'), F2D=document.getElementById('rdF2d');
-  [F1N,F1D,F2N,F2D].forEach(el=>el.classList.remove('rd-pop'));
-  F1N.textContent='1'; F1D.textContent='4'; F2N.textContent='1'; F2D.textContent='6';
+  rdStageHTML(`
+    <div style="text-align:center">
+      <div class="rd-lcd">Общий знаменатель: <b id="rdLcdNum">12</b></div>
+      <div class="rd-row" style="justify-content:center">
+        <div class="rd-frac" id="rdF1"><span class="rd-num" id="rdF1n">1</span><span class="rd-bar"></span><span class="rd-den" id="rdF1d">4</span></div>
+        <span class="rd-eq">и</span>
+        <div class="rd-frac" id="rdF2"><span class="rd-num" id="rdF2n">1</span><span class="rd-bar"></span><span class="rd-den" id="rdF2d">6</span></div>
+      </div>
+    </div>`);
 }
 const RULE_DEMO_STEPS_WALL = [
   { bubble:'Приведём дроби 1/4 и 1/6 к общему знаменателю 12.', finger:'rdLcdNum' },
   { bubble:'Смотрим на знаменатель первой дроби — 4. Считаем: 12 ÷ 4 = 3. Это множитель для первой дроби.', finger:'rdF1d' },
   { bubble:'Умножаем числитель и знаменатель первой дроби на 3.', finger:'rdF1d',
-    apply:()=>{ document.getElementById('rdF1n').textContent='1×3'; document.getElementById('rdF1d').textContent='4×3'; } },
+    apply:()=>{ rdSetText('rdF1n','1×3'); rdSetText('rdF1d','4×3'); } },
   { bubble:'Получили: 1/4 = 3/12.', finger:'rdF1n',
-    apply:()=>{ const n=document.getElementById('rdF1n'), d=document.getElementById('rdF1d'); n.textContent='3'; d.textContent='12'; n.classList.add('rd-pop'); d.classList.add('rd-pop'); } },
+    apply:()=>{ rdSetText('rdF1n','3'); rdSetText('rdF1d','12'); rdPop('rdF1n','rdF1d'); } },
   { bubble:'Теперь знаменатель второй дроби — 6. Считаем: 12 ÷ 6 = 2. Это множитель для второй дроби.', finger:'rdF2d' },
   { bubble:'Умножаем числитель и знаменатель второй дроби на 2.', finger:'rdF2d',
-    apply:()=>{ document.getElementById('rdF2n').textContent='1×2'; document.getElementById('rdF2d').textContent='6×2'; } },
+    apply:()=>{ rdSetText('rdF2n','1×2'); rdSetText('rdF2d','6×2'); } },
   { bubble:'Получили: 1/6 = 2/12. Теперь у обеих дробей знаменатель 12 — можно сравнивать, складывать и вычитать!', finger:'rdLcdNum',
-    apply:()=>{ const n=document.getElementById('rdF2n'), d=document.getElementById('rdF2d'); n.textContent='2'; d.textContent='12'; n.classList.add('rd-pop'); d.classList.add('rd-pop'); } },
+    apply:()=>{ rdSetText('rdF2n','2'); rdSetText('rdF2d','12'); rdPop('rdF2n','rdF2d'); } },
 ];
-/* какую демонстрацию показывать для какой локации (пока только Великая стена) */
+
+/* ---- LOC0 Эйфелева башня: что такое доля и дробь (§26) ---- */
+function rdResetEiffel(){
+  rdStageHTML(`
+    <div style="text-align:center">
+      <div class="rd-cells" id="rdCells">
+        <div class="rd-cell" id="rdC0"></div><div class="rd-cell" id="rdC1"></div>
+        <div class="rd-cell" id="rdC2"></div><div class="rd-cell" id="rdC3"></div>
+      </div>
+      <div class="rd-row" style="margin-top:18px;justify-content:center">
+        <div class="rd-frac" id="rdEF"><span class="rd-num" id="rdEFn">?</span><span class="rd-bar"></span><span class="rd-den" id="rdEFd">?</span></div>
+      </div>
+    </div>`);
+}
+const RULE_DEMO_STEPS_EIFFEL = [
+  { bubble:'Раздели целое на 4 равные доли — это число внизу дроби, знаменатель.', finger:'rdC3',
+    apply:()=>{ rdSetText('rdEFd','4'); } },
+  { bubble:'Возьми 3 доли из четырёх.', finger:'rdC2',
+    apply:()=>{ ['rdC0','rdC1','rdC2'].forEach(id=>rdEl(id).classList.add('filled')); } },
+  { bubble:'Число взятых долей (3) пишем наверху — это числитель.', finger:'rdEFn',
+    apply:()=>{ rdSetText('rdEFn','3'); rdPop('rdEFn'); } },
+  { bubble:'Получилась дробь 3/4: наверху — сколько долей взяли, внизу — на сколько долей разделили целое.', finger:'rdEFd',
+    apply:()=>{ rdPop('rdEFd'); } },
+];
+
+/* ---- LOC1 Колизей: сравнение дробей с одинаковым знаменателем (§27-28) ---- */
+function rdResetColosseum(){
+  rdStageHTML(`
+    <div class="rd-row" style="justify-content:center">
+      <div class="rd-frac" id="rdCoF1"><span class="rd-num" id="rdCoF1n">3</span><span class="rd-bar"></span><span class="rd-den" id="rdCoF1d">7</span></div>
+      <span class="rd-eq" id="rdCoSign">?</span>
+      <div class="rd-frac" id="rdCoF2"><span class="rd-num" id="rdCoF2n">5</span><span class="rd-bar"></span><span class="rd-den" id="rdCoF2d">7</span></div>
+    </div>`);
+}
+const RULE_DEMO_STEPS_COLOSSEUM = [
+  { bubble:'Сравним дроби 3/7 и 5/7. Сначала смотрим на знаменатели.', finger:'rdCoF1d' },
+  { bubble:'Знаменатели одинаковые (7 и 7) — значит, сравнивать нужно только числители.', finger:'rdCoF2d' },
+  { bubble:'3 меньше, чем 5 — значит, и вся дробь 3/7 меньше, чем 5/7.', finger:'rdCoF1n' },
+  { bubble:'Записываем: 3/7 < 5/7. Чем больше числитель при одинаковом знаменателе — тем больше дробь.', finger:'rdCoSign',
+    apply:()=>{ rdSetText('rdCoSign','<'); rdPop('rdCoSign'); } },
+];
+
+/* ---- LOC2 Мачу-Пикчу: сложение дробей с одинаковым знаменателем (§29) ---- */
+function rdResetMachu(){
+  rdStageHTML(`
+    <div class="rd-row" style="justify-content:center">
+      <div class="rd-frac"><span class="rd-num">2</span><span class="rd-bar"></span><span class="rd-den" id="rdMaD1">9</span></div>
+      <span class="rd-eq">+</span>
+      <div class="rd-frac"><span class="rd-num">4</span><span class="rd-bar"></span><span class="rd-den" id="rdMaD2">9</span></div>
+      <span class="rd-eq">=</span>
+      <div class="rd-frac" id="rdMaRes"><span class="rd-num" id="rdMaResN">?</span><span class="rd-bar"></span><span class="rd-den" id="rdMaResD">?</span></div>
+    </div>`);
+}
+const RULE_DEMO_STEPS_MACHU = [
+  { bubble:'Складываем 2/9 и 4/9. Знаменатели одинаковые (9) — он остаётся без изменений.', finger:'rdMaD1' },
+  { bubble:'Знаменатель результата — тот же самый: 9.', finger:'rdMaD2',
+    apply:()=>{ rdSetText('rdMaResD','9'); } },
+  { bubble:'Складываем только числители: 2 + 4 = 6.', finger:'rdMaRes',
+    apply:()=>{ rdSetText('rdMaResN','6'); rdPop('rdMaResN'); } },
+  { bubble:'Получили: 2/9 + 4/9 = 6/9. При сложении (и вычитании) дробей с одинаковым знаменателем он не меняется — складываются только числители.', finger:'rdMaResD',
+    apply:()=>{ rdPop('rdMaResD'); } },
+];
+
+/* ---- LOC3 Тадж-Махал: выделение целой части, смешанное число (§31-33) ---- */
+function rdResetTaj(){
+  rdStageHTML(`
+    <div style="text-align:center">
+      <div class="rd-row" style="justify-content:center">
+        <div class="rd-frac" id="rdTjF"><span class="rd-num" id="rdTjN">11</span><span class="rd-bar"></span><span class="rd-den" id="rdTjD">4</span></div>
+      </div>
+      <div class="rd-row" style="justify-content:center;margin-top:14px;font-size:20px;font-weight:800;color:var(--ink)">
+        <span id="rdTjWhole" style="min-width:24px;text-align:right"></span>
+        <div class="rd-frac" id="rdTjRes" style="display:none"><span class="rd-num" id="rdTjResN">?</span><span class="rd-bar"></span><span class="rd-den" id="rdTjResD">4</span></div>
+      </div>
+    </div>`);
+}
+const RULE_DEMO_STEPS_TAJ = [
+  { bubble:'Превратим неправильную дробь 11/4 в смешанное число. Раздели числитель на знаменатель: 11 ÷ 4.', finger:'rdTjN' },
+  { bubble:'11 ÷ 4 = 2, и в остатке 3. Число 2 — это целая часть (сколько раз знаменатель поместился в числителе).', finger:'rdTjD',
+    apply:()=>{ rdSetText('rdTjWhole','2 '); rdPop('rdTjWhole'); } },
+  { bubble:'Остаток 3 — это числитель дробной части, знаменатель остаётся прежним, 4.', finger:'rdTjRes',
+    apply:()=>{ rdEl('rdTjRes').style.display='flex'; rdSetText('rdTjResN','3'); rdPop('rdTjResN','rdTjResD'); } },
+  { bubble:'Получили смешанное число: 2 целых и 3/4, то есть 2 3/4.', finger:'rdTjWhole' },
+];
+
+/* ---- LOC5 Статуя Свободы: умножение и деление дробей (§37-39) ---- */
+function rdResetLiberty(){
+  rdStageHTML(`
+    <div class="rd-row" style="justify-content:center" id="rdLbRow">
+      <div class="rd-frac"><span class="rd-num" id="rdLbA1">2</span><span class="rd-bar"></span><span class="rd-den" id="rdLbA2">3</span></div>
+      <span class="rd-eq" id="rdLbOp">×</span>
+      <div class="rd-frac"><span class="rd-num" id="rdLbB1">3</span><span class="rd-bar"></span><span class="rd-den" id="rdLbB2">5</span></div>
+      <span class="rd-eq">=</span>
+      <div class="rd-frac" id="rdLbRes"><span class="rd-num" id="rdLbResN">?</span><span class="rd-bar"></span><span class="rd-den" id="rdLbResD">?</span></div>
+    </div>`);
+}
+const RULE_DEMO_STEPS_LIBERTY = [
+  { bubble:'Умножаем дроби: 2/3 × 3/5. Правило простое — числитель на числитель, знаменатель на знаменатель.', finger:'rdLbA1' },
+  { bubble:'Числители: 2 × 3 = 6.', finger:'rdLbB1',
+    apply:()=>{ rdSetText('rdLbResN','6'); rdPop('rdLbResN'); } },
+  { bubble:'Знаменатели: 3 × 5 = 15.', finger:'rdLbB2',
+    apply:()=>{ rdSetText('rdLbResD','15'); rdPop('rdLbResD'); } },
+  { bubble:'Получили 6/15. Дробь можно сократить — и числитель, и знаменатель делятся на 3: получаем 2/5.', finger:'rdLbRes',
+    apply:()=>{ rdSetText('rdLbResN','2'); rdSetText('rdLbResD','5'); rdPop('rdLbResN','rdLbResD'); } },
+  { bubble:'Теперь деление: 2/3 : 4/5. Чтобы разделить на дробь — перевернём её и заменим деление на умножение.', finger:'rdLbRow',
+    apply:()=>{ rdSetText('rdLbA1','2'); rdSetText('rdLbA2','3'); rdSetText('rdLbOp','×'); rdSetText('rdLbB1','5'); rdSetText('rdLbB2','4'); rdSetText('rdLbResN','?'); rdSetText('rdLbResD','?'); } },
+  { bubble:'2/3 : 4/5 = 2/3 × 5/4. Числители: 2 × 5 = 10.', finger:'rdLbB1',
+    apply:()=>{ rdSetText('rdLbResN','10'); rdPop('rdLbResN'); } },
+  { bubble:'Знаменатели: 3 × 4 = 12. Получили 10/12 = 5/6 (сократили на 2).', finger:'rdLbB2',
+    apply:()=>{ rdSetText('rdLbResD','12'); rdPop('rdLbResD'); } },
+];
+
+/* ---- LOC6 Христос-Искупитель: что такое десятичная дробь (§41-42) ---- */
+function rdResetChrist(){
+  rdStageHTML(`
+    <div style="text-align:center">
+      <div class="rd-row" style="justify-content:center">
+        <div class="rd-frac" id="rdChF"><span class="rd-num">3</span><span class="rd-bar"></span><span class="rd-den" id="rdChD">10</span></div>
+        <span class="rd-eq">=</span>
+        <span id="rdChDec" style="font-size:22px;font-weight:800;color:var(--ink)">?</span>
+      </div>
+      <div style="margin-top:14px;font-size:13px;color:var(--muted)" id="rdChNote"></div>
+    </div>`);
+}
+const RULE_DEMO_STEPS_CHRIST = [
+  { bubble:'Дробь 3/10 можно записать по-другому — десятичной дробью.', finger:'rdChD' },
+  { bubble:'Знаменатель 10 означает: после запятой будет ровно ОДНА цифра — это «десятые».', finger:'rdChD',
+    apply:()=>{ rdSetText('rdChNote','знаменатель 10 → 1 цифра после запятой'); } },
+  { bubble:'3/10 = 0,3. Цифра 3 встаёт сразу после запятой.', finger:'rdChDec',
+    apply:()=>{ rdSetText('rdChDec','0,3'); rdPop('rdChDec'); } },
+  { bubble:'Если бы знаменатель был 100 — цифр после запятой было бы две («сотые»): например, 27/100 = 0,27. Число нулей в знаменателе = число цифр после запятой.', finger:'rdChDec',
+    apply:()=>{ rdSetText('rdChNote','знаменатель 100 → 2 цифры, 1000 → 3 цифры и т.д.'); } },
+];
+
+/* ---- LOC7 Парфенон: сложение десятичных в столбик + округление (§43-44) ---- */
+function rdResetParthenon(){
+  rdStageHTML(`
+    <div class="rd-col" id="rdPaCol">
+      <div class="rd-numrow"><span class="rd-int" id="rdPaA">3</span><span class="rd-comma">,</span><span class="rd-frac2" id="rdPaAf">4</span></div>
+      <div class="rd-numrow"><span class="rd-op">+</span><span class="rd-int" id="rdPaB">2</span><span class="rd-comma">,</span><span class="rd-frac2" id="rdPaBf">17</span></div>
+      <div class="rd-line"></div>
+      <div class="rd-numrow"><span class="rd-int" id="rdPaR">?</span><span class="rd-comma">,</span><span class="rd-frac2" id="rdPaRf">?</span></div>
+    </div>`);
+}
+const RULE_DEMO_STEPS_PARTHENON = [
+  { bubble:'Складываем 3,4 и 2,17 в столбик. Самое важное правило — запятая под запятой!', finger:'rdPaCol' },
+  { bubble:'У числа 3,4 после запятой одна цифра, а у 2,17 — две. Допишем нолик: 3,4 = 3,40, чтобы разрядов было поровну.', finger:'rdPaAf',
+    apply:()=>{ rdSetText('rdPaAf','40'); } },
+  { bubble:'Теперь складываем как обычные числа, запятую в ответе ставим на то же место: 40+17=57, 3+2=5.', finger:'rdPaR',
+    apply:()=>{ rdSetText('rdPaR','5'); rdSetText('rdPaRf','57'); rdPop('rdPaR','rdPaRf'); } },
+  { bubble:'Получили 5,57. Если нужно округлить до десятых — смотрим на следующую цифру (сотые, это 7). Она ≥5, значит десятые увеличиваются на 1: 5,57 ≈ 5,6.', finger:'rdPaRf' },
+];
+
+/* ---- LOC8 Пирамиды: умножение десятичных дробей (§45-46) ---- */
+function rdResetPyramids(){
+  rdStageHTML(`
+    <div style="text-align:center">
+      <div style="font-size:21px;font-weight:800;color:var(--ink)" id="rdPyLine1">1,2 × 0,3</div>
+      <div style="font-size:21px;font-weight:800;color:var(--ink);margin-top:8px" id="rdPyLine2"></div>
+      <div style="font-size:13px;color:var(--muted);margin-top:10px" id="rdPyNote"></div>
+    </div>`);
+}
+const RULE_DEMO_STEPS_PYRAMIDS = [
+  { bubble:'Умножаем 1,2 × 0,3. Сначала посчитаем как обычные целые числа, забыв про запятые: 12 × 3.', finger:'rdPyLine1' },
+  { bubble:'12 × 3 = 36.', finger:'rdPyLine2',
+    apply:()=>{ rdSetText('rdPyLine2','12 × 3 = 36'); rdPop('rdPyLine2'); } },
+  { bubble:'Теперь считаем, сколько всего цифр после запятой было в множителях: у 1,2 — одна, у 0,3 — тоже одна. Всего 2 цифры.', finger:'rdPyLine1',
+    apply:()=>{ rdSetText('rdPyNote','1 цифра + 1 цифра = 2 цифры после запятой в ответе'); } },
+  { bubble:'Отсчитываем 2 цифры от конца числа 36 и ставим запятую: получаем 0,36.', finger:'rdPyLine2',
+    apply:()=>{ rdSetText('rdPyLine2','1,2 × 0,3 = 0,36'); rdPop('rdPyLine2'); } },
+];
+
+/* ---- LOC9 Петра: как читать угол по транспортиру (§47-48) ---- */
+function rdResetPetra(){
+  rdStageHTML(`
+    <div class="rd-protractor">
+      <div class="rd-angle-label" id="rdPeLabel" style="opacity:0">60°</div>
+      <div class="rd-ray rd-base"></div>
+      <div class="rd-ray" id="rdPeRay"></div>
+      <div class="rd-center" id="rdPeCenter"></div>
+    </div>`);
+}
+const RULE_DEMO_STEPS_PETRA = [
+  { bubble:'Приложи центр транспортира точно к вершине угла.', finger:'rdPeCenter' },
+  { bubble:'Совмести один луч угла с нулевой отметкой (линия справа, 0°).', finger:'rdPeRay' },
+  { bubble:'Теперь смотрим, где второй луч пересекает шкалу транспортира — например, отметку 60°.', finger:'rdPeLabel',
+    apply:()=>{ rdEl('rdPeRay').style.transform='rotate(-60deg)'; } },
+  { bubble:'Это и есть градусная мера угла: 60°.', finger:'rdPeLabel',
+    apply:()=>{ rdEl('rdPeLabel').style.opacity='1'; rdPop('rdPeLabel'); } },
+];
+
+/* какую демонстрацию показывать для какой локации */
 const RULE_DEMOS = {
-  4: { title:'💡 Общий знаменатель', sub:'Как привести дроби к одному знаменателю', reset:rdResetWall, steps:RULE_DEMO_STEPS_WALL }
+  0: { title:'💡 Что такое дробь', sub:'Доли и дроби', reset:rdResetEiffel, steps:RULE_DEMO_STEPS_EIFFEL },
+  1: { title:'💡 Сравнение дробей', sub:'Какая дробь больше', reset:rdResetColosseum, steps:RULE_DEMO_STEPS_COLOSSEUM },
+  2: { title:'💡 Сложение дробей', sub:'Одинаковый знаменатель', reset:rdResetMachu, steps:RULE_DEMO_STEPS_MACHU },
+  3: { title:'💡 Смешанное число', sub:'Выделяем целую часть', reset:rdResetTaj, steps:RULE_DEMO_STEPS_TAJ },
+  4: { title:'💡 Общий знаменатель', sub:'Как привести дроби к одному знаменателю', reset:rdResetWall, steps:RULE_DEMO_STEPS_WALL },
+  5: { title:'💡 Умножение и деление дробей', sub:'Две простые формулы', reset:rdResetLiberty, steps:RULE_DEMO_STEPS_LIBERTY },
+  6: { title:'💡 Десятичная дробь', sub:'Что значит запятая', reset:rdResetChrist, steps:RULE_DEMO_STEPS_CHRIST },
+  7: { title:'💡 Сложение десятичных', sub:'Запятая под запятой', reset:rdResetParthenon, steps:RULE_DEMO_STEPS_PARTHENON },
+  8: { title:'💡 Умножение десятичных', sub:'Считаем, потом ставим запятую', reset:rdResetPyramids, steps:RULE_DEMO_STEPS_PYRAMIDS },
+  9: { title:'💡 Транспортир', sub:'Как измерить угол', reset:rdResetPetra, steps:RULE_DEMO_STEPS_PETRA },
 };
 let rdSteps=[], rdStepIdx=0;
 function startRuleDemo(locIdx){
@@ -4355,7 +4572,6 @@ function startRuleDemo(locIdx){
   if(!demo) return;
   document.getElementById('rdTitle').textContent = demo.title;
   document.getElementById('rdSub').textContent = demo.sub;
-  document.getElementById('rdLcdNum').textContent = '12';
   demo.reset();
   rdSteps = demo.steps;
   rdStepIdx = -1;
