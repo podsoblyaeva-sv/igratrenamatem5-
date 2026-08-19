@@ -28,28 +28,6 @@
   }
   /* On larger screens, cap the height so bottom buttons are always visible,
      and show it as a phone-like frame centered on the page. */
-  @media (min-width:480px){
-    body{background:#dde5f7}
-    #app{
-      height:min(820px, 100dvh);
-      max-height:100dvh;
-      border-radius:32px;
-      box-shadow:0 24px 60px rgba(26,34,56,.28);
-      border:1px solid rgba(255,255,255,.6);
-    }
-  }
-  /* ---- DESKTOP: comfortable wider layout ---- */
-  @media (min-width:660px){
-    #app{
-      max-width:620px;
-      height:min(780px, 100dvh);
-    }
-    .opt{ font-size:17px; padding:13px 10px }
-    .answer-input{ font-size:20px; padding:13px }
-    .q-text{ font-size:18px; line-height:1.5 }
-    .q-body{ padding:14px 20px 20px }
-    .q-body.kp-open{ padding-bottom:205px }
-  }
   .screen{
     position:absolute; inset:0; display:flex; flex-direction:column;
     opacity:0; pointer-events:none; transform:translateX(24px);
@@ -179,6 +157,7 @@
   .q-count{font-size:13px; font-weight:700; color:var(--muted); font-variant-numeric:tabular-nums}
   .q-body{flex:1; display:flex; flex-direction:column; padding:18px 22px 28px; overflow-y:auto; -webkit-overflow-scrolling:touch}
   .q-body.kp-open{padding-bottom:210px}
+  .step-done{background:#e8fbf4;border:1.5px solid #b2f0d8;border-radius:10px;padding:8px 14px;margin-bottom:8px;font-size:15px;color:#1a7a4a}
   .q-tag{display:inline-flex; align-self:flex-start; gap:6px; align-items:center; background:var(--soft); color:var(--sky-deep);
     font-size:12px; font-weight:700; padding:6px 12px; border-radius:30px; margin-bottom:14px}
   .q-text{font-size:21px; line-height:1.6; font-weight:600}
@@ -426,6 +405,38 @@
   .gear-card.owned .g-badge{background:#e8fbf4; color:#11936b}
   .gear-card.current .g-badge{background:#fff3d0; color:#b37800}
   .gear-card.locked .g-badge{background:var(--soft); color:var(--muted)}
+
+  /* ---- Responsive overrides — placed last so they win the cascade on matching screens ---- */
+  @media (min-width:480px){
+    body{background:#dde5f7}
+    #app{
+      height:min(820px, 96dvh);
+      max-height:96dvh;
+      border-radius:32px;
+      box-shadow:0 24px 60px rgba(26,34,56,.28);
+      border:1px solid rgba(255,255,255,.6);
+    }
+  }
+  /* ---- DESKTOP: comfortable wider layout, use more of the available height ---- */
+  @media (min-width:660px){
+    #app{
+      max-width:620px;
+      height:min(920px, 94dvh);
+    }
+    .opt{ font-size:17px; padding:13px 10px }
+    .answer-input{ font-size:20px; padding:13px }
+    .q-text{ font-size:18px; line-height:1.5 }
+    .topbar{ padding:10px 18px }
+    .q-top{ padding:10px 20px 0 }
+    .q-body{ padding:10px 20px 16px }
+    .q-body.kp-open{ padding-bottom:205px }
+    .step-done{ padding:6px 12px; font-size:13.5px; margin-bottom:6px }
+    .eq-step-box{ padding:9px 12px; margin-bottom:8px }
+    .q-tag{ margin-bottom:2px }
+  }
+  @media (min-width:660px) and (min-height:850px){
+    #app{ height:min(1000px, 94dvh); }
+  }
 </style>
 </head>
 <body>
@@ -4359,7 +4370,7 @@ function renderStep(q, stepIdx){
   let doneHtml = '';
   for(let i=0;i<stepIdx;i++){
     const s=q.steps[i];
-    doneHtml+=`<div style="background:#e8fbf4;border:1.5px solid #b2f0d8;border-radius:10px;padding:8px 14px;margin-bottom:8px;font-size:15px;color:#1a7a4a">
+    doneHtml+=`<div class="step-done">
       ✅ ${fmtFrac(s.prompt)} <b>${fmtFrac(s.answer)} ${s.unit||''}</b></div>`;
   }
   const step = q.steps[stepIdx];
