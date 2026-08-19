@@ -4409,13 +4409,27 @@ function checkStepInput(){
     if(curStep + 1 < q.steps.length){
       setTimeout(()=> renderStep(q, curStep+1), 600);
     } else {
-      resolve(true);
+      resolve(!q._anyStepFailed);
     }
   } else {
     inp.classList.add('wrong'); attempts++;
     if(attempts===2){ revealHintBtn(); }
-    if(attempts>=3){ inp.disabled=true; resolve(false); }
-    else { setTimeout(()=>{ inp.classList.remove('wrong'); inp.value=''; inp.focus(); },600); }
+    if(attempts>=3){
+      // 3 неверных попытки на ЭТОМ шаге — показываем верный ответ шага
+      // и даём доиграть остальные шаги, а не обрываем всю задачу.
+      q._anyStepFailed = true;
+      inp.disabled = true;
+      inp.classList.remove('wrong');
+      inp.value = step.answer;
+      inp.classList.add('correct');
+      if(curStep + 1 < q.steps.length){
+        setTimeout(()=> renderStep(q, curStep+1), 1400);
+      } else {
+        setTimeout(()=> resolve(false), 1000);
+      }
+    } else {
+      setTimeout(()=>{ inp.classList.remove('wrong'); inp.value=''; inp.focus(); },600);
+    }
   }
 }
 
