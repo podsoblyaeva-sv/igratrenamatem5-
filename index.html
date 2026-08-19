@@ -585,8 +585,23 @@
     <div class="spacer"></div>
     <button class="btn" id="dayEndBtn">Продолжить</button>
     <button class="btn ghost" id="dayEndMapBtn" data-act="go" data-arg="map">На карту 🗺️</button>
+    <div style="height:8px"></div>
+    <button class="btn ghost" id="reportBtn" style="border-color:rgba(255,255,255,.5);color:#fff;background:rgba(255,255,255,.12)" data-act="open-report">📋 Отчёт для родителей</button>
     <div style="height:6px"></div>
   </section>
+
+  <!-- ====== ОТЧЁТ ДЛЯ РОДИТЕЛЕЙ ====== -->
+  <div class="sheet-bg" id="reportSheetBg" data-act="close-report"></div>
+  <div class="sheet" id="reportSheet">
+    <div class="sheet-head">
+      <h3>📋 Отчёт по локации</h3>
+      <button class="sheet-x" data-act="close-report" aria-label="Закрыть">✕</button>
+    </div>
+    <div id="reportSummary" style="font-size:15px;font-weight:700;margin:4px 0 12px"></div>
+    <div id="reportList"></div>
+    <div style="height:10px"></div>
+    <button class="btn" data-act="close-report">Готово</button>
+  </div>
 
   <!-- ====== FINAL SCREEN ====== -->
   <section class="screen pad center" id="final">
@@ -725,22 +740,17 @@
       <h3>Настройки</h3>
       <button class="sheet-x" data-act="close-sheet" aria-label="Закрыть">✕</button>
     </div>
-    <div class="opt-line">
-      <span>Лимит заданий в день</span>
+    <div class="opt-line" style="border-bottom:none">
+      <span>Одна локация в день</span>
       <div class="seg" id="limitSeg">
-        <button data-lim="soft" class="on">Мягкий</button>
-        <button data-lim="hard">Жёсткий</button>
+        <button data-lim="day" class="on">Да</button>
         <button data-lim="off">Без</button>
       </div>
     </div>
     <p style="font-size:12.5px;color:var(--muted);line-height:1.5;margin:8px 0 14px">
-      <b>Мягкий</b> — после 5 заданий игра предложит паузу, но даст продолжить.
-      <b>Жёсткий</b> — стоп до завтра. <b>Без</b> — без ограничений.
+      <b>Да</b> — после каждой локации игра предложит закончить на сегодня, но ребёнок сам может выбрать «продолжить» и пройти следующие локации.
+      <b>Без</b> — без напоминаний, можно снимать локацию за локацией без остановок.
     </p>
-    <div class="opt-line" style="border-bottom:none">
-      <span>Заданий сегодня: <b id="dayCountLabel">0</b> из 15</span>
-      <button class="btn small ghost" data-act="reset-day">Сбросить день</button>
-    </div>
     <div style="height:10px"></div>
     <button class="btn ghost" data-act="reset-progress">Сбросить весь прогресс</button>
     <div style="height:10px"></div>
@@ -759,7 +769,7 @@ let state = {
   followers: 0,
   progress: EMPTY_PROGRESS(),
   rounds: EMPTY_PROGRESS(),
-  limit: 'soft',
+  limit: 'day',
   dayStamp: '',
   dayCount: 0,
   achievements: [],   // array of earned achievement ids
@@ -778,6 +788,7 @@ function load(){
   if(!state.rounds) state.rounds = EMPTY_PROGRESS();
   if(!state.achievements) state.achievements = [];
   if(state.gearLevel===undefined) state.gearLevel = 0;
+  if(state.limit==='soft'||state.limit==='hard') state.limit='day'; // старые значения лимита
 }
 function save(){ try{ localStorage.setItem(SAVE_KEY, JSON.stringify(state)); }catch(e){} }
 load();
@@ -853,6 +864,7 @@ function showAchToast(emoji, name, desc, onDone){
   setTimeout(()=>{ t.classList.remove('show'); if(onDone) setTimeout(onDone,400); }, 3200);
 }
 let _perfectCurrentLoc=true; // resets per location start
+let locResults=[]; // отчёт для родителей: [{tag, text, correct, usedHint, attempts}]
 function checkAchievements(){
   // follower milestones
   if(state.followers>=2000) unlockAchievement('followers2k');
@@ -4231,13 +4243,8 @@ function renderLoc(){
 
 /* ============ QUIZ FLOW ============ */
 let dayGain=0, curIndex=0, attempts=0, usedHint=false, taskIntroShown=false, curStep=0;
-const DAY_LIMIT=15;
-function limitReached(){ return state.limit!=='off' && state.dayCount>=DAY_LIMIT; }
-
 function startDay(){
   refreshDay();
-  // hard/soft limit already reached today?
-  if(limitReached()){ showLimitGate(); return; }
   if(locDone(currentLoc)){
     // replay: advance round so new (different) questions are generated
     state.rounds[currentLoc] = locRound(currentLoc) + 1;
@@ -4249,21 +4256,9 @@ function startDay(){
     QUESTIONS = locQCache[currentLoc] || buildLocationQuestions(currentLoc, locRound(currentLoc));
     locQCache[currentLoc] = QUESTIONS;
   }
-  dayGain=0; _perfectCurrentLoc=true; taskIntroShown=false;
+  dayGain=0; _perfectCurrentLoc=true; taskIntroShown=false; locResults=[];
   go('quiz');
   loadQuestion(locProgress(currentLoc));
-}
-/* show a "come back tomorrow" gate when the daily limit blocks a new session */
-function showLimitGate(){
-  go('dayend');
-  document.getElementById('dayEndEmoji').textContent='😴';
-  document.getElementById('dayEndTitle').textContent='На сегодня всё!';
-  document.getElementById('dayEndMsg').textContent='Ты уже снял 15 заданий за сегодня. Возвращайся завтра за новыми кадрами!';
-  document.getElementById('dayEndGain').textContent='✓';
-  document.querySelector('#dayend .summary .cap').textContent='съёмочный день завершён';
-  const btn=document.getElementById('dayEndBtn');
-  btn.textContent='На карту 🗺️'; btn.style.display='flex'; btn.onclick=()=>go('map');
-  document.getElementById('dayEndMapBtn').style.display='none';
 }
 function goNextLoc(){
   if(currentLoc+1 < TOTAL_LOCATIONS && locUnlocked(currentLoc+1)){
@@ -4675,6 +4670,7 @@ function checkMiniAnswer(given, correct){
       +(q.explain?`<div style="margin-top:10px;padding:10px 14px;background:#fff8e1;border-left:3px solid #ffb300;border-radius:8px;font-size:14px;color:#555;text-align:left;line-height:1.6">${fmtFrac(q.explain)}</div>`:'')
       +nextBtnHtml;
   }
+  setTimeout(()=>fb.scrollIntoView({behavior:'smooth', block:'end'}), 50);
 }
 
 function nextMiniExamQuestion(){
@@ -4705,7 +4701,7 @@ function showMiniExamResult(){
   const retryBtn=document.getElementById('merRetryBtn');
   const mapBtn=document.getElementById('merMapBtn');
   retryBtn.onclick=()=>{ miniExamIdx=0; miniExamScore=0; miniExamMode=true; go('miniExam'); showMiniExamQuestion(); };
-  mapBtn.onclick=()=>endDay(true);
+  mapBtn.onclick=()=>endDay();
 }
 
 function askHint(){
@@ -4714,6 +4710,7 @@ function askHint(){
   const hb=document.getElementById('hintBubble');
   const hintText = q.type==='steps' ? (q._stepHint||q.steps[curStep]?.hint||'') : (q.hint||'');
   hb.innerHTML='💡 '+fmtFrac(hintText); hb.classList.add('show');
+  setTimeout(()=>hb.scrollIntoView({behavior:'smooth', block:'nearest'}), 50);
 }
 function normalize(s){
   let t=(s||'').trim().toLowerCase().replace(/\s+/g,'').replace(/\\/g,'/').replace(',','.');
@@ -4794,6 +4791,7 @@ function resolve(success){
   } else {
     _perfectCurrentLoc=false;
   }
+  locResults[curIndex] = {tag:q.tag, text:q.text, correct:success, usedHint, attempts};
   // award
   state.followers += gain; dayGain += gain;
   state.dayCount = (state.dayCount||0) + 1;
@@ -4829,9 +4827,7 @@ function nextQuestion(){
     return;
   }
   const finishedLocation = locProgress(currentLoc)>=locLength(currentLoc);
-  const hitLimit = limitReached();
   if(finishedLocation){ startMiniExam(currentLoc); return; }
-  if(hitLimit){ endDay(false); return; }
   // показываем переход к задачам, если следующий вопрос — задача и переход ещё не показывали
   const nextIdx = locProgress(currentLoc);
   if(!taskIntroShown && nextIdx < QUESTIONS.length && isTaskQuestion(QUESTIONS[nextIdx])){
@@ -4913,70 +4909,44 @@ function kpPress(val){
   _kpTarget.classList.remove('wrong','correct');
 }
 
-/* ============ DAY END ============ */
-function endDay(locationDone){
+/* ============ DAY END (после прохождения локации) ============ */
+function endDay(){
   go('dayend');
   const gainEl=document.getElementById('dayEndGain');
   document.querySelector('#dayend .summary .cap').textContent='подписчиков за сегодня';
-  gainEl.textContent='+'+dayGain.toLocaleString('ru-RU');
-  const hitLimit = limitReached();
   const mapBtn=document.getElementById('dayEndMapBtn');
-  mapBtn.style.display='flex'; // default visible
+  mapBtn.style.display='flex';
 
-  if(locationDone){
-    state.followers += 500; save();
-    checkHype(); checkAchievements();
-    const loc=LOCATIONS[currentLoc];
-    const allDone = Object.keys(state.progress).every(k=>locDone(Number(k)));
-    document.getElementById('dayEndEmoji').textContent='🏆';
-    document.getElementById('dayEndTitle').textContent='Локация пройдена!';
-    document.getElementById('dayEndMsg').innerHTML=`${loc.name} в кадре! ${loc.flag} Ты получаешь флаг страны и бонус <b>+500</b> за вирусное видео!`;
-    gainEl.textContent='+'+(dayGain+500).toLocaleString('ru-RU');
-    const hasNext = currentLoc+1 < TOTAL_LOCATIONS;
-    const btn=document.getElementById('dayEndBtn');
-    if(allDone){
-      // show final screen after a short delay so the dayend screen flashes first
-      btn.textContent='Финал 🎉'; btn.style.display='flex'; btn.onclick=()=>go('final');
-      mapBtn.style.display='none';
-    } else if(hasNext && hitLimit && state.limit==='hard'){
-      document.getElementById('dayEndMsg').innerHTML += '<br><br>На сегодня съёмка окончена — возвращайся завтра, чтобы открыть следующую локацию!';
-      btn.textContent='На карту 🗺️'; btn.style.display='flex'; btn.onclick=()=>go('map');
-      mapBtn.style.display='none';
-    } else if(hasNext){
-      const nextIdx = currentLoc+1;
-      btn.textContent = (hitLimit && state.limit==='soft') ? 'Снять ещё (следующая локация) →' : 'Следующая локация →';
-      btn.style.display='flex'; btn.onclick=()=>openLocation(nextIdx);
+  state.followers += 500; save();
+  checkHype(); checkAchievements();
+  const loc=LOCATIONS[currentLoc];
+  const allDone = Object.keys(state.progress).every(k=>locDone(Number(k)));
+  document.getElementById('dayEndEmoji').textContent='🏆';
+  document.getElementById('dayEndTitle').textContent='Локация пройдена!';
+  document.getElementById('dayEndMsg').innerHTML=`${loc.name} в кадре! ${loc.flag} Ты получаешь флаг страны и бонус <b>+500</b> за вирусное видео!`;
+  gainEl.textContent='+'+(dayGain+500).toLocaleString('ru-RU');
+  const hasNext = currentLoc+1 < TOTAL_LOCATIONS;
+  const btn=document.getElementById('dayEndBtn');
+  btn.classList.remove('ghost'); mapBtn.classList.add('ghost');
+  if(allDone){
+    btn.textContent='Финал 🎉'; btn.style.display='flex'; btn.onclick=()=>go('final');
+    mapBtn.style.display='none';
+  } else if(hasNext){
+    const nextIdx = currentLoc+1;
+    if(state.limit==='off'){
+      mapBtn.textContent='На карту 🗺️';
+      btn.textContent='Следующая локация →'; btn.style.display='flex'; btn.onclick=()=>openLocation(nextIdx);
     } else {
-      btn.textContent='Забрать награду 🎁'; btn.style.display='flex'; btn.onclick=()=>go('final');
+      document.getElementById('dayEndMsg').innerHTML += '<br><br>На сегодня одна локация пройдена — можно сделать перерыв, а можно, если хочется, снять ещё одну!';
+      mapBtn.textContent='На сегодня хватит 👋';
+      btn.textContent='Хочу ещё одну локацию →'; btn.style.display='flex'; btn.onclick=()=>openLocation(nextIdx);
+      // визуально мягко подталкиваем к паузе, но выбор — за ребёнком
+      btn.classList.add('ghost'); mapBtn.classList.remove('ghost');
     }
-    confetti();
-  }else{
-    document.getElementById('dayEndEmoji').textContent='🎬';
-    document.getElementById('dayEndTitle').textContent='Съёмка завершена!';
-    const btn=document.getElementById('dayEndBtn');
-    if(state.limit==='soft'){
-      document.getElementById('dayEndMsg').textContent='На сегодня хватит — отличная работа! Можно сделать паузу до завтра или снять ещё немного.';
-      btn.textContent='Снять ещё 🎥'; btn.style.display='flex'; btn.onclick=afterDay;
-    } else {
-      document.getElementById('dayEndMsg').textContent='На сегодня съёмка закончена. Возвращайся завтра за новыми кадрами!';
-      btn.textContent='На карту 🗺️'; btn.style.display='flex'; btn.onclick=()=>go('map');
-      mapBtn.style.display='none';
-    }
+  } else {
+    btn.textContent='Забрать награду 🎁'; btn.style.display='flex'; btn.onclick=()=>go('final');
   }
-}
-function afterDay(){
-  refreshDay();
-  if(locDone(currentLoc)){
-    if(currentLoc+1 < TOTAL_LOCATIONS && locUnlocked(currentLoc+1)){
-      openLocation(currentLoc+1);
-    } else {
-      go('map');
-    }
-    return;
-  }
-  // soft limit: continue another session in the same location
-  dayGain=0;
-  go('quiz'); loadQuestion(locProgress(currentLoc));
+  confetti();
 }
 
 function confetti(){
@@ -4992,12 +4962,40 @@ function confetti(){
 }
 
 /* ============ SETTINGS ============ */
-function openSheet(){ refreshDay(); document.getElementById('dayCountLabel').textContent=state.dayCount||0; document.getElementById('sheetBg').classList.add('show'); document.getElementById('sheet').classList.add('show'); syncLimitSeg(); }
-function resetDay(){
-  state.dayCount=0; state.dayStamp=todayStr(); save();
-  document.getElementById('dayCountLabel').textContent=0;
-}
+function openSheet(){ refreshDay(); document.getElementById('sheetBg').classList.add('show'); document.getElementById('sheet').classList.add('show'); syncLimitSeg(); }
 function closeSheet(){ document.getElementById('sheetBg').classList.remove('show'); document.getElementById('sheet').classList.remove('show'); }
+
+/* ============ ОТЧЁТ ДЛЯ РОДИТЕЛЕЙ ============ */
+function openReport(){
+  const total = QUESTIONS.length;
+  const answered = locResults.filter(Boolean);
+  const correct = answered.filter(r=>r.correct).length;
+  const wrong = answered.length - correct;
+  document.getElementById('reportSummary').innerHTML =
+    `✅ Правильно: <b>${correct}</b> &nbsp; ❌ Неправильно: <b>${wrong}</b> &nbsp; Всего заданий: ${total}`;
+  const list = document.getElementById('reportList');
+  list.innerHTML = QUESTIONS.map((q,i)=>{
+    const r = locResults[i];
+    let mark, note;
+    if(!r){ mark='⏳'; note='не решено'; }
+    else if(r.correct){ mark='✅'; note = r.usedHint ? 'верно, с подсказкой' : (r.attempts>0 ? 'верно со 2-й попытки' : 'верно с первого раза'); }
+    else { mark='❌'; note='ответили неверно (после подсказки показан верный ответ)'; }
+    return `<div style="padding:10px 0;border-bottom:1px solid var(--soft);display:flex;gap:10px;align-items:flex-start">
+      <div style="font-size:18px">${mark}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:12.5px;font-weight:700;color:var(--muted)">${q.tag}</div>
+        <div style="font-size:14px;color:var(--ink)">${fmtFrac(q.text)}</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px">${note}</div>
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('reportSheetBg').classList.add('show');
+  document.getElementById('reportSheet').classList.add('show');
+}
+function closeReport(){
+  document.getElementById('reportSheetBg').classList.remove('show');
+  document.getElementById('reportSheet').classList.remove('show');
+}
 function syncLimitSeg(){
   document.querySelectorAll('#limitSeg button').forEach(b=>b.classList.toggle('on', b.dataset.lim===state.limit));
 }
@@ -5018,28 +5016,47 @@ document.addEventListener('click', function(e){
   const el = e.target.closest('[data-act]');
   if(!el) return;
   const act = el.dataset.act, arg = el.dataset.arg;
-  switch(act){
-    case 'start-onboarding': go('onboard'); showSlide(0); break;
-    case 'next-slide': nextSlide(); break;
-    case 'go': go(arg); break;
-    case 'open-sheet': openSheet(); break;
-    case 'close-sheet': closeSheet(); break;
-    case 'start-exam': startExam(); break;
-    case 'start-day': startDay(); break;
-    case 'go-next-loc': goNextLoc(); break;
-    case 'next-question': nextQuestion(); break;
-    case 'reset-progress': resetProgress(); break;
-    case 'reset-day': resetDay(); break;
-    case 'continue-to-tasks': continueToTasks(); break;
-    case 'kp-press': kpPress(arg); break;
-    case 'buy-gear': buyGear(Number(arg)); break;
-    case 'check-step1-sign': checkStep1Sign(arg); break;
-    case 'check-input': checkInput(); break;
-    case 'ask-hint': askHint(); break;
-    case 'check-step-input': checkStepInput(); break;
-    case 'submit-mini-input': submitMiniInput(); break;
-    case 'next-mini-question': nextMiniExamQuestion(); break;
-    case 'print': window.print(); break;
+  try{
+    switch(act){
+      case 'start-onboarding': go('onboard'); showSlide(0); break;
+      case 'next-slide': nextSlide(); break;
+      case 'go': go(arg); break;
+      case 'open-sheet': openSheet(); break;
+      case 'close-sheet': closeSheet(); break;
+      case 'open-report': openReport(); break;
+      case 'close-report': closeReport(); break;
+      case 'start-exam': startExam(); break;
+      case 'start-day': startDay(); break;
+      case 'go-next-loc': goNextLoc(); break;
+      case 'next-question': nextQuestion(); break;
+      case 'reset-progress': resetProgress(); break;
+      case 'continue-to-tasks': continueToTasks(); break;
+      case 'kp-press': kpPress(arg); break;
+      case 'buy-gear': buyGear(Number(arg)); break;
+      case 'check-step1-sign': checkStep1Sign(arg); break;
+      case 'check-input': checkInput(); break;
+      case 'ask-hint': askHint(); break;
+      case 'check-step-input': checkStepInput(); break;
+      case 'submit-mini-input': submitMiniInput(); break;
+      case 'next-mini-question': nextMiniExamQuestion(); break;
+      case 'print': window.print(); break;
+    }
+  } catch(err){
+    // Что-то пошло не так внутри действия — не оставляем экран "мёртвым":
+    // чистим кэш вопросов текущей локации (частая причина — устаревшие
+    // данные в localStorage после обновления игры) и уводим на карту.
+    console.error('Ошибка при обработке действия "'+act+'":', err);
+    const navActs = ['start-onboarding','go','start-exam','start-day','go-next-loc','continue-to-tasks'];
+    if(navActs.includes(act)){
+      try{
+        if(typeof currentLoc==='number'){
+          localStorage.removeItem(`locQ_${currentLoc}_r`);
+          localStorage.removeItem(`locQ_${currentLoc}_t`);
+          delete locQCache[currentLoc];
+        }
+      } catch(e2){}
+      try{ go('map'); } catch(e3){}
+    }
   }
 });
 /* Привязка обработчиков ввода к полям ответа (CSP-safe, без inline oninput/onkeydown).
