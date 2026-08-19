@@ -285,7 +285,7 @@
 
   /* day complete */
   #dayend{background:linear-gradient(160deg,#ffb44d,#ff7e5f); color:#fff}
-  #dayend .clap{font-size:96px; animation:float 3s ease-in-out infinite}
+  #dayend .clap{font-size:72px; animation:float 3s ease-in-out infinite}
   #dayend .summary{background:rgba(255,255,255,.18); border-radius:22px; padding:20px; margin-top:22px; backdrop-filter:blur(4px)}
   #dayend .summary .big{font-size:40px; font-weight:800}
   #dayend .summary .cap{font-size:14px; opacity:.9}
@@ -528,7 +528,8 @@
       <div class="route" id="route"></div>
       <p class="lock-note">Проходи локации одну за другой — каждая открывает следующую. Все 10 чудес света ждут тебя!</p>
       <div style="padding:0 22px 24px">
-        <button id="mapExamBtn" class="btn warm" style="display:none;margin-top:4px" data-act="start-exam">📝 Итоговая контрольная за 5 класс</button>
+        <button id="mapExamBtn" class="btn warm" style="margin-top:4px" data-act="start-exam">📝 Итоговая контрольная за 5 класс</button>
+        <p id="mapExamNote" style="display:none;font-size:12.5px;color:var(--muted);text-align:center;margin-top:8px;line-height:1.5">🔒 Откроется, когда пройдёшь все 10 локаций</p>
       </div>
     </div>
   </section>
@@ -550,6 +551,8 @@
       <div class="pad" style="padding-top:4px">
         <button class="btn ghost" data-act="show-rule-demo" id="ruleDemoBtn" style="display:none;border-color:#ffd88a;color:#b37800;background:#fff8e8">💡 Напомни правило</button>
         <div id="ruleDemoBtnGap" style="height:10px;display:none"></div>
+        <button class="btn ghost" data-act="open-report-loc" id="locReportBtn" style="display:none;border-color:#ffcf80;color:#8a5a00;background:#fff3d6">📋 Отчёт для родителей</button>
+        <div id="locReportBtnGap" style="height:10px;display:none"></div>
         <button class="btn warm" data-act="start-day" id="startDayBtn">Начать съёмку 🎥</button>
         <div style="height:10px"></div>
         <button class="btn" data-act="go-next-loc" id="nextLocBtn" style="display:none">Дальше →</button>
@@ -633,12 +636,10 @@
       <div class="big" id="dayEndGain">+0</div>
       <div class="cap">подписчиков за сегодня</div>
     </div>
+    <button class="btn" id="reportBtn" style="margin-top:16px;background:#fff3d6;color:#8a5a00" data-act="open-report">📋 Отчёт для родителей</button>
     <div class="spacer"></div>
     <button class="btn" id="dayEndBtn">Продолжить</button>
     <button class="btn ghost" id="dayEndMapBtn" data-act="go" data-arg="map">На карту 🗺️</button>
-    <div style="height:8px"></div>
-    <button class="btn ghost" id="reportBtn" style="border-color:rgba(255,255,255,.5);color:#fff;background:rgba(255,255,255,.12)" data-act="open-report">📋 Отчёт для родителей</button>
-    <div style="height:6px"></div>
   </section>
 
   <!-- ====== ОТЧЁТ ДЛЯ РОДИТЕЛЕЙ ====== -->
@@ -824,7 +825,8 @@ let state = {
   dayStamp: '',
   dayCount: 0,
   achievements: [],   // array of earned achievement ids
-  gearLevel: 0        // 0=phone,1=camera,2=drone,3=satellite
+  gearLevel: 0,        // 0=phone,1=camera,2=drone,3=satellite
+  lastResults: {}     // {[locIdx]: [{tag,text,correct,usedHint,attempts}, ...]} — отчёт по последнему прохождению
 };
 let currentLoc = 0;       // which location is being played
 function todayStr(){ const d=new Date(); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
@@ -839,6 +841,7 @@ function load(){
   if(!state.rounds) state.rounds = EMPTY_PROGRESS();
   if(!state.achievements) state.achievements = [];
   if(state.gearLevel===undefined) state.gearLevel = 0;
+  if(!state.lastResults) state.lastResults = {};
   if(state.limit==='soft'||state.limit==='hard') state.limit='day'; // старые значения лимита
 }
 function save(){ try{ localStorage.setItem(SAVE_KEY, JSON.stringify(state)); }catch(e){} }
@@ -1119,10 +1122,17 @@ function renderMap(){
     r.appendChild(div);
   });
 
-  // exam button when all done
+  // итоговая контрольная — всегда видна в списке, но заблокирована до прохождения всех локаций
   const allDone=Object.keys(state.progress).every(k=>locDone(Number(k)));
   const examBtn=document.getElementById('mapExamBtn');
-  if(examBtn) examBtn.style.display=allDone?'flex':'none';
+  const examNote=document.getElementById('mapExamNote');
+  if(examBtn){
+    examBtn.style.display='flex';
+    examBtn.disabled = !allDone;
+    examBtn.style.opacity = allDone ? '1' : '.5';
+    examBtn.style.pointerEvents = allDone ? 'auto' : 'none';
+  }
+  if(examNote) examNote.style.display = allDone ? 'none' : 'block';
 
   // fly plane to newly opened location after DOM settles
   if(shouldFly){
@@ -4295,6 +4305,11 @@ function renderLoc(){
   const hasRuleDemo = !!RULE_DEMOS[currentLoc];
   ruleBtn.style.display = hasRuleDemo ? 'flex' : 'none';
   ruleGap.style.display = hasRuleDemo ? 'block' : 'none';
+  const reportBtn=document.getElementById('locReportBtn');
+  const reportGap=document.getElementById('locReportBtnGap');
+  const hasReport = !!(state.lastResults && state.lastResults[currentLoc] && state.lastResults[currentLoc].length);
+  reportBtn.style.display = hasReport ? 'flex' : 'none';
+  reportGap.style.display = hasReport ? 'block' : 'none';
 }
 
 /* ============ НАПОМИНАНИЕ ПРАВИЛА (пошаговая демонстрация) ============ */
@@ -5045,7 +5060,9 @@ function endDay(){
   const mapBtn=document.getElementById('dayEndMapBtn');
   mapBtn.style.display='flex';
 
-  state.followers += 500; save();
+  state.followers += 500;
+  state.lastResults[currentLoc] = locResults.slice();
+  save();
   checkHype(); checkAchievements();
   const loc=LOCATIONS[currentLoc];
   const allDone = Object.keys(state.progress).every(k=>locDone(Number(k)));
@@ -5094,25 +5111,28 @@ function openSheet(){ refreshDay(); document.getElementById('sheetBg').classList
 function closeSheet(){ document.getElementById('sheetBg').classList.remove('show'); document.getElementById('sheet').classList.remove('show'); }
 
 /* ============ ОТЧЁТ ДЛЯ РОДИТЕЛЕЙ ============ */
-function openReport(){
-  const total = QUESTIONS.length;
-  const answered = locResults.filter(Boolean);
+/* results: массив {tag,text,correct,usedHint,attempts} — либо текущий locResults
+   (сразу после прохождения), либо сохранённый state.lastResults[locIdx] (из карты). */
+function openReport(results){
+  results = results || [];
+  const total = results.length;
+  const answered = results.filter(Boolean);
   const correct = answered.filter(r=>r.correct).length;
   const wrong = answered.length - correct;
-  document.getElementById('reportSummary').innerHTML =
-    `✅ Правильно: <b>${correct}</b> &nbsp; ❌ Неправильно: <b>${wrong}</b> &nbsp; Всего заданий: ${total}`;
+  document.getElementById('reportSummary').innerHTML = total
+    ? `✅ Правильно: <b>${correct}</b> &nbsp; ❌ Неправильно: <b>${wrong}</b> &nbsp; Всего заданий: ${total}`
+    : 'Отчёт появится после прохождения локации.';
   const list = document.getElementById('reportList');
-  list.innerHTML = QUESTIONS.map((q,i)=>{
-    const r = locResults[i];
+  list.innerHTML = results.map(r=>{
+    if(!r) return '';
     let mark, note;
-    if(!r){ mark='⏳'; note='не решено'; }
-    else if(r.correct){ mark='✅'; note = r.usedHint ? 'верно, с подсказкой' : (r.attempts>0 ? 'верно со 2-й попытки' : 'верно с первого раза'); }
+    if(r.correct){ mark='✅'; note = r.usedHint ? 'верно, с подсказкой' : (r.attempts>0 ? 'верно со 2-й попытки' : 'верно с первого раза'); }
     else { mark='❌'; note='ответили неверно (после подсказки показан верный ответ)'; }
     return `<div style="padding:10px 0;border-bottom:1px solid var(--soft);display:flex;gap:10px;align-items:flex-start">
       <div style="font-size:18px">${mark}</div>
       <div style="flex:1;min-width:0">
-        <div style="font-size:12.5px;font-weight:700;color:var(--muted)">${q.tag}</div>
-        <div style="font-size:14px;color:var(--ink)">${fmtFrac(q.text)}</div>
+        <div style="font-size:12.5px;font-weight:700;color:var(--muted)">${r.tag}</div>
+        <div style="font-size:14px;color:var(--ink)">${fmtFrac(r.text)}</div>
         <div style="font-size:12px;color:var(--muted);margin-top:2px">${note}</div>
       </div>
     </div>`;
@@ -5132,7 +5152,7 @@ document.querySelectorAll('#limitSeg button').forEach(b=>{
 });
 function resetProgress(){
   if(confirm('Сбросить весь прогресс и начать заново?')){
-    state={followers:0, progress:EMPTY_PROGRESS(), rounds:EMPTY_PROGRESS(), limit:state.limit, dayStamp:todayStr(), dayCount:0, achievements:[], gearLevel:0};
+    state={followers:0, progress:EMPTY_PROGRESS(), rounds:EMPTY_PROGRESS(), limit:state.limit, dayStamp:todayStr(), dayCount:0, achievements:[], gearLevel:0, lastResults:{}};
     currentLoc=0; QUESTIONS=[];
     save(); syncFollowers(); syncAvatar(); closeSheet(); renderMap();
     go('welcome'); showSlide(0);
@@ -5151,7 +5171,8 @@ document.addEventListener('click', function(e){
       case 'go': go(arg); break;
       case 'open-sheet': openSheet(); break;
       case 'close-sheet': closeSheet(); break;
-      case 'open-report': openReport(); break;
+      case 'open-report': openReport(locResults); break;
+      case 'open-report-loc': openReport(state.lastResults[currentLoc]); break;
       case 'close-report': closeReport(); break;
       case 'start-exam': startExam(); break;
       case 'start-day': startDay(); break;
