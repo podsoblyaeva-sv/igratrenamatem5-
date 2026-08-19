@@ -3847,17 +3847,40 @@ const GENERATORS = { 0:GEN_EIFFEL, 1:GEN_COLOSSEUM, 2:GEN_MACHU, 3:GEN_TAJ, 4:GE
 function isTaskQuestion(q){ return !!(q.tag||'').match(/задача|задач/i); }
 
 function buildLocationQuestions(locIndex, round){
+  try {
+    return buildLocationQuestionsInner(locIndex, round);
+  } catch(e){
+    // Защита от повреждённых/устаревших данных в localStorage (например, после
+    // обновления игры): чистим кэш очереди для этой локации и пробуем ещё раз.
+    try {
+      localStorage.removeItem(`locQ_${locIndex}_r`);
+      localStorage.removeItem(`locQ_${locIndex}_t`);
+    } catch(e2){}
+    try {
+      return buildLocationQuestionsInner(locIndex, round);
+    } catch(e3){
+      // Крайний случай: просто отдаём вопросы без сохранения очереди.
+      const gens = GENERATORS[locIndex] || [];
+      return shuffle(gens.map(g=>g())).slice(0, QUESTIONS_PER_LOCATION);
+    }
+  }
+}
+function buildLocationQuestionsInner(locIndex, round){
   const gens = GENERATORS[locIndex] || [];
   const sig  = SIGNATURE[locIndex]  || [];
 
   // Разбиваем генераторы на обычные и задачи (вызываем один раз для определения типа)
   const regIdxs = [], taskIdxs = [];
   gens.forEach((g,i) => { isTaskQuestion(g()) ? taskIdxs.push(i) : regIdxs.push(i); });
+  const regSet = new Set(regIdxs), taskSet = new Set(taskIdxs);
 
   // --- Очередь обычных заданий (6 штук, без задач) ---
   const regKey = `locQ_${locIndex}_r`;
   let regQueue = [];
   try { regQueue = JSON.parse(localStorage.getItem(regKey)||'[]'); } catch(e){}
+  // отбрасываем индексы, которых больше нет в текущем пуле (после обновления игры)
+  if(!Array.isArray(regQueue)) regQueue = [];
+  regQueue = regQueue.filter(i => regSet.has(i));
   const regNeeded = sig.length > 0 ? 5 : 6;
   if(regQueue.length < regNeeded) regQueue = shuffle([...regIdxs]);
 
@@ -3873,6 +3896,8 @@ function buildLocationQuestions(locIndex, round){
     const taskKey = `locQ_${locIndex}_t`;
     let taskQueue = [];
     try { taskQueue = JSON.parse(localStorage.getItem(taskKey)||'[]'); } catch(e){}
+    if(!Array.isArray(taskQueue)) taskQueue = [];
+    taskQueue = taskQueue.filter(i => taskSet.has(i));
     if(taskQueue.length < 5) taskQueue = shuffle([...taskIdxs]);
     const picked = taskQueue.splice(0, Math.min(5, taskQueue.length));
     // если задач меньше 5 — добираем повторами
