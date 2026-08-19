@@ -4547,9 +4547,9 @@ function rdResetPetra(){
 const RULE_DEMO_STEPS_PETRA = [
   { bubble:'Приложи центр транспортира точно к вершине угла.', finger:'rdPeCenter' },
   { bubble:'Совмести один луч угла с нулевой отметкой (линия справа, 0°).', finger:'rdPeRay' },
-  { bubble:'Теперь смотрим, где второй луч пересекает шкалу транспортира — например, отметку 60°.', finger:'rdPeLabel',
+  { bubble:'Теперь смотрим, где второй луч пересекает шкалу транспортира — например, отметку 60°.', finger:'rdPeRay',
     apply:()=>{ rdEl('rdPeRay').style.transform='rotate(-60deg)'; } },
-  { bubble:'Это и есть градусная мера угла: 60°.', finger:'rdPeLabel',
+  { bubble:'Это и есть градусная мера угла: 60°.', finger:'rdPeRay',
     apply:()=>{ rdEl('rdPeLabel').style.opacity='1'; rdPop('rdPeLabel'); } },
 ];
 
