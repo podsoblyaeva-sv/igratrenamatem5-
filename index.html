@@ -551,10 +551,10 @@
       <div class="pad" style="padding-top:4px">
         <button class="btn ghost" data-act="show-rule-demo" id="ruleDemoBtn" style="display:none;border-color:#ffd88a;color:#b37800;background:#fff8e8">💡 Напомни правило</button>
         <div id="ruleDemoBtnGap" style="height:10px;display:none"></div>
-        <button class="btn ghost" data-act="open-report-loc" id="locReportBtn" style="display:none;border-color:#ffcf80;color:#8a5a00;background:#fff3d6">📋 Отчёт для родителей</button>
-        <div id="locReportBtnGap" style="height:10px;display:none"></div>
         <button class="btn warm" data-act="start-day" id="startDayBtn">Начать съёмку 🎥</button>
         <div style="height:10px"></div>
+        <button class="btn ghost" data-act="open-report-loc" id="locReportBtn" style="display:none;border-color:#ffcf80;color:#8a5a00;background:#fff3d6">📋 Отчёт для родителей</button>
+        <div id="locReportBtnGap" style="height:10px;display:none"></div>
         <button class="btn" data-act="go-next-loc" id="nextLocBtn" style="display:none">Дальше →</button>
         <div style="height:10px"></div>
         <button class="btn ghost" data-act="go" data-arg="map">← На карту</button>
@@ -4307,9 +4307,8 @@ function renderLoc(){
   ruleGap.style.display = hasRuleDemo ? 'block' : 'none';
   const reportBtn=document.getElementById('locReportBtn');
   const reportGap=document.getElementById('locReportBtnGap');
-  const hasReport = !!(state.lastResults && state.lastResults[currentLoc] && state.lastResults[currentLoc].length);
-  reportBtn.style.display = hasReport ? 'flex' : 'none';
-  reportGap.style.display = hasReport ? 'block' : 'none';
+  reportBtn.style.display = done ? 'flex' : 'none';
+  reportGap.style.display = done ? 'block' : 'none';
 }
 
 /* ============ НАПОМИНАНИЕ ПРАВИЛА (пошаговая демонстрация) ============ */
